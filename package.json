@@ -1,0 +1,79 @@
+{
+    "name": "web-design-dnd",
+    "version": "0.1.0",
+    "description": "",
+    "main": "lib/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "transform-es src -d lib -c -w --corejs false",
+        "demo": "node scripts/server",
+        "docs": "node scripts/docs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pagedesign/web-design-dnd.git"
+    },
+    "keywords": [
+        "web-design-dnd",
+        "drag-and-drop",
+        "react-dnd",
+        "designer"
+    ],
+    "author": "nobo.zhou@foxmail.com",
+    "license": "MIT",
+    "files": [
+        "*.md",
+        "lib"
+    ],
+    "bugs": {
+        "url": "https://github.com/pagedesign/web-design-dnd/issues"
+    },
+    "homepage": "https://github.com/pagedesign/web-design-dnd#readme",
+    "dependencies": {
+        "@babel/runtime": "^7.4.5",
+        "@babel/runtime-corejs2": "^7.4.5",
+        "invariant": "^2.2.4",
+        "lodash": "^4.17.11",
+        "prop-types": "^15.7.2",
+        "react": "^16.8.6",
+        "react-dnd": "^9.3.4",
+        "react-dnd-html5-backend": "^9.3.4",
+        "react-dom": "^16.8.6",
+        "react-is": "^16.8.6",
+        "warning": "^4.0.3",
+        "with-component-hooks": "^1.0.0"
+    },
+    "devDependencies": {
+        "@babel/plugin-transform-modules-amd": "^7.2.0",
+        "@babel/plugin-transform-modules-commonjs": "^7.4.4",
+        "@babel/plugin-transform-modules-systemjs": "^7.4.4",
+        "@babel/plugin-transform-modules-umd": "^7.2.0",
+        "async-validator": "^1.11.2",
+        "autoprefixer": "^9.6.0",
+        "babel-eslint": "^10.0.1",
+        "babel-loader": "^8.0.6",
+        "babel-preset-packez": "^0.2.0",
+        "css-loader": "^2.1.1",
+        "eslint": "^5.16.0",
+        "eslint-config-packez": "^0.3.0",
+        "eslint-loader": "^2.1.2",
+        "json5-loader": "^2.0.0",
+        "mini-css-extract-plugin": "^0.6.0",
+        "node-sass": "^4.12.0",
+        "packez": "^2.0.4",
+        "postcss": "^7.0.16",
+        "postcss-flexbugs-fixes": "^4.1.0",
+        "postcss-loader": "^3.0.0",
+        "postcss-preset-env": "^6.6.0",
+        "sass-loader": "^7.1.0",
+        "style-loader": "^0.23.1",
+        "styled-components": "^4.3.2",
+        "transform-es": "^2.3.0"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ]
+}

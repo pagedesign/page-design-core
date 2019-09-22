@@ -359,29 +359,30 @@ export default class WebDesignModel extends React.Component {
     }
 
     getModel() {
-        return {
-            DropContainerContext: this.DropContainerContext,
-            isSameItem: this.isSameItem.bind(this),
-            getScope: this.getScope.bind(this),
-            fireEvent: this.fireEvent.bind(this),
-            addItem: this.addItem.bind(this),
-            addTmpItem: this.addTmpItem.bind(this),
-            getPids: this.getPids.bind(this),
-            updateItem: this.updateItem.bind(this),
-            getItems: this.getItems.bind(this),
-            getAllItems: this.getAllItems.bind(this),
-            removeItem: this.removeItem.bind(this),
-            getItemIndex: this.getItemIndex.bind(this),
-            getItem: this.getItem.bind(this),
-            insertBefore: this.insertBefore.bind(this),
-            insertAfter: this.insertAfter.bind(this),
-            clearTmpItems: this.clearTmpItems.bind(this),
-            commitItem: this.commitItem.bind(this),
-            isTmpItem: this.isTmpItem.bind(this),
-            updateItemPid: this.updateItemPid.bind(this),
-            setItemDragging: this.setItemDragging.bind(this),
-            isDragging: this.isDragging.bind(this)
-        };
+        return Object.create(this);
+        // return {
+        //     DropContainerContext: this.DropContainerContext,
+        //     isSameItem: this.isSameItem.bind(this),
+        //     getScope: this.getScope.bind(this),
+        //     fireEvent: this.fireEvent.bind(this),
+        //     addItem: this.addItem.bind(this),
+        //     addTmpItem: this.addTmpItem.bind(this),
+        //     getPids: this.getPids.bind(this),
+        //     updateItem: this.updateItem.bind(this),
+        //     getItems: this.getItems.bind(this),
+        //     getAllItems: this.getAllItems.bind(this),
+        //     removeItem: this.removeItem.bind(this),
+        //     getItemIndex: this.getItemIndex.bind(this),
+        //     getItem: this.getItem.bind(this),
+        //     insertBefore: this.insertBefore.bind(this),
+        //     insertAfter: this.insertAfter.bind(this),
+        //     clearTmpItems: this.clearTmpItems.bind(this),
+        //     commitItem: this.commitItem.bind(this),
+        //     isTmpItem: this.isTmpItem.bind(this),
+        //     updateItemPid: this.updateItemPid.bind(this),
+        //     setItemDragging: this.setItemDragging.bind(this),
+        //     isDragging: this.isDragging.bind(this)
+        // };
     }
 
     render() {

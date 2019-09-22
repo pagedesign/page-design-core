@@ -99,13 +99,14 @@ class DropContainer extends React.Component {
                 //根节点统一commit
                 if (isRootContainer) {
                     const isTmpItem = designer.isTmpItem(item);
-                    designer.commitItem(item);
 
                     designer.fireEvent("onDrop", {
                         item,
                         target: pid,
                         action: isTmpItem ? ACTION_ADD : ACTION_SORT
                     });
+
+                    designer.commitItem(item);
                 }
             },
 

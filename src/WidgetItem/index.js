@@ -46,12 +46,12 @@ class WidgetItem extends React.Component {
                     beginDrag(item, monitor);
                 }
 
-                designer.addTmpItem(item);
-
                 designer.fireEvent("onDragStart", {
                     item,
                     action: ACTION_ADD
                 });
+
+                designer.addTmpItem(item);
 
                 return {
                     item: item
@@ -63,12 +63,12 @@ class WidgetItem extends React.Component {
                     endDrag(item, monitor);
                 }
 
-                designer.clearTmpItems();
-
                 designer.fireEvent("onDragEnd", {
                     item,
                     action: ACTION_ADD
                 });
+
+                designer.clearTmpItems();
             },
 
             collect(monitor) {

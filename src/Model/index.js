@@ -29,6 +29,7 @@ function normalizeItem(item, props) {
 export default class WebDesignModel extends React.Component {
     static propTypes = {
         value: propTypes.array,
+        align: propTypes.oneOf(["all", "vertical", "horizontal"]),
         onChange: propTypes.func,
         onDragStart: propTypes.func,
         onDragEnd: propTypes.func,
@@ -48,6 +49,7 @@ export default class WebDesignModel extends React.Component {
         idField: "id",
         pidField: "pid",
         indexField: "index",
+        align: "vertical",
         onChange: null
     };
 

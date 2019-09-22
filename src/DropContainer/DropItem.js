@@ -5,11 +5,13 @@ import withHooks from "with-component-hooks";
 import { useDrop, useDrag } from "react-dnd";
 import { ACTION_ADD, ACTION_SORT } from "../constants";
 import ModelContext from "../ModelContext";
+import { isBeforeRect } from "../utils";
 
 class DropItem extends React.Component {
     static propTypes = {
         children: propTypes.func.isRequired,
         item: propTypes.object.isRequired,
+        align: propTypes.oneOf(["all", "vertical", "horizontal"]),
         canDrag: propTypes.func,
         beginDrag: propTypes.func,
         endDrag: propTypes.func
@@ -17,10 +19,12 @@ class DropItem extends React.Component {
 
     getDropOptions() {
         const self = this;
-        const { item } = this.props;
+        let { item, align } = this.props;
         const designer = React.useContext(ModelContext);
         const DropContainerContext = designer.DropContainerContext;
         const { canDrop } = React.useContext(DropContainerContext);
+
+        align = align || designer.props.align;
 
         return {
             accept: designer.getScope(),
@@ -47,16 +51,43 @@ class DropItem extends React.Component {
                 }
 
                 const dragOffset = monitor.getClientOffset();
-                const previewDOM = findDOMNode(self);
+                const targetDOM = findDOMNode(self);
 
                 //顺序调整
-                const targetOffset = previewDOM.getBoundingClientRect();
+                const targetOffset = targetDOM.getBoundingClientRect();
+
+                const middleX = ~~(targetOffset.right - targetOffset.width / 2);
+
                 const middleY = ~~(
                     targetOffset.bottom -
                     targetOffset.height / 2
                 );
 
-                if (dragOffset.y <= middleY) {
+                let shouldInsertBefore = false;
+
+                switch (align) {
+                    case "vertical":
+                        shouldInsertBefore = dragOffset.y <= middleY;
+                        break;
+                    case "horizontal":
+                        shouldInsertBefore = dragOffset.x <= middleX;
+                        break;
+                    case "all":
+                        shouldInsertBefore = isBeforeRect(
+                            targetOffset.left,
+                            targetOffset.top,
+                            targetOffset.width,
+                            targetOffset.height,
+                            dragOffset.x,
+                            dragOffset.y
+                        );
+                        break;
+                    default:
+                        //vertical default
+                        shouldInsertBefore = dragOffset.y <= middleY;
+                }
+
+                if (shouldInsertBefore) {
                     designer.insertBefore(dragItem, item);
                 } else {
                     designer.insertAfter(dragItem, item);
@@ -97,12 +128,12 @@ class DropItem extends React.Component {
                     beginDrag(item, monitor);
                 }
 
-                designer.setItemDragging(item);
-
                 designer.fireEvent("onDragStart", {
                     item,
                     action: ACTION_SORT
                 });
+
+                designer.setItemDragging(item);
 
                 return {
                     item
@@ -114,12 +145,13 @@ class DropItem extends React.Component {
                     endDrag(item, monitor);
                 }
 
-                designer.clearTmpItems();
-
                 designer.fireEvent("onDragEnd", {
                     item,
                     action: ACTION_SORT
                 });
+
+                //clearDraggingState
+                designer.clearTmpItems();
             }
 
             // collect(monitor) {
@@ -153,6 +185,7 @@ class DropItem extends React.Component {
         return children({
             ...collectedDropProps,
             ...collectedDragProps,
+            item,
             isTmp: designer.isTmpItem(item),
             isDragging: designer.isDragging(item),
             connectDropTarget,

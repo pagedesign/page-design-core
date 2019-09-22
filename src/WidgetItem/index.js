@@ -49,7 +49,7 @@ class WidgetItem extends React.Component {
                 designer.addTmpItem(item);
 
                 designer.fireEvent("onDragStart", {
-                    target: item,
+                    item,
                     action: ACTION_ADD
                 });
 
@@ -66,7 +66,7 @@ class WidgetItem extends React.Component {
                 designer.clearTmpItems();
 
                 designer.fireEvent("onDragEnd", {
-                    target: item,
+                    item,
                     action: ACTION_ADD
                 });
             },

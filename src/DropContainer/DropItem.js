@@ -100,7 +100,7 @@ class DropItem extends React.Component {
                 designer.setItemDragging(item);
 
                 designer.fireEvent("onDragStart", {
-                    target: item,
+                    item,
                     action: ACTION_SORT
                 });
 
@@ -117,7 +117,7 @@ class DropItem extends React.Component {
                 designer.clearTmpItems();
 
                 designer.fireEvent("onDragEnd", {
-                    target: item,
+                    item,
                     action: ACTION_SORT
                 });
             }

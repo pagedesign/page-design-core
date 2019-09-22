@@ -102,7 +102,8 @@ class DropContainer extends React.Component {
                     designer.commitItem(item);
 
                     designer.fireEvent("onDrop", {
-                        target: item,
+                        item,
+                        target: pid,
                         action: isTmpItem ? ACTION_ADD : ACTION_SORT
                     });
                 }

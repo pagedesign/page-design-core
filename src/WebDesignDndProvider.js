@@ -5,6 +5,10 @@ import { DndProvider } from "react-dnd";
 import Model from "./Model";
 
 export default class WebDesignDndProvider extends React.Component {
+    static defaultProps = {
+        backend: HTML5Backend
+    };
+
     model = null;
 
     getModel() {
@@ -16,10 +20,10 @@ export default class WebDesignDndProvider extends React.Component {
     };
 
     render() {
-        const { children, ...props } = this.props;
+        const { children, backend, ...props } = this.props;
 
         return (
-            <DndProvider backend={HTML5Backend}>
+            <DndProvider backend={backend}>
                 <Model {...props} ref={this.saveModel}>
                     {children}
                 </Model>

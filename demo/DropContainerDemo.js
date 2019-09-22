@@ -19,6 +19,7 @@ export default function DropContainerDemo({ pid = null, title, canDrop }) {
                             return (
                                 <DropItem key={item.id} item={item}>
                                     {({
+                                        connectDragAndDrop,
                                         isDragging,
                                         isHover,
                                         isOver,
@@ -26,6 +27,7 @@ export default function DropContainerDemo({ pid = null, title, canDrop }) {
                                     }) => {
                                         return (
                                             <div
+                                                ref={connectDragAndDrop}
                                                 style={{
                                                     opacity: isDragging
                                                         ? 0.5

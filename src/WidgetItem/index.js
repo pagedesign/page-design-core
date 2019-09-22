@@ -2,37 +2,19 @@ import React from "react";
 import propTypes from "prop-types";
 import { findDOMNode } from "react-dom";
 import { useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 import withHooks from "with-component-hooks";
 import ModelContext from "../ModelContext";
 import { ACTION_ADD, ACTION_SORT } from "../constants";
 
 class WidgetItem extends React.Component {
     static propTypes = {
+        children: propTypes.func.isRequired,
         getInstance: propTypes.func.isRequired,
-        disabled: propTypes.bool,
         canDrag: propTypes.func,
         beginDrag: propTypes.func,
         endDrag: propTypes.func
     };
-
-    _connectDragSource = null;
-
-    connectDrag() {
-        const { disabled } = this.props;
-
-        const dom = findDOMNode(this);
-        if (this._connectDragSource) {
-            this._connectDragSource(disabled ? null : dom);
-        }
-    }
-
-    componentDidMount() {
-        this.connectDrag();
-    }
-
-    componentDidUpdate() {
-        this.connectDrag();
-    }
 
     render() {
         const {
@@ -45,7 +27,7 @@ class WidgetItem extends React.Component {
 
         const designer = React.useContext(ModelContext);
 
-        const [collectProps, connectDragSource] = useDrag({
+        const [collectProps, connectDragTarget, connectDragPreview] = useDrag({
             item: {
                 type: designer.getScope()
             },
@@ -97,14 +79,11 @@ class WidgetItem extends React.Component {
             }
         });
 
-        this._connectDragSource = connectDragSource;
-
-        const child =
-            typeof children === "function" ? children(collectProps) : children;
-
-        React.Children.only(child);
-
-        return child;
+        return children({
+            ...collectProps,
+            connectDragTarget,
+            connectDragPreview
+        });
     }
 }
 

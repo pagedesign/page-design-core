@@ -8,9 +8,8 @@ import ModelContext from "../ModelContext";
 
 class DropItem extends React.Component {
     static propTypes = {
+        children: propTypes.func.isRequired,
         item: propTypes.object.isRequired,
-        disableDrag: propTypes.bool,
-        disableDrop: propTypes.bool,
         canDrag: propTypes.func,
         beginDrag: propTypes.func,
         endDrag: propTypes.func
@@ -132,38 +131,6 @@ class DropItem extends React.Component {
         };
     }
 
-    _connectDropTarget = null;
-    _connectDragTarget = null;
-
-    connectDropAndDrag() {
-        const { disableDrag, disableDrop } = this.props;
-
-        const dom = findDOMNode(this);
-        if (this._connectDropTarget) {
-            this._connectDropTarget(disableDrop ? null : dom);
-        }
-        if (this._connectDragTarget) {
-            this._connectDragTarget(disableDrag ? null : dom);
-        }
-    }
-
-    componentDidMount() {
-        this.connectDropAndDrag();
-    }
-
-    componentDidUpdate() {
-        this.connectDropAndDrag();
-    }
-
-    componentWillUnmount() {
-        if (this._connectDropTarget) {
-            this._connectDropTarget(null);
-        }
-        if (this._connectDragTarget) {
-            this._connectDragTarget(null);
-        }
-    }
-
     render() {
         const { children, item } = this.props;
         const designer = React.useContext(ModelContext);
@@ -172,26 +139,27 @@ class DropItem extends React.Component {
             this.getDropOptions()
         );
 
-        const [collectedDragProps, connectDragTarget] = useDrag(
-            this.getDragOptions()
-        );
+        const [
+            collectedDragProps,
+            connectDragTarget,
+            connectDragPreview
+        ] = useDrag(this.getDragOptions());
 
-        this._connectDropTarget = connectDropTarget;
-        this._connectDragTarget = connectDragTarget;
+        const connectDragAndDrop = dom => {
+            connectDropTarget(dom);
+            connectDragTarget(dom);
+        };
 
-        const child =
-            typeof children === "function"
-                ? children({
-                      ...collectedDropProps,
-                      ...collectedDragProps,
-                      isTmp: designer.isTmpItem(item),
-                      isDragging: designer.isDragging(item)
-                  })
-                : children;
-
-        React.Children.only(child);
-
-        return child;
+        return children({
+            ...collectedDropProps,
+            ...collectedDragProps,
+            isTmp: designer.isTmpItem(item),
+            isDragging: designer.isDragging(item),
+            connectDropTarget,
+            connectDragTarget,
+            connectDragAndDrop,
+            connectDragPreview
+        });
     }
 }
 

@@ -18,6 +18,7 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                             return (
                                 <DropItem key={item.id} item={item}>
                                     {({
+                                        connectDragAndDrop,
                                         isDragging,
                                         isHover,
                                         isOver,
@@ -25,6 +26,7 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                                     }) => {
                                         return (
                                             <div
+                                                ref={connectDragAndDrop}
                                                 style={{
                                                     opacity: isDragging
                                                         ? 0.5
@@ -62,6 +64,7 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                                                     key={item.id}
                                                     item={item}>
                                                     {({
+                                                        connectDragAndDrop,
                                                         isDragging,
                                                         isHover,
                                                         isOver,
@@ -69,6 +72,9 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                                                     }) => {
                                                         return (
                                                             <div
+                                                                ref={
+                                                                    connectDragAndDrop
+                                                                }
                                                                 style={{
                                                                     opacity: isDragging
                                                                         ? 0.5

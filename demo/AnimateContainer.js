@@ -40,6 +40,7 @@ export default function AnimateContainer() {
                                     return (
                                         <DropItem key={item.id} item={item}>
                                             {({
+                                                connectDragAndDrop,
                                                 isDragging,
                                                 isHover,
                                                 isOver,
@@ -47,6 +48,7 @@ export default function AnimateContainer() {
                                             }) => {
                                                 return (
                                                     <div
+                                                        ref={connectDragAndDrop}
                                                         key={item.id}
                                                         id={item.id}
                                                         style={{

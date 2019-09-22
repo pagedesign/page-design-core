@@ -1,11 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
+
 import AnimateContainer from "./AnimateContainer";
 
 import DropContainerDemo from "./DropContainerDemo";
 import DropContainerWithChildDemo from "./DropContainerWithChildDemo";
 
-import { WebDesignDndProvider, WidgetItem } from "../src";
+import { WebDesignDndProvider, WidgetItem, DragLayer } from "../src";
 
 import widgets from "./widgets";
 
@@ -16,6 +17,25 @@ function randomStr() {
 }
 
 let idx = 1;
+
+function DragLayerDemo() {
+    return (
+        <DragLayer>
+            {({ isDragging }) =>
+                !isDragging ? null : (
+                    <div
+                        style={{
+                            position: "fixed",
+                            top: 0,
+                            right: 0
+                        }}>
+                        isDragging...
+                    </div>
+                )
+            }
+        </DragLayer>
+    );
+}
 
 function App() {
     const [metadata, onMetadataChange] = React.useState({
@@ -68,14 +88,17 @@ function App() {
                                         pid: null,
                                         index: idx++
                                     })}>
-                                    <div
-                                        style={{
-                                            height: 32,
-                                            lineHeight: `32px`,
-                                            padding: "0 20px"
-                                        }}>
-                                        {widget.title}
-                                    </div>
+                                    {({ connectDragTarget }) => (
+                                        <div
+                                            ref={connectDragTarget}
+                                            style={{
+                                                height: 32,
+                                                lineHeight: `32px`,
+                                                padding: "0 20px"
+                                            }}>
+                                            {widget.title}
+                                        </div>
+                                    )}
                                 </WidgetItem>
                             );
                         })}
@@ -92,6 +115,7 @@ function App() {
                             return item.xtype === "EX_TEXTAREA_FIELD";
                         }}
                     />
+                    <DragLayerDemo />
                 </div>
             </WebDesignDndProvider>
         </div>

@@ -3,16 +3,17 @@ import { useDragLayer } from "react-dnd";
 
 export default ({ children }) => {
     const props = useDragLayer(monitor => {
+        const dragResult = monitor.getItem();
         return [
             {
                 type: monitor.getItemType(),
-                item: monitor.getItem(),
                 isDragging: monitor.isDragging(),
                 initialClientOffset: monitor.getInitialClientOffset(),
                 initialSourceClientOffset: monitor.getInitialSourceClientOffset(),
                 clientOffset: monitor.getClientOffset(),
                 differenceFromInitialOffset: monitor.getDifferenceFromInitialOffset(),
-                sourceClientOffset: monitor.getSourceClientOffset()
+                sourceClientOffset: monitor.getSourceClientOffset(),
+                ...dragResult
             },
             monitor
         ];

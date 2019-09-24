@@ -108,6 +108,7 @@ class DropItem extends React.Component {
     }
 
     getDragOptions() {
+        const self = this;
         const { item, canDrag, beginDrag, endDrag } = this.props;
         const designer = React.useContext(ModelContext);
 
@@ -124,29 +125,39 @@ class DropItem extends React.Component {
             },
 
             begin(monitor) {
+                const dom = findDOMNode(self);
+
                 if (beginDrag) {
-                    beginDrag(item, monitor);
+                    beginDrag(
+                        {
+                            item,
+                            dom
+                        },
+                        monitor
+                    );
                 }
 
                 designer.fireEvent("onDragStart", {
                     item,
+                    dom,
                     action: ACTION_SORT
                 });
 
                 designer.setItemDragging(item);
 
                 return {
-                    item
+                    item,
+                    dom
                 };
             },
 
-            end(item, monitor) {
+            end(dragResult, monitor) {
                 if (endDrag) {
-                    endDrag(item, monitor);
+                    endDrag(dragResult, monitor);
                 }
 
                 designer.fireEvent("onDragEnd", {
-                    item,
+                    ...dragResult,
                     action: ACTION_SORT
                 });
 

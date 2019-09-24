@@ -41,6 +41,7 @@ class DropContainer extends React.Component {
     }
 
     render() {
+        const self = this;
         const {
             pid = null,
             canDrop,
@@ -70,15 +71,18 @@ class DropContainer extends React.Component {
                 return true;
             },
 
-            hover({ item }, monitor) {
+            hover(dragResult, monitor) {
+                const targetDOM = findDOMNode(self);
+
                 if (hover) {
-                    hover(item, monitor);
+                    hover(dragResult, monitor);
                 }
 
                 designer.fireEvent("onDragHoverContainer", {
                     target: pid,
+                    targetDOM,
                     monitor,
-                    item
+                    ...dragResult
                 });
 
                 const isOver = monitor.isOver({ shallow: true });
@@ -88,25 +92,28 @@ class DropContainer extends React.Component {
                     return;
                 }
 
-                designer.updateItemPid(item, pid);
+                designer.updateItemPid(dragResult.item, pid);
             },
 
-            drop({ item }, monitor) {
+            drop(dragResult, monitor) {
+                const targetDOM = findDOMNode(self);
+
                 if (drop) {
-                    drop(item, monitor);
+                    drop(dragResult, monitor);
                 }
 
                 //根节点统一commit
                 if (isRootContainer) {
-                    const isTmpItem = designer.isTmpItem(item);
+                    const isTmpItem = designer.isTmpItem(dragResult.item);
 
                     designer.fireEvent("onDrop", {
-                        item,
                         target: pid,
-                        action: isTmpItem ? ACTION_ADD : ACTION_SORT
+                        targetDOM,
+                        action: isTmpItem ? ACTION_ADD : ACTION_SORT,
+                        ...dragResult
                     });
 
-                    designer.commitItem(item);
+                    designer.commitItem(dragResult.item);
                 }
             },
 
@@ -142,7 +149,8 @@ class DropContainer extends React.Component {
                 value={{
                     isRootContainer: false,
                     canDrop: canDrop
-                }}>
+                }}
+            >
                 {child}
             </DropContainerContext.Provider>
         );

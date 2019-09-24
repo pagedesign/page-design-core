@@ -24,7 +24,7 @@ class WidgetItem extends React.Component {
             beginDrag,
             endDrag
         } = this.props;
-
+        const self = this;
         const designer = React.useContext(ModelContext);
 
         const [collectProps, connectDragTarget, connectDragPreview] = useDrag({
@@ -41,30 +41,39 @@ class WidgetItem extends React.Component {
 
             begin(monitor) {
                 const item = getInstance();
+                const dom = findDOMNode(self);
 
                 if (beginDrag) {
-                    beginDrag(item, monitor);
+                    beginDrag(
+                        {
+                            item,
+                            dom
+                        },
+                        monitor
+                    );
                 }
 
                 designer.fireEvent("onDragStart", {
                     item,
+                    dom,
                     action: ACTION_ADD
                 });
 
                 designer.addTmpItem(item);
 
                 return {
-                    item: item
+                    item,
+                    dom
                 };
             },
 
-            end(item, monitor) {
+            end(dragResult, monitor) {
                 if (endDrag) {
-                    endDrag(item, monitor);
+                    endDrag(dragResult, monitor);
                 }
 
                 designer.fireEvent("onDragEnd", {
-                    item,
+                    ...dragResult,
                     action: ACTION_ADD
                 });
 

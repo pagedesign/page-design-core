@@ -6,7 +6,7 @@ const dataset = [];
 for (let i = 0; i < 20; i++) {
     dataset.push({
         id: i + 1,
-        title: `item${i + 1}`
+        title: `${i + 1}. item`
     });
 }
 

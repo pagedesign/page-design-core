@@ -3,9 +3,10 @@ import { DropContainer, DropItem } from "@/src";
 export default function DropContainerWithChildDemo({ title, canDrop }) {
     return (
         <DropContainer pid="parent" canDrop={canDrop}>
-            {(items, { monitor, canDrop }) => {
+            {({ items, monitor, canDrop, connectDropTarget }) => {
                 return (
                     <div
+                        ref={connectDropTarget}
                         style={{
                             border: canDrop
                                 ? "1px solid green"
@@ -47,9 +48,15 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                         })}
 
                         <DropContainer pid="child">
-                            {(items, { monitor, canDrop }) => {
+                            {({
+                                items,
+                                monitor,
+                                canDrop,
+                                connectDropTarget
+                            }) => {
                                 return (
                                     <div
+                                        ref={connectDropTarget}
                                         style={{
                                             height: 300,
                                             overflow: "auto",

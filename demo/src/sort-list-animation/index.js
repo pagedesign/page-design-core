@@ -41,7 +41,7 @@ function ListItem({ item, index }) {
     );
 }
 
-function renderList(items) {
+function renderList({ items, monitor, canDrop, connectDropTarget }) {
     const list = [...items];
     list.sort((a, b) => a.id - b.id);
 
@@ -54,6 +54,7 @@ function renderList(items) {
 
     return (
         <div
+            ref={{ items, monitor, canDrop, connectDropTarget }}
             style={{
                 position: "relative",
                 border: "1px solid #ccc",

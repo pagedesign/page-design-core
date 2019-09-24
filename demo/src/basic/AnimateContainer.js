@@ -4,7 +4,7 @@ import { DropContainer, DropItem } from "@/src";
 export default function AnimateContainer() {
     return (
         <DropContainer pid="Animate">
-            {(items, { monitor, canDrop }) => {
+            {({ items, monitor, canDrop, connectDropTarget }) => {
                 const list = [...items];
                 list.sort((a, b) => a.index - b.index);
 
@@ -17,6 +17,7 @@ export default function AnimateContainer() {
 
                 return (
                     <div
+                        ref={connectDropTarget}
                         style={{
                             position: "relative",
                             border: canDrop

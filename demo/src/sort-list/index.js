@@ -39,8 +39,9 @@ export default () => {
     return (
         <WebDesignDndProvider value={value} onChange={onChange}>
             <DropContainer>
-                {items => (
+                {({ items, monitor, canDrop, connectDropTarget }) => (
                     <div
+                        ref={connectDropTarget}
                         style={{
                             border: "1px solid #ccc",
                             borderRadius: 4,

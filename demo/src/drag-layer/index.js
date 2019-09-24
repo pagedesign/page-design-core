@@ -112,8 +112,9 @@ export default () => {
                 }}
             >
                 <DropContainer pid="a">
-                    {items => (
+                    {({ items, monitor, canDrop, connectDropTarget }) => (
                         <div
+                            ref={connectDropTarget}
                             style={{
                                 flex: "1",
                                 border: "1px solid #ccc",
@@ -134,8 +135,9 @@ export default () => {
                     }}
                 ></div>
                 <DropContainer pid="b">
-                    {items => (
+                    {({ items, monitor, canDrop, connectDropTarget }) => (
                         <div
+                            ref={connectDropTarget}
                             style={{
                                 flex: "1",
                                 border: "1px solid #ccc",

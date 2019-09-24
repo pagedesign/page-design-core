@@ -4,9 +4,10 @@ import { DropContainer, DropItem } from "@/src";
 export default function DropContainerDemo({ pid = null, title, canDrop }) {
     return (
         <DropContainer pid={pid} canDrop={canDrop}>
-            {(items, { monitor, canDrop }) => {
+            {({ items, monitor, canDrop, connectDropTarget }) => {
                 return (
                     <div
+                        ref={connectDropTarget}
                         style={{
                             border: canDrop
                                 ? "1px solid green"

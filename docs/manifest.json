@@ -1,9 +1,11 @@
 {
-  "index.js": "./js/index.7ec5db8a.chunk.js",
-  "index.js.map": "./js/index.7ec5db8a.chunk.js.map",
+  "index.css": "./css/index.ce1e4b91.chunk.css",
+  "index.js": "./js/index.ce1e4b91.chunk.js",
+  "index.css.map": "./css/index.ce1e4b91.chunk.css.map",
+  "index.js.map": "./js/index.ce1e4b91.chunk.js.map",
   "runtime~index.js": "./js/runtime~index.3e4ba4c7.js",
   "runtime~index.js.map": "./js/runtime~index.3e4ba4c7.js.map",
-  "js/2.c5f95182.chunk.js": "./js/2.c5f95182.chunk.js",
-  "js/2.c5f95182.chunk.js.map": "./js/2.c5f95182.chunk.js.map",
+  "js/2.00e2a3b9.chunk.js": "./js/2.00e2a3b9.chunk.js",
+  "js/2.00e2a3b9.chunk.js.map": "./js/2.00e2a3b9.chunk.js.map",
   "index.html": "./index.html"
 }

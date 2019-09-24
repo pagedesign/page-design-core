@@ -1,24 +1,28 @@
-const packez = require('packez');
-const path = require('path');
+const packez = require("packez");
+const path = require("path");
 
-packez.build({
-    index: './demo/index.js',
-}, 'docs', {
-        publicPath: './',
+packez.build(
+    {
+        index: "./demo/index.js"
+    },
+    "docs",
+    {
+        publicPath: "./",
         assest: {
             css: {
-                output: "css",
+                output: "css"
             },
             js: {
-                output: "js",
+                output: "js"
             },
             media: {
-                output: 'media',
+                output: "media",
                 publicPath: "/media"
             }
         },
         resolve: {
             alias: {
+                "@": path.join(__dirname, ".."),
                 components: path.join(__dirname, "../demo/components")
             }
         },
@@ -29,7 +33,7 @@ packez.build({
                     "react/jsx-no-undef": 1
                 }
             },
-            babel: {
-            }
-        },
-    });
+            babel: {}
+        }
+    }
+);

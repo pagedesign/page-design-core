@@ -55,8 +55,8 @@ export default class WebDesignModel extends React.Component {
     };
 
     DropContainerContext = React.createContext({
-        isRootContainer: true,
-        canDrop: null
+        isRootContainer: true
+        // canDrop: null
     });
 
     state = {

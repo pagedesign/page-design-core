@@ -21,8 +21,8 @@ class DropItem extends React.Component {
         const self = this;
         let { item, align } = this.props;
         const designer = React.useContext(ModelContext);
-        const DropContainerContext = designer.DropContainerContext;
-        const { canDrop } = React.useContext(DropContainerContext);
+        // const DropContainerContext = designer.DropContainerContext;
+        // const { canDrop } = React.useContext(DropContainerContext);
 
         align = align || designer.props.align;
 
@@ -44,9 +44,9 @@ class DropItem extends React.Component {
                 const isOver = monitor.isOver({ shallow: true });
                 if (!isOver) return;
 
-                const canDropRet = canDrop ? canDrop(dragItem, monitor) : true;
-
-                if (!monitor.canDrop() || !canDropRet) {
+                // const canDropRet = canDrop ? canDrop(dragItem, monitor) : true;
+                //|| !canDropRet
+                if (!monitor.canDrop()) {
                     return;
                 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { DropContainer, DropItem } from "../src";
+import { DropContainer, DropItem } from "@/src";
 
 export default function DropContainerDemo({ pid = null, title, canDrop }) {
     return (
@@ -12,7 +12,8 @@ export default function DropContainerDemo({ pid = null, title, canDrop }) {
                                 ? "1px solid green"
                                 : "1px solid #ccc",
                             flex: 1
-                        }}>
+                        }}
+                    >
                         <h3>{title}</h3>
                         <hr />
                         {items.map(item => {
@@ -36,7 +37,8 @@ export default function DropContainerDemo({ pid = null, title, canDrop }) {
                                                     margin: 5,
                                                     background: "#f2f2f2",
                                                     border: "1px solid #dadada"
-                                                }}>
+                                                }}
+                                            >
                                                 {item.title}({item.id})
                                             </div>
                                         );

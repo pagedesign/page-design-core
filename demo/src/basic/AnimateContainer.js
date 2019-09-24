@@ -1,5 +1,5 @@
 import React from "react";
-import { DropContainer, DropItem } from "../src";
+import { DropContainer, DropItem } from "@/src";
 
 export default function AnimateContainer() {
     return (
@@ -23,17 +23,20 @@ export default function AnimateContainer() {
                                 ? "1px solid green"
                                 : "1px solid #ccc",
                             flex: 1
-                        }}>
+                        }}
+                    >
                         <h3>Animate</h3>
                         <hr />
                         <div
                             style={{
                                 position: "relative"
-                            }}>
+                            }}
+                        >
                             <div
                                 style={{
                                     position: "relative"
-                                }}>
+                                }}
+                            >
                                 {list.map((item, index) => {
                                     var pos = getPositionIndex(item.index);
 
@@ -75,7 +78,8 @@ export default function AnimateContainer() {
                                                                 !isDragging
                                                                     ? "1px solid green"
                                                                     : "1px solid #dadada"
-                                                        }}>
+                                                        }}
+                                                    >
                                                         {item.title}({item.id})
                                                     </div>
                                                 );

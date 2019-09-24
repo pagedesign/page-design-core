@@ -22,6 +22,7 @@ packez.server(
         },
         resolve: {
             alias: {
+                "@": path.join(__dirname, ".."),
                 components: path.join(__dirname, "../demo/components")
             }
         },

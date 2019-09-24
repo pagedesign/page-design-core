@@ -1,5 +1,5 @@
 import React from "react";
-import { DropContainer, DropItem } from "../src";
+import { DropContainer, DropItem } from "@/src";
 export default function DropContainerWithChildDemo({ title, canDrop }) {
     return (
         <DropContainer pid="parent" canDrop={canDrop}>
@@ -11,7 +11,8 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                                 ? "1px solid green"
                                 : "1px solid #ccc",
                             flex: 1
-                        }}>
+                        }}
+                    >
                         <h3>{title}</h3>
                         <hr />
                         {items.map(item => {
@@ -35,7 +36,8 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                                                     margin: 5,
                                                     background: "#f2f2f2",
                                                     border: "1px solid #dadada"
-                                                }}>
+                                                }}
+                                            >
                                                 {item.title}({item.id})
                                             </div>
                                         );
@@ -55,14 +57,16 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                                                 ? "1px solid green"
                                                 : "1px solid #ccc",
                                             flex: 1
-                                        }}>
+                                        }}
+                                    >
                                         <h3>child</h3>
                                         <hr />
                                         {items.map(item => {
                                             return (
                                                 <DropItem
                                                     key={item.id}
-                                                    item={item}>
+                                                    item={item}
+                                                >
                                                     {({
                                                         connectDragAndDrop,
                                                         isDragging,
@@ -85,7 +89,8 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                                                                         "#f2f2f2",
                                                                     border:
                                                                         "1px solid #dadada"
-                                                                }}>
+                                                                }}
+                                                            >
                                                                 {item.title}(
                                                                 {item.id})
                                                             </div>

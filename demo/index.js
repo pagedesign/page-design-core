@@ -1,127 +1,135 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import AnimateContainer from "./AnimateContainer";
+import App from "./src";
 
-import DropContainerDemo from "./DropContainerDemo";
-import DropContainerWithChildDemo from "./DropContainerWithChildDemo";
+// import AnimateContainer from "./AnimateContainer";
 
-import { WebDesignDndProvider, WidgetItem, DragLayer } from "../src";
+// import DropContainerDemo from "./DropContainerDemo";
+// import DropContainerWithChildDemo from "./DropContainerWithChildDemo";
 
-import widgets from "./widgets";
+// import { WebDesignDndProvider, WidgetItem, DragLayer } from "../src";
 
-function randomStr() {
-    return Math.random()
-        .toString(16)
-        .slice(2, 8);
-}
+// import widgets from "./widgets";
 
-let idx = 1;
+// function randomStr() {
+//     return Math.random()
+//         .toString(16)
+//         .slice(2, 8);
+// }
 
-function DragLayerDemo() {
-    return (
-        <DragLayer>
-            {({ isDragging }) =>
-                !isDragging ? null : (
-                    <div
-                        style={{
-                            padding: 5,
-                            background: "rgba(0,0,0,.2)",
-                            position: "fixed",
-                            top: 0,
-                            right: 0
-                        }}>
-                        dragLayer: isDragging...
-                    </div>
-                )
-            }
-        </DragLayer>
-    );
-}
+// let idx = 1;
 
-function App() {
-    const [metadata, onMetadataChange] = React.useState({
-        items: []
-    });
+// function DragLayerDemo() {
+//     return (
+//         <DragLayer>
+//             {({ isDragging }) =>
+//                 !isDragging ? null : (
+//                     <div
+//                         style={{
+//                             padding: 5,
+//                             background: "rgba(0,0,0,.2)",
+//                             position: "fixed",
+//                             top: 0,
+//                             right: 0
+//                         }}
+//                     >
+//                         dragLayer: isDragging...
+//                     </div>
+//                 )
+//             }
+//         </DragLayer>
+//     );
+// }
 
-    function onChange(items) {
-        onMetadataChange({
-            items
-        });
-    }
+// function App() {
+//     const [metadata, onMetadataChange] = React.useState({
+//         items: []
+//     });
 
-    return (
-        <div>
-            <WebDesignDndProvider
-                // 受控
-                value={metadata.items}
-                onChange={onChange}
-                onDragStart={ev => {
-                    console.log("onDragStart", ev);
-                }}
-                onDragEnd={ev => {
-                    console.log("onDragEnd", ev);
-                }}
-                onDrop={ev => {
-                    console.log("onDrop", ev);
-                }}>
-                <div
-                    style={{
-                        display: "flex",
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0
-                    }}>
-                    <div
-                        style={{
-                            width: 240,
-                            flex: "none"
-                        }}>
-                        {widgets.map(widget => {
-                            return (
-                                <WidgetItem
-                                    key={widget.xtype}
-                                    // disabled={widget.xtype === "EX_URL_FIELD"}
-                                    getInstance={() => ({
-                                        ...widget,
-                                        id: randomStr(),
-                                        pid: null,
-                                        index: idx++
-                                    })}>
-                                    {({ connectDragTarget }) => (
-                                        <div
-                                            ref={connectDragTarget}
-                                            style={{
-                                                height: 32,
-                                                lineHeight: `32px`,
-                                                padding: "0 20px"
-                                            }}>
-                                            {widget.title}
-                                        </div>
-                                    )}
-                                </WidgetItem>
-                            );
-                        })}
-                    </div>
-                    <DropContainerDemo title="A" />
-                    <DropContainerDemo pid="b" title="B" />
-                    <AnimateContainer />
+//     function onChange(items) {
+//         onMetadataChange({
+//             items
+//         });
+//     }
 
-                    <DropContainerWithChildDemo title="Parent" />
-                    <DropContainerDemo
-                        pid="d"
-                        title="D"
-                        canDrop={item => {
-                            return item.xtype === "EX_TEXTAREA_FIELD";
-                        }}
-                    />
-                    <DragLayerDemo />
-                </div>
-            </WebDesignDndProvider>
-        </div>
-    );
-}
+//     return (
+//         <div>
+//             <WebDesignDndProvider
+//                 // 受控
+//                 value={metadata.items}
+//                 onChange={onChange}
+//                 onDragStart={ev => {
+//                     console.log("onDragStart", ev);
+//                 }}
+//                 onDragEnd={ev => {
+//                     console.log("onDragEnd", ev);
+//                 }}
+//                 onDrop={ev => {
+//                     console.log("onDrop", ev);
+//                 }}
+//             >
+//                 <div
+//                     style={{
+//                         display: "flex",
+//                         position: "fixed",
+//                         top: 0,
+//                         left: 0,
+//                         right: 0,
+//                         bottom: 0
+//                     }}
+//                 >
+//                     <div
+//                         style={{
+//                             width: 240,
+//                             flex: "none"
+//                         }}
+//                     >
+//                         {widgets.map(widget => {
+//                             return (
+//                                 <WidgetItem
+//                                     key={widget.xtype}
+//                                     // disabled={widget.xtype === "EX_URL_FIELD"}
+//                                     getInstance={() => ({
+//                                         ...widget,
+//                                         id: randomStr(),
+//                                         pid: null,
+//                                         index: idx++
+//                                     })}
+//                                 >
+//                                     {({ connectDragTarget }) => (
+//                                         <div
+//                                             ref={connectDragTarget}
+//                                             style={{
+//                                                 height: 32,
+//                                                 lineHeight: `32px`,
+//                                                 padding: "0 20px"
+//                                             }}
+//                                         >
+//                                             {widget.title}
+//                                         </div>
+//                                     )}
+//                                 </WidgetItem>
+//                             );
+//                         })}
+//                     </div>
+//                     <DropContainerDemo title="A" />
+//                     <DropContainerDemo pid="b" title="B" />
+//                     <AnimateContainer />
+
+//                     <DropContainerWithChildDemo title="Parent" />
+//                     <DropContainerDemo
+//                         pid="d"
+//                         title="D"
+//                         canDrop={item => {
+//                             return item.xtype === "EX_TEXTAREA_FIELD";
+//                         }}
+//                     />
+//                     <DragLayerDemo />
+//                 </div>
+//             </WebDesignDndProvider>
+//         </div>
+//     );
+// }
 
 ReactDOM.render(<App />, document.getElementById("root"));

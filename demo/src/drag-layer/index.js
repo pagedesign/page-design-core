@@ -3,7 +3,8 @@ import {
     WebDesignDndProvider,
     DropContainer,
     DropItem,
-    DragLayer
+    DragLayer,
+    getEmptyImage
 } from "@/src";
 
 /**
@@ -21,7 +22,7 @@ for (let i = 0; i < 5; i++) {
     });
 }
 
-for (let i = 5; i < 10; i++) {
+for (let i = 5; i < 20; i++) {
     dataset.push({
         pid: "b",
         id: i + 1,
@@ -32,12 +33,15 @@ for (let i = 5; i < 10; i++) {
 function ListItem({ item }) {
     return (
         <DropItem item={item}>
-            {({ connectDragAndDrop, isDragging }) => {
+            {({ connectDragAndDrop, connectDragPreview, isDragging }) => {
+                //用空白图片覆盖默认推拽效果
+                connectDragPreview(getEmptyImage());
+
                 return (
                     <div
                         ref={connectDragAndDrop}
                         style={{
-                            opacity: isDragging ? 0.5 : 1,
+                            opacity: isDragging ? 0.4 : 1,
                             padding: 10,
                             margin: 5,
                             background: "#f2f2f2",
@@ -52,17 +56,24 @@ function ListItem({ item }) {
     );
 }
 
-function ItemDragLayer({ dom, clientOffset }) {
-    console.log(clientOffset, "offset");
+function ItemDragLayer({ dom, differenceFromInitialOffset }) {
+    const [ret, initData] = React.useState(null);
+
     React.useEffect(() => {
+        const cloneNode = dom.cloneNode(true);
         const rect = dom.getBoundingClientRect();
 
-        const cloneNode = dom.cloneNode(true);
+        initData({
+            rect,
+            cloneNode
+        });
 
-        cloneNode.style.display = "fixed";
-        cloneNode.style.left = clientOffset.x + "px";
-        cloneNode.style.top = clientOffset.y + "px";
+        cloneNode.style.position = "fixed";
+        //重要
+        cloneNode.style.pointerEvents = "none";
         cloneNode.style.opacity = 1;
+        cloneNode.style.left = rect.left + "px";
+        cloneNode.style.top = rect.top + "px";
         cloneNode.style.boxSizing = "border-box";
         cloneNode.style.width = rect.width + "px";
         cloneNode.style.height = rect.height + "px";
@@ -72,6 +83,16 @@ function ItemDragLayer({ dom, clientOffset }) {
             document.body.removeChild(cloneNode);
         };
     }, []);
+
+    if (ret) {
+        const { cloneNode, rect } = ret;
+        if (differenceFromInitialOffset) {
+            cloneNode.style.left =
+                rect.left + differenceFromInitialOffset.x + "px";
+            cloneNode.style.top =
+                rect.top + differenceFromInitialOffset.y + "px";
+        }
+    }
 
     return null;
 }
@@ -130,9 +151,9 @@ export default () => {
                     )}
                 </DropContainer>
                 <DragLayer>
-                    {({ isDragging, ...props }) => {
-                        if (!isDragging) return null;
-                        return <ItemDragLayer {...props} />;
+                    {({ isDragging, dom, ...props }) => {
+                        if (!isDragging || !dom) return null;
+                        return <ItemDragLayer dom={dom} {...props} />;
                     }}
                 </DragLayer>
             </div>

@@ -19,7 +19,7 @@ export default () => {
                     <NavLink to="/sort-list-animation">
                         列表排序(动画效果)
                     </NavLink>
-                    <NavLink to="/drag-layer">列表排序</NavLink>
+                    <NavLink to="/drag-layer">自定义推拽层</NavLink>
                 </div>
                 <div className="container">
                     <Switch>

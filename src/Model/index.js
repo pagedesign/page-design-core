@@ -29,6 +29,7 @@ function normalizeItem(item, props) {
 export default class WebDesignModel extends React.Component {
     static propTypes = {
         value: propTypes.array,
+        defaultValue: propTypes.array,
         align: propTypes.oneOf(["all", "vertical", "horizontal"]),
         onChange: propTypes.func,
         onDragStart: propTypes.func,
@@ -60,7 +61,7 @@ export default class WebDesignModel extends React.Component {
 
     state = {
         scope: randomStr("scope_"),
-        items: []
+        items: this.props.defaultValue || []
     };
 
     onChange(items) {

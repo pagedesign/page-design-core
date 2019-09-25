@@ -16,6 +16,14 @@ class WidgetItem extends React.Component {
         endDrag: propTypes.func
     };
 
+    _connectDragTarget = null;
+    _connectDragPreview = null;
+
+    componentWillUnmount() {
+        this._connectDragTarget(null);
+        this._connectDragPreview(null);
+    }
+
     render() {
         const {
             children,
@@ -87,6 +95,9 @@ class WidgetItem extends React.Component {
                 };
             }
         });
+
+        this._connectDragTarget = connectDragTarget;
+        this._connectDragPreview = connectDragPreview;
 
         return children({
             ...collectProps,

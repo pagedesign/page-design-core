@@ -174,6 +174,16 @@ class DropItem extends React.Component {
         };
     }
 
+    _connectDropTarget = null;
+    _connectDragTarget = null;
+    _connectDragPreview = null;
+
+    componentWillUnmount() {
+        this._connectDropTarget(null);
+        this._connectDragTarget(null);
+        this._connectDragPreview(null);
+    }
+
     render() {
         const { children, item } = this.props;
         const designer = React.useContext(ModelContext);
@@ -192,6 +202,10 @@ class DropItem extends React.Component {
             connectDropTarget(dom);
             connectDragTarget(dom);
         };
+
+        this._connectDropTarget = connectDropTarget;
+        this._connectDragTarget = connectDragTarget;
+        this._connectDragPreview = connectDragPreview;
 
         return children({
             ...collectedDropProps,

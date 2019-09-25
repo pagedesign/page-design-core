@@ -22,7 +22,7 @@ class DropContainer extends React.Component {
         pid: null
     };
 
-    // _connectDropTarget = null;
+    _connectDropTarget = null;
 
     // connectDrop() {
     //     const { disabled } = this.props;
@@ -41,6 +41,12 @@ class DropContainer extends React.Component {
     componentDidUpdate() {
         //TODO: 后续提示_connectDropTarget是否被未被调用
         // this.connectDrop();
+    }
+
+    componentWillUnmount() {
+        if (this._connectDropTarget) {
+            this._connectDropTarget(null);
+        }
     }
 
     render() {
@@ -138,7 +144,7 @@ class DropContainer extends React.Component {
             items = items.filter(item => !designer.isTmpItem(item));
         }
 
-        // this._connectDropTarget = connectDropTarget;
+        this._connectDropTarget = connectDropTarget;
 
         // const child =
         //     typeof children === "function"

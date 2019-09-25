@@ -54,7 +54,7 @@ function renderList({ items, monitor, canDrop, connectDropTarget }) {
 
     return (
         <div
-            ref={{ items, monitor, canDrop, connectDropTarget }}
+            ref={connectDropTarget}
             style={{
                 position: "relative",
                 border: "1px solid #ccc",

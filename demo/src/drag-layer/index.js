@@ -82,7 +82,7 @@ function ItemDragLayer({ dom, differenceFromInitialOffset }) {
         return () => {
             document.body.removeChild(cloneNode);
         };
-    }, []);
+    }, [dom]);
 
     if (ret) {
         const { cloneNode, rect } = ret;

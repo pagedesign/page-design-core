@@ -30,7 +30,7 @@ export default class WebDesignModel extends React.Component {
     static propTypes = {
         value: propTypes.array,
         defaultValue: propTypes.array,
-        align: propTypes.oneOf(["all", "vertical", "horizontal"]),
+        axis: propTypes.oneOf(["both", "vertical", "horizontal"]),
         onChange: propTypes.func,
         onDragStart: propTypes.func,
         onDragEnd: propTypes.func,
@@ -50,7 +50,7 @@ export default class WebDesignModel extends React.Component {
         idField: "id",
         pidField: "pid",
         indexField: "index",
-        align: "vertical",
+        axis: "vertical",
         onChange: null
     };
 
@@ -170,14 +170,7 @@ export default class WebDesignModel extends React.Component {
 
     addTmpItem(item, pid) {
         item.__tmp__ = true;
-        item.__dragging__ = true;
         this.addItem(item, pid);
-    }
-
-    setItemDragging(item) {
-        item.__dragging__ = true;
-
-        this.onChange(this.getAllItems());
     }
 
     removeItem(id) {
@@ -278,14 +271,7 @@ export default class WebDesignModel extends React.Component {
 
     clearTmpItems() {
         const items = this.getAllItems();
-        const newItems = items
-            .map(item => {
-                if (item.__dragging__) {
-                    delete item.__dragging__;
-                }
-                return item;
-            })
-            .filter(item => !item.__tmp__);
+        const newItems = items.filter(item => !item.__tmp__);
 
         this.onChange(newItems);
     }
@@ -355,10 +341,6 @@ export default class WebDesignModel extends React.Component {
 
     isTmpItem(item) {
         return !!item.__tmp__;
-    }
-
-    isDragging(item) {
-        return !!item.__dragging__;
     }
 
     getModel() {

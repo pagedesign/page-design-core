@@ -8,6 +8,8 @@ import { ACTION_ADD, ACTION_SORT } from "../constants";
 import ModelContext from "../ModelContext";
 
 class DropContainer extends React.Component {
+    static contextType = ModelContext;
+
     static propTypes = {
         children: propTypes.oneOfType([propTypes.func, propTypes.node]),
         render: propTypes.func,
@@ -49,10 +51,11 @@ class DropContainer extends React.Component {
     }
 
     getDropOptions() {
-        const self = this;
         const { pid = null, canDrop, hover, drop, collect } = this.props;
+        const targetDOM = findDOMNode(this);
 
-        const designer = React.useContext(ModelContext);
+        const designer = this.context;
+
         const DropContainerContext = designer.DropContainerContext;
         const { isRootContainer } = React.useContext(DropContainerContext);
 
@@ -67,9 +70,7 @@ class DropContainer extends React.Component {
                 return true;
             },
 
-            hover(dragResult, monitor) {
-                const targetDOM = findDOMNode(self);
-
+            hover: (dragResult, monitor) => {
                 if (hover) {
                     hover(dragResult, monitor);
                 }
@@ -91,9 +92,7 @@ class DropContainer extends React.Component {
                 designer.updateItemPid(dragResult.item, pid);
             },
 
-            drop(dragResult, monitor) {
-                const targetDOM = findDOMNode(self);
-
+            drop: (dragResult, monitor) => {
                 if (drop) {
                     drop(dragResult, monitor);
                 }
@@ -130,7 +129,8 @@ class DropContainer extends React.Component {
     render() {
         const { pid = null, children, render } = this.props;
 
-        const designer = React.useContext(ModelContext);
+        const designer = this.context;
+
         const DropContainerContext = designer.DropContainerContext;
         const { isRootContainer } = React.useContext(DropContainerContext);
 

@@ -7,6 +7,8 @@ import ModelContext from "../ModelContext";
 import { ACTION_ADD, ACTION_SORT } from "../constants";
 
 class WidgetItem extends React.Component {
+    static contextType = ModelContext;
+
     static propTypes = {
         children: propTypes.oneOfType([propTypes.func, propTypes.node]),
         render: propTypes.func,
@@ -40,19 +42,11 @@ class WidgetItem extends React.Component {
         this._connectDragPreview(null);
     }
 
-    render() {
-        const {
-            children,
-            render,
-            getInstance,
-            canDrag,
-            beginDrag,
-            endDrag
-        } = this.props;
-        const self = this;
-        const designer = React.useContext(ModelContext);
+    getDragOptions() {
+        const { getInstance, canDrag, beginDrag, endDrag } = this.props;
+        const designer = this.context;
 
-        const [collectProps, connectDragTarget, connectDragPreview] = useDrag({
+        return {
             item: {
                 type: designer.getScope()
             },
@@ -64,9 +58,9 @@ class WidgetItem extends React.Component {
                 return true;
             },
 
-            begin(monitor) {
+            begin: monitor => {
                 const item = getInstance();
-                const dom = findDOMNode(self);
+                const dom = findDOMNode(this);
 
                 if (beginDrag) {
                     beginDrag(
@@ -111,7 +105,15 @@ class WidgetItem extends React.Component {
                     isDragging: monitor.isDragging()
                 };
             }
-        });
+        };
+    }
+
+    render() {
+        const { children, render } = this.props;
+
+        const [collectProps, connectDragTarget, connectDragPreview] = useDrag(
+            this.getDragOptions()
+        );
 
         this._connectDragTarget = connectDragTarget;
         this._connectDragPreview = connectDragPreview;

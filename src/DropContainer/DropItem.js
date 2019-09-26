@@ -8,25 +8,67 @@ import ModelContext from "../ModelContext";
 import { isBeforeRect } from "../utils";
 
 class DropItem extends React.Component {
+    static contextType = ModelContext;
+
     static propTypes = {
         children: propTypes.oneOfType([propTypes.func, propTypes.node]),
         render: propTypes.func,
         item: propTypes.object.isRequired,
-        align: propTypes.oneOf(["all", "vertical", "horizontal"]),
+        axis: propTypes.oneOf(["both", "vertical", "horizontal"]),
         canDrop: propTypes.func,
         canDrag: propTypes.func,
         beginDrag: propTypes.func,
         endDrag: propTypes.func
     };
 
+    shouldInsertBefore(monitor, targetDOM = findDOMNode(this)) {
+        const designer = this.context;
+        let { axis } = this.props;
+        axis = axis || designer.props.axis;
+
+        const targetOffset = targetDOM.getBoundingClientRect();
+
+        const dragOffset = monitor.getClientOffset();
+
+        const middleX = ~~(targetOffset.right - targetOffset.width / 2);
+        const middleY = ~~(targetOffset.bottom - targetOffset.height / 2);
+
+        let result = false;
+
+        switch (axis) {
+            case "vertical":
+                result = dragOffset.y <= middleY;
+                break;
+            case "horizontal":
+                result = dragOffset.x <= middleX;
+                break;
+            case "both":
+                result = isBeforeRect(
+                    targetOffset.left,
+                    targetOffset.top,
+                    targetOffset.width,
+                    targetOffset.height,
+                    dragOffset.x,
+                    dragOffset.y
+                );
+                break;
+            default:
+                //vertical default
+                result = dragOffset.y <= middleY;
+        }
+
+        return result;
+    }
+
     getDropOptions() {
-        const self = this;
-        let { item, align, canDrop } = this.props;
-        const designer = React.useContext(ModelContext);
+        let { item, axis, canDrop } = this.props;
+        const targetDOM = findDOMNode(this);
+        const designer = this.context;
+        // const designer = React.useContext(ModelContext);
         // const DropContainerContext = designer.DropContainerContext;
         // const { canDrop } = React.useContext(DropContainerContext);
 
-        align = align || designer.props.align;
+        axis = axis || designer.props.axis;
 
         return {
             accept: designer.getScope(),
@@ -44,8 +86,7 @@ class DropItem extends React.Component {
                 return ret;
             },
 
-            hover(dragResult, monitor) {
-                const targetDOM = findDOMNode(self);
+            hover: (dragResult, monitor) => {
                 const dragItem = dragResult.item;
 
                 designer.fireEvent("onDragHoverItem", {
@@ -64,43 +105,7 @@ class DropItem extends React.Component {
                     return;
                 }
 
-                const dragOffset = monitor.getClientOffset();
-
-                //顺序调整
-                const targetOffset = targetDOM.getBoundingClientRect();
-
-                const middleX = ~~(targetOffset.right - targetOffset.width / 2);
-
-                const middleY = ~~(
-                    targetOffset.bottom -
-                    targetOffset.height / 2
-                );
-
-                let shouldInsertBefore = false;
-
-                switch (align) {
-                    case "vertical":
-                        shouldInsertBefore = dragOffset.y <= middleY;
-                        break;
-                    case "horizontal":
-                        shouldInsertBefore = dragOffset.x <= middleX;
-                        break;
-                    case "all":
-                        shouldInsertBefore = isBeforeRect(
-                            targetOffset.left,
-                            targetOffset.top,
-                            targetOffset.width,
-                            targetOffset.height,
-                            dragOffset.x,
-                            dragOffset.y
-                        );
-                        break;
-                    default:
-                        //vertical default
-                        shouldInsertBefore = dragOffset.y <= middleY;
-                }
-
-                if (shouldInsertBefore) {
+                if (this.shouldInsertBefore(monitor, targetDOM)) {
                     designer.insertBefore(dragItem, item);
                 } else {
                     designer.insertAfter(dragItem, item);
@@ -121,9 +126,9 @@ class DropItem extends React.Component {
     }
 
     getDragOptions() {
-        const self = this;
         const { item, canDrag, beginDrag, endDrag } = this.props;
-        const designer = React.useContext(ModelContext);
+        const designer = this.context;
+        // const designer = React.useContext(ModelContext);
 
         return {
             item: {
@@ -137,8 +142,8 @@ class DropItem extends React.Component {
                 return true;
             },
 
-            begin(monitor) {
-                const dom = findDOMNode(self);
+            begin: monitor => {
+                const dom = findDOMNode(this);
 
                 if (beginDrag) {
                     beginDrag(
@@ -156,8 +161,6 @@ class DropItem extends React.Component {
                     action: ACTION_SORT
                 });
 
-                designer.setItemDragging(item);
-
                 return {
                     item,
                     dom
@@ -169,21 +172,23 @@ class DropItem extends React.Component {
                     endDrag(dragResult, monitor);
                 }
 
+                //TODO: 查找react-dnd出现onDragEnd不及时调用问题
+
                 designer.fireEvent("onDragEnd", {
                     ...dragResult,
                     action: ACTION_SORT
                 });
+            },
 
-                //clearDraggingState
-                designer.clearTmpItems();
+            collect(monitor) {
+                const dragResult = monitor.getItem();
+
+                return {
+                    // monitor
+                    isDragging:
+                        dragResult && designer.isSameItem(dragResult.item, item)
+                };
             }
-
-            // collect(monitor) {
-            //     return {
-            //         // monitor,
-            //         // isDragging: monitor.isDragging()
-            //     };
-            // }
         };
     }
 
@@ -218,7 +223,8 @@ class DropItem extends React.Component {
 
     render() {
         const { children, render, item } = this.props;
-        const designer = React.useContext(ModelContext);
+        const designer = this.context;
+        // const designer = React.useContext(ModelContext);
 
         const [collectedDropProps, connectDropTarget] = useDrop(
             this.getDropOptions()
@@ -244,7 +250,6 @@ class DropItem extends React.Component {
             ...collectedDragProps,
             item,
             isTmp: designer.isTmpItem(item),
-            isDragging: designer.isDragging(item),
             connectDropTarget,
             connectDragTarget,
             connectDragAndDrop,

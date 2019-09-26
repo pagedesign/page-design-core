@@ -6,6 +6,7 @@ import Basic from "./basic";
 import SortList from "./sort-list";
 import SortListAnimation from "./sort-list-animation";
 import DragLayer from "./drag-layer";
+import TodoList from "./todo-list";
 
 import "./style/index.scss";
 
@@ -20,6 +21,7 @@ export default () => {
                         列表排序(动画效果)
                     </NavLink>
                     <NavLink to="/drag-layer">自定义推拽层</NavLink>
+                    <NavLink to="/todo-list">TodoList</NavLink>
                 </div>
                 <div className="container">
                     <Switch>
@@ -30,6 +32,7 @@ export default () => {
                         />
                         <Route path="/basic" component={Basic} />
                         <Route path="/sort-list" component={SortList} />
+                        <Route path="/todo-list" component={TodoList} />
                         <Route
                             path="/sort-list-animation"
                             component={SortListAnimation}

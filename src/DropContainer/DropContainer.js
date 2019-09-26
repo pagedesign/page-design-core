@@ -9,9 +9,9 @@ import ModelContext from "../ModelContext";
 
 class DropContainer extends React.Component {
     static propTypes = {
-        children: propTypes.func.isRequired,
+        children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+        render: propTypes.func,
         pid: propTypes.any,
-        disabled: propTypes.bool,
         collect: propTypes.func,
         canDrop: propTypes.func,
         hover: propTypes.func,
@@ -24,52 +24,39 @@ class DropContainer extends React.Component {
 
     _connectDropTarget = null;
 
-    // connectDrop() {
-    //     const { disabled } = this.props;
+    connectDropTarget() {
+        const children = this.props.children;
 
-    //     const dom = findDOMNode(this);
-    //     if (this._connectDropTarget) {
-    //         this._connectDropTarget(disabled ? null : dom);
-    //     }
-    // }
+        if (!children || typeof children === "function") return;
+
+        const dom = findDOMNode(this);
+
+        this._connectDropTarget(dom);
+    }
 
     componentDidMount() {
         //TODO: 后续提示_connectDropTarget是否被未被调用 DropItem WidgetItem 同样提示
-        // this.connectDrop();
+        this.connectDropTarget();
     }
 
     componentDidUpdate() {
         //TODO: 后续提示_connectDropTarget是否被未被调用
-        // this.connectDrop();
+        this.connectDropTarget();
     }
 
     componentWillUnmount() {
-        if (this._connectDropTarget) {
-            this._connectDropTarget(null);
-        }
+        this._connectDropTarget(null);
     }
 
-    render() {
+    getDropOptions() {
         const self = this;
-        const {
-            pid = null,
-            canDrop,
-            hover,
-            drop,
-            collect,
-            children
-        } = this.props;
+        const { pid = null, canDrop, hover, drop, collect } = this.props;
 
         const designer = React.useContext(ModelContext);
         const DropContainerContext = designer.DropContainerContext;
         const { isRootContainer } = React.useContext(DropContainerContext);
 
-        invariant(
-            isRootContainer ? true : pid != null,
-            "sub DropContainer props.pid miss."
-        );
-
-        const [collectedProps, connectDropTarget] = useDrop({
+        return {
             accept: designer.getScope(),
 
             canDrop({ item }, monitor) {
@@ -137,7 +124,24 @@ class DropContainer extends React.Component {
                     ...ext
                 };
             }
-        });
+        };
+    }
+
+    render() {
+        const { pid = null, children, render } = this.props;
+
+        const designer = React.useContext(ModelContext);
+        const DropContainerContext = designer.DropContainerContext;
+        const { isRootContainer } = React.useContext(DropContainerContext);
+
+        invariant(
+            isRootContainer ? true : pid != null,
+            "sub DropContainer props.pid miss."
+        );
+
+        const [collectedProps, connectDropTarget] = useDrop(
+            this.getDropOptions()
+        );
 
         let items = designer.getItems(pid);
         if (!collectedProps.isOver) {
@@ -146,12 +150,20 @@ class DropContainer extends React.Component {
 
         this._connectDropTarget = connectDropTarget;
 
-        // const child =
-        //     typeof children === "function"
-        //         ? children(items, collectedProps)
-        //         : children;
+        const props = {
+            ...collectedProps,
+            model: designer,
+            connectDropTarget,
+            items
+        };
 
-        // React.Children.only(child);
+        const child = children
+            ? typeof children === "function"
+                ? children(props)
+                : children
+            : render
+            ? render(props)
+            : null;
 
         return (
             <DropContainerContext.Provider
@@ -159,12 +171,7 @@ class DropContainer extends React.Component {
                     isRootContainer: false
                 }}
             >
-                {children({
-                    ...collectedProps,
-                    model: designer,
-                    connectDropTarget,
-                    items
-                })}
+                {child}
             </DropContainerContext.Provider>
         );
     }

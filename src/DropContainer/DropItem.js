@@ -9,7 +9,8 @@ import { isBeforeRect } from "../utils";
 
 class DropItem extends React.Component {
     static propTypes = {
-        children: propTypes.func.isRequired,
+        children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+        render: propTypes.func,
         item: propTypes.object.isRequired,
         align: propTypes.oneOf(["all", "vertical", "horizontal"]),
         canDrag: propTypes.func,
@@ -178,6 +179,25 @@ class DropItem extends React.Component {
     _connectDragTarget = null;
     _connectDragPreview = null;
 
+    componentDidUpdate() {
+        this.connectDragAndDrop();
+    }
+
+    componentDidMount() {
+        this.connectDragAndDrop();
+    }
+
+    connectDragAndDrop() {
+        const children = this.props.children;
+
+        if (!children || typeof children === "function") return;
+
+        const dom = findDOMNode(this);
+
+        this._connectDropTarget(dom);
+        this._connectDragTarget(dom);
+    }
+
     componentWillUnmount() {
         this._connectDropTarget(null);
         this._connectDragTarget(null);
@@ -185,7 +205,7 @@ class DropItem extends React.Component {
     }
 
     render() {
-        const { children, item } = this.props;
+        const { children, render, item } = this.props;
         const designer = React.useContext(ModelContext);
 
         const [collectedDropProps, connectDropTarget] = useDrop(
@@ -207,7 +227,7 @@ class DropItem extends React.Component {
         this._connectDragTarget = connectDragTarget;
         this._connectDragPreview = connectDragPreview;
 
-        return children({
+        const props = {
             ...collectedDropProps,
             ...collectedDragProps,
             item,
@@ -217,7 +237,15 @@ class DropItem extends React.Component {
             connectDragTarget,
             connectDragAndDrop,
             connectDragPreview
-        });
+        };
+
+        return children
+            ? typeof children === "function"
+                ? children(props)
+                : children
+            : render
+            ? render(props)
+            : null;
     }
 }
 

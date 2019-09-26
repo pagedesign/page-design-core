@@ -59,9 +59,9 @@ class DropContainer extends React.Component {
         return {
             accept: designer.getScope(),
 
-            canDrop({ item }, monitor) {
+            canDrop(dragResult, monitor) {
                 if (canDrop) {
-                    return canDrop(item, monitor);
+                    return canDrop(dragResult, monitor);
                 }
 
                 return true;

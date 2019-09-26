@@ -13,6 +13,7 @@ class DropItem extends React.Component {
         render: propTypes.func,
         item: propTypes.object.isRequired,
         align: propTypes.oneOf(["all", "vertical", "horizontal"]),
+        canDrop: propTypes.func,
         canDrag: propTypes.func,
         beginDrag: propTypes.func,
         endDrag: propTypes.func
@@ -20,7 +21,7 @@ class DropItem extends React.Component {
 
     getDropOptions() {
         const self = this;
-        let { item, align } = this.props;
+        let { item, align, canDrop } = this.props;
         const designer = React.useContext(ModelContext);
         // const DropContainerContext = designer.DropContainerContext;
         // const { canDrop } = React.useContext(DropContainerContext);
@@ -29,17 +30,29 @@ class DropItem extends React.Component {
 
         return {
             accept: designer.getScope(),
-            canDrop({ item: dragItem }, monitor) {
-                return designer.isTmpItem(item)
+            canDrop(dragResult, monitor) {
+                const dragItem = dragResult.item;
+
+                let ret = designer.isTmpItem(item)
                     ? false
                     : !designer.isSameItem(item, dragItem);
+
+                if (ret && canDrop) {
+                    ret = canDrop(dragResult, monitor);
+                }
+
+                return ret;
             },
 
-            hover({ item: dragItem }, monitor) {
+            hover(dragResult, monitor) {
+                const targetDOM = findDOMNode(self);
+                const dragItem = dragResult.item;
+
                 designer.fireEvent("onDragHoverItem", {
                     target: item,
+                    targetDOM,
                     monitor,
-                    item: dragItem
+                    ...dragResult
                 });
 
                 const isOver = monitor.isOver({ shallow: true });
@@ -52,7 +65,6 @@ class DropItem extends React.Component {
                 }
 
                 const dragOffset = monitor.getClientOffset();
-                const targetDOM = findDOMNode(self);
 
                 //顺序调整
                 const targetOffset = targetDOM.getBoundingClientRect();

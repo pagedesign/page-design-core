@@ -5,6 +5,7 @@ import { DndProvider } from "react-dnd";
 import Model from "./Model";
 
 export default class WebDesignDndProvider extends React.Component {
+    //TODO: 延迟释放
     static defaultProps = {
         backend: HTML5Backend
     };

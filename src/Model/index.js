@@ -152,7 +152,7 @@ export default class WebDesignModel extends React.Component {
     isSameItem(s1, s2) {
         const { idField } = this.props;
 
-        return s1[idField] === s2[idField];
+        return s1 && s2 && s1[idField] === s2[idField];
     }
 
     addItem(item, pid = null) {

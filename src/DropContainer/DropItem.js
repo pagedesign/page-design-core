@@ -5,7 +5,9 @@ import withHooks from "with-component-hooks";
 import { useDrop, useDrag } from "react-dnd";
 import { ACTION_ADD, ACTION_SORT } from "../constants";
 import ModelContext from "../ModelContext";
-import { isBeforeRect } from "../utils";
+import { isBeforeRect, isNodeInDocument } from "../utils";
+
+import DragState from "../Model/DragState";
 
 class DropItem extends React.Component {
     static contextType = ModelContext;
@@ -64,9 +66,6 @@ class DropItem extends React.Component {
         let { item, axis, canDrop } = this.props;
         const targetDOM = findDOMNode(this);
         const designer = this.context;
-        // const designer = React.useContext(ModelContext);
-        // const DropContainerContext = designer.DropContainerContext;
-        // const { canDrop } = React.useContext(DropContainerContext);
 
         axis = axis || designer.props.axis;
 
@@ -128,7 +127,6 @@ class DropItem extends React.Component {
     getDragOptions() {
         const { item, canDrag, beginDrag, endDrag } = this.props;
         const designer = this.context;
-        // const designer = React.useContext(ModelContext);
 
         return {
             item: {
@@ -144,6 +142,13 @@ class DropItem extends React.Component {
 
             begin: monitor => {
                 const dom = findDOMNode(this);
+                const dragDOM = this._connectDragDOM;
+
+                DragState.setState({
+                    dragDOMIsRemove: false,
+                    isDragging: true,
+                    dragDOM
+                });
 
                 if (beginDrag) {
                     beginDrag(
@@ -168,11 +173,16 @@ class DropItem extends React.Component {
             },
 
             end(dragResult, monitor) {
+                const { dragDOMIsRemove, dragDOM } = DragState.getState();
+                DragState.reset();
+
+                if (dragDOMIsRemove && dragDOM && dragDOM.parentNode) {
+                    dragDOM.parentNode.removeChild(dragDOM);
+                }
+
                 if (endDrag) {
                     endDrag(dragResult, monitor);
                 }
-
-                //TODO: 查找react-dnd出现onDragEnd不及时调用问题
 
                 designer.fireEvent("onDragEnd", {
                     ...dragResult,
@@ -191,6 +201,8 @@ class DropItem extends React.Component {
             }
         };
     }
+
+    _connectDragDOM = null;
 
     _connectDropTarget = null;
     _connectDragTarget = null;
@@ -216,6 +228,26 @@ class DropItem extends React.Component {
     }
 
     componentWillUnmount() {
+        //fix: 当拖动节点在拖动状态被删除时导致react-dnd在drop后需要移动鼠标才及时触发endDrag问题
+        const dragDOM = this._connectDragDOM;
+        const dragState = DragState.getState();
+        if (dragState.isDragging && dragState.dragDOM === dragDOM) {
+            DragState.setState({
+                dragDOMIsRemove: true
+            });
+
+            setTimeout(() => {
+                if (isNodeInDocument(dragDOM)) return;
+
+                dragDOM.style.display = "none";
+                dragDOM.style.width = "0px";
+                dragDOM.style.height = "0px";
+                dragDOM.style.overflow = "hidden";
+
+                document.body.appendChild(dragDOM);
+            }, 0);
+        }
+
         this._connectDropTarget(null);
         this._connectDragTarget(null);
         this._connectDragPreview(null);
@@ -236,14 +268,20 @@ class DropItem extends React.Component {
             connectDragPreview
         ] = useDrag(this.getDragOptions());
 
-        const connectDragAndDrop = dom => {
-            connectDropTarget(dom);
-            connectDragTarget(dom);
-        };
-
         this._connectDropTarget = connectDropTarget;
-        this._connectDragTarget = connectDragTarget;
+        this._connectDragTarget = React.useCallback(
+            dom => {
+                this._connectDragDOM = dom;
+                connectDragTarget(dom);
+            },
+            [connectDragTarget]
+        );
         this._connectDragPreview = connectDragPreview;
+
+        const connectDragAndDrop = dom => {
+            this._connectDropTarget(dom);
+            this._connectDragTarget(dom);
+        };
 
         const props = {
             ...collectedDropProps,

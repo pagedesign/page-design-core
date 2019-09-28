@@ -54,3 +54,7 @@ export function isBeforeRect(...a) {
 
     return ret === 1 || ret === 3;
 }
+
+export function isNodeInDocument(node) {
+    return document.body.contains(node);
+}

@@ -5,6 +5,8 @@ import { useDrag } from "react-dnd";
 import withHooks from "with-component-hooks";
 import ModelContext from "../ModelContext";
 import { ACTION_ADD, ACTION_SORT } from "../constants";
+import { isNodeInDocument } from "../utils";
+import DragState from "../Model/DragState";
 
 class WidgetItem extends React.Component {
     static contextType = ModelContext;
@@ -17,6 +19,8 @@ class WidgetItem extends React.Component {
         beginDrag: propTypes.func,
         endDrag: propTypes.func
     };
+
+    _connectDragDOM = null;
 
     _connectDragTarget = null;
     _connectDragPreview = null;
@@ -38,6 +42,26 @@ class WidgetItem extends React.Component {
     }
 
     componentWillUnmount() {
+        //fix: 当拖动节点在拖动状态被删除时导致react-dnd在drop后需要移动鼠标才及时触发endDrag问题
+        const dragDOM = this._connectDragDOM;
+        const dragState = DragState.getState();
+        if (dragState.isDragging && dragState.dragDOM === dragDOM) {
+            DragState.setState({
+                dragDOMIsRemove: true
+            });
+
+            setTimeout(() => {
+                if (isNodeInDocument(dragDOM)) return;
+
+                dragDOM.style.display = "none";
+                dragDOM.style.width = "0px";
+                dragDOM.style.height = "0px";
+                dragDOM.style.overflow = "hidden";
+
+                document.body.appendChild(dragDOM);
+            }, 0);
+        }
+
         this._connectDragTarget(null);
         this._connectDragPreview(null);
     }
@@ -55,12 +79,20 @@ class WidgetItem extends React.Component {
                 if (canDrag) {
                     return canDrag(monitor);
                 }
+
                 return true;
             },
 
             begin: monitor => {
                 const item = getInstance();
                 const dom = findDOMNode(this);
+
+                const dragDOM = this._connectDragDOM;
+                DragState.setState({
+                    dragDOMIsRemove: false,
+                    isDragging: true,
+                    dragDOM
+                });
 
                 if (beginDrag) {
                     beginDrag(
@@ -87,6 +119,13 @@ class WidgetItem extends React.Component {
             },
 
             end(dragResult, monitor) {
+                const { dragDOMIsRemove, dragDOM } = DragState.getState();
+                DragState.reset();
+
+                if (dragDOMIsRemove && dragDOM && dragDOM.parentNode) {
+                    dragDOM.parentNode.removeChild(dragDOM);
+                }
+
                 if (endDrag) {
                     endDrag(dragResult, monitor);
                 }
@@ -115,7 +154,13 @@ class WidgetItem extends React.Component {
             this.getDragOptions()
         );
 
-        this._connectDragTarget = connectDragTarget;
+        this._connectDragTarget = React.useCallback(
+            dom => {
+                this._connectDragDOM = dom;
+                connectDragTarget(dom);
+            },
+            [connectDragTarget]
+        );
         this._connectDragPreview = connectDragPreview;
 
         const props = {

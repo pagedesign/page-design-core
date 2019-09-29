@@ -4,7 +4,12 @@ import propTypes from "prop-types";
 import { useDrag } from "react-dnd";
 import withHooks from "with-component-hooks";
 import ModelContext from "../ModelContext";
-import { ACTION_ADD, ACTION_SORT } from "../constants";
+import {
+    ACTION_ADD,
+    ACTION_SORT,
+    COMMIT_ACTION_ON_HOVER,
+    COMMIT_ACTION_ON_DROP
+} from "../constants";
 import { isNodeInDocument } from "../utils";
 import DragState from "../Model/DragState";
 
@@ -69,6 +74,7 @@ class WidgetItem extends React.Component {
     getDragOptions() {
         const { getInstance, canDrag, beginDrag, endDrag } = this.props;
         const designer = this.context;
+        const commitAction = designer.props.commitAction;
 
         return {
             item: {
@@ -89,6 +95,8 @@ class WidgetItem extends React.Component {
 
                 const dragDOM = this._connectDragDOM;
                 DragState.setState({
+                    item,
+                    isNew: true,
                     dragDOMIsRemove: false,
                     isDragging: true,
                     dragDOM
@@ -110,7 +118,11 @@ class WidgetItem extends React.Component {
                     action: ACTION_ADD
                 });
 
-                designer.addTmpItem(item);
+                if (commitAction === COMMIT_ACTION_ON_HOVER) {
+                    designer.addTmpItem(item);
+                } else {
+                    //TODO: ?
+                }
 
                 return {
                     item,

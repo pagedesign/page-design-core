@@ -7,7 +7,7 @@
  * @param {number} height 矩形高度
  * @param {number} px 待检测坐标x(一般位鼠标x坐标)
  * @param {number} py 待检测坐标y(一般位鼠标y坐标)
- * @returns {number} 1:上 2:下 3:左 4:右 -1:对角线上(中心点)
+ * @returns {number} 1:up 2:down 3:left 4:right -1:center(对角线上)
  */
 export function getRectDirection(x, y, width, height, px, py) {
     const y_ac =
@@ -53,6 +53,24 @@ export function isBeforeRect(...a) {
     const ret = getRectDirection(...a);
 
     return ret === 1 || ret === 3;
+}
+
+export function getHoverDirection(...a) {
+    const ret = getRectDirection(...a);
+
+    const dir = "down";
+
+    if (ret === 1) {
+        dir = "up";
+    } else if (ret === 2) {
+        dir = "down";
+    } else if (ret === 3) {
+        dir = "left";
+    } else if (ret === 4) {
+        dir = "right";
+    }
+
+    return dir;
 }
 
 export function isNodeInDocument(node) {

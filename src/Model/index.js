@@ -1,9 +1,9 @@
 import React from "react";
 import propTypes from "prop-types";
-import ModelContext from "../ModelContext";
-
 import find from "lodash/find";
 import findIndex from "lodash/findIndex";
+import ModelContext from "../ModelContext";
+import { COMMIT_ACTION_ON_HOVER, COMMIT_ACTION_ON_DROP } from "../constants";
 
 function randomStr(prefix = "") {
     return (
@@ -31,6 +31,10 @@ export default class WebDesignModel extends React.Component {
         value: propTypes.array,
         defaultValue: propTypes.array,
         axis: propTypes.oneOf(["both", "vertical", "horizontal"]),
+        commitAction: propTypes.oneOf([
+            COMMIT_ACTION_ON_HOVER,
+            COMMIT_ACTION_ON_DROP
+        ]),
         onChange: propTypes.func,
         onDragStart: propTypes.func,
         onDragEnd: propTypes.func,
@@ -51,6 +55,7 @@ export default class WebDesignModel extends React.Component {
         pidField: "pid",
         indexField: "index",
         axis: "vertical",
+        commitAction: COMMIT_ACTION_ON_HOVER,
         onChange: null
     };
 
@@ -61,8 +66,42 @@ export default class WebDesignModel extends React.Component {
 
     state = {
         scope: randomStr("scope_"),
-        items: this.props.defaultValue || []
+        items: this.props.defaultValue || [],
+        dragState: {
+            item: null,
+            isNew: false,
+            hoverPid: null,
+            hoverItem: null,
+            hoverDirection: "none"
+        }
     };
+
+    getDragState() {
+        return this.state.dragState;
+    }
+
+    setDragState(state) {
+        const { dragState } = this.state;
+
+        this.setState({
+            dragState: {
+                ...dragState,
+                ...state
+            }
+        });
+    }
+
+    resetDragState() {
+        this.setState({
+            dragState: {
+                item: null,
+                isNew: false,
+                hoverPid: null,
+                hoverItem: null,
+                hoverDirection: "none"
+            }
+        });
+    }
 
     onChange(items) {
         const props = this.props;
@@ -153,6 +192,14 @@ export default class WebDesignModel extends React.Component {
         const { idField } = this.props;
 
         return s1 && s2 && s1[idField] === s2[idField];
+    }
+
+    _addItem(item, pid = null) {
+        const { pidField } = this.props;
+        item = normalizeItem(item, this.props);
+        item[pidField] = pid;
+
+        this.state.items.push(item);
     }
 
     addItem(item, pid = null) {

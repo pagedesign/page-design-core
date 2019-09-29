@@ -1,11 +1,22 @@
 import React from "react";
+import find from "lodash/find";
+import last from "lodash/last";
 import { findDOMNode } from "react-dom";
 import { useDrop } from "react-dnd";
 import propTypes from "prop-types";
 import withHooks from "with-component-hooks";
 import invariant from "invariant";
-import { ACTION_ADD, ACTION_SORT } from "../constants";
+import {
+    ACTION_ADD,
+    ACTION_SORT,
+    DRAG_DIR_NONE,
+    DRAG_DIR_UP,
+    DRAG_DIR_LEFT,
+    COMMIT_ACTION_ON_DROP,
+    COMMIT_ACTION_ON_HOVER
+} from "../constants";
 import ModelContext from "../ModelContext";
+import DragState from "../Model/DragState";
 
 class DropContainer extends React.Component {
     static contextType = ModelContext;
@@ -58,6 +69,7 @@ class DropContainer extends React.Component {
 
         const DropContainerContext = designer.DropContainerContext;
         const { isRootContainer } = React.useContext(DropContainerContext);
+        const commitAction = designer.props.commitAction;
 
         return {
             accept: designer.getScope(),
@@ -89,7 +101,17 @@ class DropContainer extends React.Component {
                     return;
                 }
 
-                designer.updateItemPid(dragResult.item, pid);
+                DragState.setState({
+                    hoverPid: pid,
+                    hoverItem: undefined,
+                    hoverDirection: DRAG_DIR_NONE
+                });
+
+                if (commitAction === COMMIT_ACTION_ON_HOVER) {
+                    designer.updateItemPid(dragResult.item, pid);
+                } else if (commitAction === COMMIT_ACTION_ON_DROP) {
+                    //TODO: update dratState
+                }
             },
 
             drop: (dragResult, monitor) => {
@@ -108,7 +130,63 @@ class DropContainer extends React.Component {
                         ...dragResult
                     });
 
-                    designer.commitItem(dragResult.item);
+                    if (commitAction === COMMIT_ACTION_ON_HOVER) {
+                        designer.commitItem(dragResult.item);
+                    } else if (commitAction === COMMIT_ACTION_ON_DROP) {
+                        const dragState = DragState.getState();
+                        const dragItem = dragState.item;
+                        const hoverPid = dragState.hoverPid;
+                        const hoverItem = dragState.hoverItem;
+                        const hoverDirection = dragState.hoverDirection;
+
+                        if (dragState.isNew) {
+                            if (hoverItem) {
+                                //新增并移动
+                                designer._addItem(dragItem, undefined, false);
+
+                                if (
+                                    hoverDirection === DRAG_DIR_UP ||
+                                    hoverDirection === DRAG_DIR_LEFT
+                                ) {
+                                    designer.insertBefore(dragItem, hoverItem);
+                                } else {
+                                    designer.insertAfter(dragItem, hoverItem);
+                                }
+                            } else {
+                                //新增
+                                designer.addItem(dragItem, hoverPid);
+                            }
+                        } else {
+                            if (hoverItem) {
+                                if (
+                                    hoverDirection === DRAG_DIR_UP ||
+                                    hoverDirection === DRAG_DIR_LEFT
+                                ) {
+                                    designer.insertBefore(dragItem, hoverItem);
+                                } else {
+                                    designer.insertAfter(dragItem, hoverItem);
+                                }
+                            } else {
+                                const childs = designer.getItems(hoverPid);
+                                const isExist = find(childs, item =>
+                                    designer.isSameItem(item, dragItem)
+                                );
+                                if (!isExist) {
+                                    if (childs.length) {
+                                        designer.insertAfter(
+                                            dragItem,
+                                            last(childs)
+                                        );
+                                    } else {
+                                        designer.updateItemPid(
+                                            dragItem,
+                                            hoverPid
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             },
 

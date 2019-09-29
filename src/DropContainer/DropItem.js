@@ -3,9 +3,19 @@ import { findDOMNode } from "react-dom";
 import propTypes from "prop-types";
 import withHooks from "with-component-hooks";
 import { useDrop, useDrag } from "react-dnd";
-import { ACTION_ADD, ACTION_SORT } from "../constants";
+import {
+    ACTION_ADD,
+    ACTION_SORT,
+    DRAG_DIR_UP,
+    DRAG_DIR_LEFT,
+    DRAG_DIR_RIGHT,
+    DRAG_DIR_DOWN,
+    DRAG_DIR_NONE,
+    COMMIT_ACTION_ON_DROP,
+    COMMIT_ACTION_ON_HOVER
+} from "../constants";
 import ModelContext from "../ModelContext";
-import { isBeforeRect, isNodeInDocument } from "../utils";
+import { isBeforeRect, isNodeInDocument, getHoverDirection } from "../utils";
 
 import DragState from "../Model/DragState";
 
@@ -23,7 +33,9 @@ class DropItem extends React.Component {
         endDrag: propTypes.func
     };
 
-    shouldInsertBefore(monitor, targetDOM = findDOMNode(this)) {
+    _lastHoverDirection = DRAG_DIR_NONE;
+
+    getHoverDirection(monitor, targetDOM = findDOMNode(this)) {
         const designer = this.context;
         let { axis } = this.props;
         axis = axis || designer.props.axis;
@@ -39,13 +51,14 @@ class DropItem extends React.Component {
 
         switch (axis) {
             case "vertical":
-                result = dragOffset.y <= middleY;
+                result = dragOffset.y <= middleY ? DRAG_DIR_UP : DRAG_DIR_DOWN;
                 break;
             case "horizontal":
-                result = dragOffset.x <= middleX;
+                result =
+                    dragOffset.x <= middleX ? DRAG_DIR_LEFT : DRAG_DIR_RIGHT;
                 break;
             case "both":
-                result = isBeforeRect(
+                result = getHoverDirection(
                     targetOffset.left,
                     targetOffset.top,
                     targetOffset.width,
@@ -56,7 +69,7 @@ class DropItem extends React.Component {
                 break;
             default:
                 //vertical default
-                result = dragOffset.y <= middleY;
+                result = dragOffset.y <= middleY ? DRAG_DIR_UP : DRAG_DIR_DOWN;
         }
 
         return result;
@@ -66,6 +79,8 @@ class DropItem extends React.Component {
         let { item, axis, canDrop } = this.props;
         const targetDOM = findDOMNode(this);
         const designer = this.context;
+
+        const commitAction = designer.props.commitAction;
 
         axis = axis || designer.props.axis;
 
@@ -104,16 +119,46 @@ class DropItem extends React.Component {
                     return;
                 }
 
-                if (this.shouldInsertBefore(monitor, targetDOM)) {
-                    designer.insertBefore(dragItem, item);
+                const currentDirection = this.getHoverDirection(
+                    monitor,
+                    targetDOM
+                );
+                const lastHoverDirection = this._lastHoverDirection;
+                this._lastHoverDirection = currentDirection;
+
+                DragState.setState({
+                    hoverPid: undefined,
+                    hoverItem: item,
+                    hoverDirection: currentDirection
+                });
+
+                //TODO: commitAction=hover情况下一般不需要开启
+                if (currentDirection !== lastHoverDirection) {
+                    this.forceUpdate();
+                }
+
+                if (commitAction === COMMIT_ACTION_ON_HOVER) {
+                    if (
+                        currentDirection === DRAG_DIR_UP ||
+                        currentDirection === DRAG_DIR_LEFT
+                    ) {
+                        designer.insertBefore(dragItem, item);
+                    } else {
+                        designer.insertAfter(dragItem, item);
+                    }
                 } else {
-                    designer.insertAfter(dragItem, item);
+                    //TODO:
+                    // if (currentDirection !== lastHoverDirection) {
+                    //     this.forceUpdate();
+                    // }
                 }
             },
 
-            collect(monitor) {
+            collect: monitor => {
                 return {
                     monitor,
+                    // dragState: designer.getDragState(),
+                    hoverDirection: DRAG_DIR_NONE,
                     isOver: monitor.isOver(),
                     isStrictlyOver: monitor.isOver({ shallow: true }),
                     canDrop: designer.isTmpItem(item)
@@ -145,6 +190,7 @@ class DropItem extends React.Component {
                 const dragDOM = this._connectDragDOM;
 
                 DragState.setState({
+                    item,
                     dragDOMIsRemove: false,
                     isDragging: true,
                     dragDOM
@@ -175,6 +221,9 @@ class DropItem extends React.Component {
             end(dragResult, monitor) {
                 const { dragDOMIsRemove, dragDOM } = DragState.getState();
                 DragState.reset();
+
+                //TODO:
+                // designer.resetDragState();
 
                 if (dragDOMIsRemove && dragDOM && dragDOM.parentNode) {
                     dragDOM.parentNode.removeChild(dragDOM);
@@ -293,6 +342,12 @@ class DropItem extends React.Component {
             connectDragAndDrop,
             connectDragPreview
         };
+
+        const { isStrictlyOver } = props;
+
+        props.hoverDirection = isStrictlyOver
+            ? this._lastHoverDirection
+            : "none";
 
         return children
             ? typeof children === "function"

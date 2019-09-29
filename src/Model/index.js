@@ -1,9 +1,16 @@
 import React from "react";
 import propTypes from "prop-types";
 import find from "lodash/find";
+import last from "lodash/last";
 import findIndex from "lodash/findIndex";
 import ModelContext from "../ModelContext";
-import { COMMIT_ACTION_ON_HOVER, COMMIT_ACTION_ON_DROP } from "../constants";
+import DragState from "./DragState";
+import {
+    COMMIT_ACTION_AUTO,
+    COMMIT_ACTION_DROP,
+    DRAG_DIR_UP,
+    DRAG_DIR_LEFT
+} from "../constants";
 
 function randomStr(prefix = "") {
     return (
@@ -31,10 +38,7 @@ export default class WebDesignModel extends React.Component {
         value: propTypes.array,
         defaultValue: propTypes.array,
         axis: propTypes.oneOf(["both", "vertical", "horizontal"]),
-        commitAction: propTypes.oneOf([
-            COMMIT_ACTION_ON_HOVER,
-            COMMIT_ACTION_ON_DROP
-        ]),
+        commitAction: propTypes.oneOf([COMMIT_ACTION_AUTO, COMMIT_ACTION_DROP]),
         onChange: propTypes.func,
         onDragStart: propTypes.func,
         onDragEnd: propTypes.func,
@@ -55,7 +59,7 @@ export default class WebDesignModel extends React.Component {
         pidField: "pid",
         indexField: "index",
         axis: "vertical",
-        commitAction: COMMIT_ACTION_ON_HOVER,
+        commitAction: COMMIT_ACTION_AUTO,
         onChange: null
     };
 
@@ -66,42 +70,8 @@ export default class WebDesignModel extends React.Component {
 
     state = {
         scope: randomStr("scope_"),
-        items: this.props.defaultValue || [],
-        dragState: {
-            item: null,
-            isNew: false,
-            hoverPid: null,
-            hoverItem: null,
-            hoverDirection: "none"
-        }
+        items: this.props.defaultValue || []
     };
-
-    getDragState() {
-        return this.state.dragState;
-    }
-
-    setDragState(state) {
-        const { dragState } = this.state;
-
-        this.setState({
-            dragState: {
-                ...dragState,
-                ...state
-            }
-        });
-    }
-
-    resetDragState() {
-        this.setState({
-            dragState: {
-                item: null,
-                isNew: false,
-                hoverPid: null,
-                hoverItem: null,
-                hoverDirection: "none"
-            }
-        });
-    }
 
     onChange(items) {
         const props = this.props;
@@ -251,6 +221,8 @@ export default class WebDesignModel extends React.Component {
     }
 
     insertBefore(item, bItem) {
+        if (this.isSameItem(item, bItem)) return;
+
         const { idField, pidField } = this.props;
         const items = this.getAllItems();
         const id = bItem[idField];
@@ -284,6 +256,8 @@ export default class WebDesignModel extends React.Component {
     }
 
     insertAfter(item, prevItem) {
+        if (this.isSameItem(item, prevItem)) return;
+
         const { idField, pidField } = this.props;
         const items = this.getAllItems();
         const id = prevItem[idField];
@@ -383,6 +357,61 @@ export default class WebDesignModel extends React.Component {
             items[idx] = item;
 
             this.onChange(items);
+        }
+    }
+
+    //提交DragState中的数据
+    commitDragStateItem() {
+        const dragState = DragState.getState();
+        const dragItem = dragState.item;
+        const hoverPid = dragState.hoverPid;
+        const hoverItem = dragState.hoverItem;
+        const hoverDirection = dragState.hoverDirection;
+        const isDragging = dragState.isDragging;
+        const isNew = dragState.isNew;
+
+        if (!isDragging) return;
+
+        DragState.reset();
+
+        const moveItem = () => {
+            if (
+                hoverDirection === DRAG_DIR_UP ||
+                hoverDirection === DRAG_DIR_LEFT
+            ) {
+                this.insertBefore(dragItem, hoverItem);
+            } else {
+                this.insertAfter(dragItem, hoverItem);
+            }
+        };
+
+        if (isNew) {
+            if (hoverItem) {
+                //新增
+                this._addItem(dragItem, undefined, false);
+                //移动
+                moveItem();
+            } else {
+                //新增
+                this.addItem(dragItem, hoverPid);
+            }
+        } else {
+            if (hoverItem) {
+                moveItem();
+            } else {
+                const childs = this.getItems(hoverPid);
+                const isExist = find(childs, item =>
+                    this.isSameItem(item, dragItem)
+                );
+
+                if (!isExist) {
+                    if (childs.length) {
+                        this.insertAfter(dragItem, last(childs));
+                    } else {
+                        this.updateItemPid(dragItem, hoverPid);
+                    }
+                }
+            }
         }
     }
 

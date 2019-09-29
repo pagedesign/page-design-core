@@ -7,8 +7,8 @@ import ModelContext from "../ModelContext";
 import {
     ACTION_ADD,
     ACTION_SORT,
-    COMMIT_ACTION_ON_HOVER,
-    COMMIT_ACTION_ON_DROP
+    COMMIT_ACTION_AUTO,
+    COMMIT_ACTION_DROP
 } from "../constants";
 import { isNodeInDocument } from "../utils";
 import DragState from "../Model/DragState";
@@ -93,15 +93,6 @@ class WidgetItem extends React.Component {
                 const item = getInstance();
                 const dom = findDOMNode(this);
 
-                const dragDOM = this._connectDragDOM;
-                DragState.setState({
-                    item,
-                    isNew: true,
-                    dragDOMIsRemove: false,
-                    isDragging: true,
-                    dragDOM
-                });
-
                 if (beginDrag) {
                     beginDrag(
                         {
@@ -118,7 +109,16 @@ class WidgetItem extends React.Component {
                     action: ACTION_ADD
                 });
 
-                if (commitAction === COMMIT_ACTION_ON_HOVER) {
+                const dragDOM = this._connectDragDOM;
+                DragState.setState({
+                    item,
+                    isNew: true,
+                    dragDOMIsRemove: false,
+                    isDragging: true,
+                    dragDOM
+                });
+
+                if (commitAction === COMMIT_ACTION_AUTO) {
                     designer.addTmpItem(item);
                 } else {
                     //TODO: ?

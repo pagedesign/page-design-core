@@ -1,6 +1,4 @@
 import React from "react";
-import find from "lodash/find";
-import last from "lodash/last";
 import { findDOMNode } from "react-dom";
 import { useDrop } from "react-dnd";
 import propTypes from "prop-types";
@@ -12,11 +10,13 @@ import {
     DRAG_DIR_NONE,
     DRAG_DIR_UP,
     DRAG_DIR_LEFT,
-    COMMIT_ACTION_ON_DROP,
-    COMMIT_ACTION_ON_HOVER
+    COMMIT_ACTION_DROP,
+    COMMIT_ACTION_AUTO
 } from "../constants";
 import ModelContext from "../ModelContext";
 import DragState from "../Model/DragState";
+
+let idx = 1;
 
 class DropContainer extends React.Component {
     static contextType = ModelContext;
@@ -26,7 +26,7 @@ class DropContainer extends React.Component {
         render: propTypes.func,
         pid: propTypes.any,
         collect: propTypes.func,
-        canDrop: propTypes.func,
+        // canDrop: propTypes.func,
         hover: propTypes.func,
         drop: propTypes.func
     };
@@ -62,7 +62,8 @@ class DropContainer extends React.Component {
     }
 
     getDropOptions() {
-        const { pid = null, canDrop, hover, drop, collect } = this.props;
+        //canDrop,
+        const { pid = null, hover, drop, collect } = this.props;
         const targetDOM = findDOMNode(this);
 
         const designer = this.context;
@@ -74,13 +75,13 @@ class DropContainer extends React.Component {
         return {
             accept: designer.getScope(),
 
-            canDrop(dragResult, monitor) {
-                if (canDrop) {
-                    return canDrop(dragResult, monitor);
-                }
+            // canDrop(dragResult, monitor) {
+            //     if (canDrop) {
+            //         return canDrop(dragResult, monitor);
+            //     }
 
-                return true;
-            },
+            //     return true;
+            // },
 
             hover: (dragResult, monitor) => {
                 if (hover) {
@@ -94,23 +95,35 @@ class DropContainer extends React.Component {
                     ...dragResult
                 });
 
-                const isOver = monitor.isOver({ shallow: true });
-                if (!isOver) return;
+                // if (!monitor.canDrop()) {
+                //     return;
+                // }
 
-                if (!monitor.canDrop()) {
-                    return;
-                }
+                //commitAction=COMMIT_ACTION_DROP时
+                //关于这段代码在场景一,场景二所在位置的表现：
+                //场景一：由于react-dnd在canDrop返回false的情况下也会触发，所以在COMMIT_ACTION_DROP且有嵌套情况下会出现问题
+                //好在react-dnd的hover触发顺序是先parent -> child 所以这种情况放在pos1比较合理。
+                //场景二：建议放在pos2，取消自定义属性canDrop，connectDropTarget完全交于用户自己处理就不会有场景一的问题。
 
+                //场景一
+                // DragState.setState({
+                //     hoverPid: pid,
+                //     hoverItem: undefined,
+                //     hoverDirection: DRAG_DIR_NONE
+                // });
+
+                const isStrictlyOver = monitor.isOver({ shallow: true });
+                if (!isStrictlyOver) return;
+
+                //场景二
                 DragState.setState({
                     hoverPid: pid,
                     hoverItem: undefined,
                     hoverDirection: DRAG_DIR_NONE
                 });
 
-                if (commitAction === COMMIT_ACTION_ON_HOVER) {
+                if (commitAction === COMMIT_ACTION_AUTO) {
                     designer.updateItemPid(dragResult.item, pid);
-                } else if (commitAction === COMMIT_ACTION_ON_DROP) {
-                    //TODO: update dratState
                 }
             },
 
@@ -119,7 +132,7 @@ class DropContainer extends React.Component {
                     drop(dragResult, monitor);
                 }
 
-                //根节点统一commit
+                //在根节点统一commit
                 if (isRootContainer) {
                     const isTmpItem = designer.isTmpItem(dragResult.item);
 
@@ -130,62 +143,10 @@ class DropContainer extends React.Component {
                         ...dragResult
                     });
 
-                    if (commitAction === COMMIT_ACTION_ON_HOVER) {
+                    if (commitAction === COMMIT_ACTION_AUTO) {
                         designer.commitItem(dragResult.item);
-                    } else if (commitAction === COMMIT_ACTION_ON_DROP) {
-                        const dragState = DragState.getState();
-                        const dragItem = dragState.item;
-                        const hoverPid = dragState.hoverPid;
-                        const hoverItem = dragState.hoverItem;
-                        const hoverDirection = dragState.hoverDirection;
-
-                        if (dragState.isNew) {
-                            if (hoverItem) {
-                                //新增并移动
-                                designer._addItem(dragItem, undefined, false);
-
-                                if (
-                                    hoverDirection === DRAG_DIR_UP ||
-                                    hoverDirection === DRAG_DIR_LEFT
-                                ) {
-                                    designer.insertBefore(dragItem, hoverItem);
-                                } else {
-                                    designer.insertAfter(dragItem, hoverItem);
-                                }
-                            } else {
-                                //新增
-                                designer.addItem(dragItem, hoverPid);
-                            }
-                        } else {
-                            if (hoverItem) {
-                                if (
-                                    hoverDirection === DRAG_DIR_UP ||
-                                    hoverDirection === DRAG_DIR_LEFT
-                                ) {
-                                    designer.insertBefore(dragItem, hoverItem);
-                                } else {
-                                    designer.insertAfter(dragItem, hoverItem);
-                                }
-                            } else {
-                                const childs = designer.getItems(hoverPid);
-                                const isExist = find(childs, item =>
-                                    designer.isSameItem(item, dragItem)
-                                );
-                                if (!isExist) {
-                                    if (childs.length) {
-                                        designer.insertAfter(
-                                            dragItem,
-                                            last(childs)
-                                        );
-                                    } else {
-                                        designer.updateItemPid(
-                                            dragItem,
-                                            hoverPid
-                                        );
-                                    }
-                                }
-                            }
-                        }
+                    } else if (commitAction === COMMIT_ACTION_DROP) {
+                        designer.commitDragStateItem();
                     }
                 }
             },

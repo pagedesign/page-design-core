@@ -37,17 +37,17 @@ const ListItem = React.memo(function ListItem({ item }) {
                 const borderColor = {};
 
                 if (hoverDirection === "up") {
-                    borderColor.borderTopColor = "green";
-                    borderColor.borderBottomColor = "#dadada";
+                    borderColor.borderTop = "1px solid red";
+                    borderColor.borderBottom = "1px solid  #dadada";
                 }
 
                 if (hoverDirection === "down") {
-                    borderColor.borderTopColor = "#dadada";
-                    borderColor.borderBottomColor = "green";
+                    borderColor.borderTop = "1px solid #dadada";
+                    borderColor.borderBottom = "1px solid red";
                 }
                 if (hoverDirection === "none") {
-                    borderColor.borderTopColor = "#dadada";
-                    borderColor.borderBottomColor = "#dadada";
+                    borderColor.borderTop = "1px solid #dadada";
+                    borderColor.borderBottom = "1px solid #dadada";
                 }
 
                 return (

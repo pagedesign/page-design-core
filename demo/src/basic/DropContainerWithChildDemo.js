@@ -47,7 +47,7 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                             );
                         })}
 
-                        <DropContainer pid="child">
+                        <DropContainer pid="child" canDrop={() => false}>
                             {({
                                 items,
                                 monitor,

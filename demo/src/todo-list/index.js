@@ -22,12 +22,33 @@ for (let i = 0; i < 20; i++) {
     });
 }
 
-function ListItem({ item }) {
+const ListItem = React.memo(function ListItem({ item }) {
     return (
         <DropItem item={item}>
-            {({ connectDragAndDrop, connectDragPreview, isDragging }) => {
+            {({
+                connectDragAndDrop,
+                connectDragPreview,
+                isDragging,
+                hoverDirection
+            }) => {
                 //用空白图片覆盖默认推拽效果
                 connectDragPreview(getEmptyImage());
+
+                const borderColor = {};
+
+                if (hoverDirection === "up") {
+                    borderColor.borderTopColor = "green";
+                    borderColor.borderBottomColor = "#dadada";
+                }
+
+                if (hoverDirection === "down") {
+                    borderColor.borderTopColor = "#dadada";
+                    borderColor.borderBottomColor = "green";
+                }
+                if (hoverDirection === "none") {
+                    borderColor.borderTopColor = "#dadada";
+                    borderColor.borderBottomColor = "#dadada";
+                }
 
                 return (
                     <div
@@ -37,7 +58,8 @@ function ListItem({ item }) {
                             padding: 10,
                             margin: 5,
                             background: "#f2f2f2",
-                            border: "1px solid #dadada"
+                            border: "1px solid #dadada",
+                            ...borderColor
                         }}
                     >
                         {item.title}
@@ -46,7 +68,7 @@ function ListItem({ item }) {
             }}
         </DropItem>
     );
-}
+});
 
 function ItemDragLayer({ dom, differenceFromInitialOffset }) {
     const [ret, initData] = React.useState(null);
@@ -63,7 +85,7 @@ function ItemDragLayer({ dom, differenceFromInitialOffset }) {
         cloneNode.style.position = "fixed";
         //重要
         cloneNode.style.pointerEvents = "none";
-        cloneNode.style.opacity = 1;
+        cloneNode.style.opacity = 0.7;
         cloneNode.style.left = rect.left + "px";
         cloneNode.style.top = rect.top + "px";
         cloneNode.style.boxSizing = "border-box";
@@ -93,7 +115,11 @@ export default () => {
     const [value, onChange] = React.useState(dataset);
 
     return (
-        <WebDesignDndProvider value={value} onChange={onChange}>
+        <WebDesignDndProvider
+            value={value}
+            onChange={onChange}
+            commitAction="drop"
+        >
             <div
                 style={{
                     position: "relative",

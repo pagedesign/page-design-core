@@ -33,7 +33,7 @@
         "@babel/runtime": "^7.4.5",
         "@babel/runtime-corejs2": "^7.4.5",
         "invariant": "^2.2.4",
-        "lodash": "^4.17.11",
+        "lodash": "^4.17.13",
         "prop-types": "^15.7.2",
         "react": "^16.8.6",
         "react-dnd": "^9.3.4",

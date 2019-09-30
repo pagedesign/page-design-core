@@ -72,6 +72,10 @@ export default class WebDesignModel extends React.Component {
         items: this.props.defaultValue || []
     };
 
+    getDragState() {
+        return DragState.getState();
+    }
+
     onChange(items) {
         const props = this.props;
         const { onChange } = props;

@@ -58,7 +58,7 @@ export function isBeforeRect(...a) {
 export function getHoverDirection(...a) {
     const ret = getRectDirection(...a);
 
-    const dir = "down";
+    let dir = "down";
 
     if (ret === 1) {
         dir = "up";

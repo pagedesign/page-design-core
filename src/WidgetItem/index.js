@@ -83,7 +83,10 @@ class WidgetItem extends React.Component {
 
             canDrag(monitor) {
                 if (canDrag) {
-                    return canDrag(monitor);
+                    return canDrag({
+                        monitor,
+                        model
+                    });
                 }
 
                 return true;

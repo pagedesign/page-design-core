@@ -74,7 +74,11 @@ class DropContainer extends React.Component {
 
             canDrop(dragResult, monitor) {
                 if (canDrop) {
-                    return canDrop(dragResult, monitor);
+                    return canDrop({
+                        ...dragResult,
+                        monitor,
+                        model
+                    });
                 }
 
                 return true;
@@ -83,7 +87,11 @@ class DropContainer extends React.Component {
             hover: (dragResult, monitor) => {
                 const canDrop = monitor.canDrop();
                 if (hover) {
-                    hover(dragResult, monitor);
+                    hover({
+                        ...dragResult,
+                        monitor,
+                        model
+                    });
                 }
 
                 model.fireEvent("onDragHoverContainer", {
@@ -117,17 +125,32 @@ class DropContainer extends React.Component {
                     drop(dragResult, monitor);
                 }
 
-                //在根节点统一commit
-                if (isRootContainer) {
-                    const isTmpItem = model.isTmpItem(dragResult.item);
+                // //在根节点统一commit时会出现问题，当根节点canDrop返回false时导致无法提交
+                // if (isRootContainer) {
+                //     const isTmpItem = model.isTmpItem(dragResult.item);
 
+                //     model.fireEvent("onDrop", {
+                //         target: pid,
+                //         targetDOM,
+                //         action: isTmpItem ? ACTION_ADD : ACTION_SORT,
+                //         ...dragResult
+                //     });
+
+                //     if (commitAction === COMMIT_ACTION_AUTO) {
+                //         model.commitItem(dragResult.item);
+                //     } else if (commitAction === COMMIT_ACTION_DROP) {
+                //         model.commitDragStateItem();
+                //     }
+                // }
+
+                if (!monitor.didDrop()) {
+                    const isTmpItem = model.isTmpItem(dragResult.item);
                     model.fireEvent("onDrop", {
                         target: pid,
                         targetDOM,
                         action: isTmpItem ? ACTION_ADD : ACTION_SORT,
                         ...dragResult
                     });
-
                     if (commitAction === COMMIT_ACTION_AUTO) {
                         model.commitItem(dragResult.item);
                     } else if (commitAction === COMMIT_ACTION_DROP) {

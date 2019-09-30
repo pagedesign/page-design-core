@@ -59,7 +59,7 @@ function DropFieldContainer({ pid }) {
     );
 
     return (
-        <DropContainer pid={pid} canDrop={_canDrop}>
+        <DropContainer pid={pid} canDrop={_canDrop} axis="horizontal">
             {({ items, connectDropTarget, canDrop, isStrictlyOver }) => {
                 return (
                     <div
@@ -76,7 +76,6 @@ function DropFieldContainer({ pid }) {
                                     canDrop={_canDrop}
                                     item={item}
                                     key={item.id}
-                                    axis="horizontal"
                                 >
                                     {({
                                         connectDropTarget,

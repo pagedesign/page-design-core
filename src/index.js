@@ -1,6 +1,7 @@
 import { getEmptyImage } from "react-dnd-html5-backend";
 import WebDesignDndProvider from "./WebDesignDndProvider";
-import { DropContainer, DropItem } from "./DropContainer";
+import DropContainer from "./DropContainer";
+import DropItem from "./DropItem";
 import WidgetItem from "./WidgetItem";
 import DragLayer from "./DragLayer";
 import { useModel } from "./hooks";

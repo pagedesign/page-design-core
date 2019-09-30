@@ -15,7 +15,7 @@ import {
     COMMIT_ACTION_AUTO
 } from "../constants";
 import ModelContext from "../ModelContext";
-import { isBeforeRect, isNodeInDocument, getHoverDirection } from "../utils";
+import { isNodeInDocument, getHoverDirection } from "../utils";
 
 import DragState from "../Model/DragState";
 
@@ -27,7 +27,7 @@ class DropItem extends React.Component {
         render: propTypes.func,
         item: propTypes.object.isRequired,
         axis: propTypes.oneOf(["both", "vertical", "horizontal"]),
-        // canDrop: propTypes.func,
+        canDrop: propTypes.func,
         canDrag: propTypes.func,
         beginDrag: propTypes.func,
         endDrag: propTypes.func
@@ -76,8 +76,7 @@ class DropItem extends React.Component {
     }
 
     getDropOptions() {
-        //, canDrop
-        let { item, axis } = this.props;
+        let { item, axis, canDrop } = this.props;
         const targetDOM = findDOMNode(this);
         const designer = this.context;
 
@@ -94,9 +93,9 @@ class DropItem extends React.Component {
                     ? false
                     : !designer.isSameItem(item, dragItem);
 
-                // if (ret && canDrop) {
-                //     ret = canDrop(dragResult, monitor);
-                // }
+                if (ret && canDrop) {
+                    ret = canDrop(dragResult, monitor);
+                }
 
                 return ret;
             },
@@ -336,11 +335,12 @@ class DropItem extends React.Component {
             connectDragPreview
         };
 
-        const { isStrictlyOver } = props;
+        const { isStrictlyOver, isDragging } = props;
 
-        props.hoverDirection = isStrictlyOver
-            ? this._lastHoverDirection
-            : DRAG_DIR_NONE;
+        props.hoverDirection =
+            isStrictlyOver && !isDragging
+                ? this._lastHoverDirection
+                : DRAG_DIR_NONE;
 
         return children
             ? typeof children === "function"

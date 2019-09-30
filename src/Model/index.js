@@ -9,7 +9,10 @@ import {
     COMMIT_ACTION_AUTO,
     COMMIT_ACTION_DROP,
     DRAG_DIR_UP,
-    DRAG_DIR_LEFT
+    DRAG_DIR_LEFT,
+    AXIS_VERTICAL,
+    AXIS_HORIZONTAL,
+    AXIS_BOTH
 } from "../constants";
 
 function randomStr(prefix = "") {
@@ -37,7 +40,7 @@ export default class WebDesignModel extends React.Component {
     static propTypes = {
         value: propTypes.array,
         defaultValue: propTypes.array,
-        axis: propTypes.oneOf(["both", "vertical", "horizontal"]),
+        axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
         commitAction: propTypes.oneOf([COMMIT_ACTION_AUTO, COMMIT_ACTION_DROP]),
         onChange: propTypes.func,
         onDragStart: propTypes.func,
@@ -57,14 +60,14 @@ export default class WebDesignModel extends React.Component {
     static defaultProps = {
         idField: "id",
         pidField: "pid",
-        axis: "vertical",
+        axis: AXIS_VERTICAL,
         commitAction: COMMIT_ACTION_AUTO,
         onChange: null
     };
 
     DropContainerContext = React.createContext({
-        isRootContainer: true
-        // canDrop: null
+        isRootContainer: true,
+        axis: AXIS_VERTICAL
     });
 
     state = {

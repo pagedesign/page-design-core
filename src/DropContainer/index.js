@@ -11,7 +11,10 @@ import {
     DRAG_DIR_UP,
     DRAG_DIR_LEFT,
     COMMIT_ACTION_DROP,
-    COMMIT_ACTION_AUTO
+    COMMIT_ACTION_AUTO,
+    AXIS_VERTICAL,
+    AXIS_HORIZONTAL,
+    AXIS_BOTH
 } from "../constants";
 import ModelContext from "../ModelContext";
 import DragState from "../Model/DragState";
@@ -21,6 +24,7 @@ class DropContainer extends React.Component {
 
     static propTypes = {
         children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+        axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
         render: propTypes.func,
         pid: propTypes.any,
         collect: propTypes.func,
@@ -174,7 +178,7 @@ class DropContainer extends React.Component {
     }
 
     render() {
-        const { pid = null, children, render } = this.props;
+        const { pid = null, children, render, axis } = this.props;
 
         const model = this.context;
 
@@ -215,7 +219,8 @@ class DropContainer extends React.Component {
         return (
             <DropContainerContext.Provider
                 value={{
-                    isRootContainer: false
+                    isRootContainer: false,
+                    axis
                 }}
             >
                 {child}

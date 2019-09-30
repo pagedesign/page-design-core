@@ -9,3 +9,7 @@ export const DRAG_DIR_NONE = "none";
 
 export const COMMIT_ACTION_AUTO = "auto";
 export const COMMIT_ACTION_DROP = "drop";
+
+export const AXIS_VERTICAL = "vertical";
+export const AXIS_HORIZONTAL = "horizontal";
+export const AXIS_BOTH = "both";

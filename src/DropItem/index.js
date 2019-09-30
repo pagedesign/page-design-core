@@ -12,7 +12,10 @@ import {
     DRAG_DIR_DOWN,
     DRAG_DIR_NONE,
     COMMIT_ACTION_DROP,
-    COMMIT_ACTION_AUTO
+    COMMIT_ACTION_AUTO,
+    AXIS_VERTICAL,
+    AXIS_HORIZONTAL,
+    AXIS_BOTH
 } from "../constants";
 import ModelContext from "../ModelContext";
 import { isNodeInDocument, getHoverDirection } from "../utils";
@@ -26,7 +29,7 @@ class DropItem extends React.Component {
         children: propTypes.oneOfType([propTypes.func, propTypes.node]),
         render: propTypes.func,
         item: propTypes.object.isRequired,
-        axis: propTypes.oneOf(["both", "vertical", "horizontal"]),
+        axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
         canDrop: propTypes.func,
         hover: propTypes.func,
         canDrag: propTypes.func,
@@ -36,11 +39,11 @@ class DropItem extends React.Component {
 
     _lastHoverDirection = DRAG_DIR_NONE;
 
-    getHoverDirection(monitor, targetDOM = findDOMNode(this)) {
-        const model = this.context;
-        let { axis } = this.props;
-        axis = axis || model.props.axis;
-
+    getHoverDirection(
+        monitor,
+        targetDOM = findDOMNode(this),
+        axis = AXIS_VERTICAL
+    ) {
         const targetOffset = targetDOM.getBoundingClientRect();
 
         const dragOffset = monitor.getClientOffset();
@@ -51,14 +54,14 @@ class DropItem extends React.Component {
         let result = false;
 
         switch (axis) {
-            case "vertical":
+            case AXIS_VERTICAL:
                 result = dragOffset.y <= middleY ? DRAG_DIR_UP : DRAG_DIR_DOWN;
                 break;
-            case "horizontal":
+            case AXIS_HORIZONTAL:
                 result =
                     dragOffset.x <= middleX ? DRAG_DIR_LEFT : DRAG_DIR_RIGHT;
                 break;
-            case "both":
+            case AXIS_BOTH:
                 result = getHoverDirection(
                     targetOffset.left,
                     targetOffset.top,
@@ -80,10 +83,11 @@ class DropItem extends React.Component {
         let { item, axis, canDrop, hover } = this.props;
         const targetDOM = findDOMNode(this);
         const model = this.context;
-
+        const DropContainerContext = model.DropContainerContext;
+        const { axis: pAxis } = React.useContext(DropContainerContext);
         const commitAction = model.props.commitAction;
 
-        axis = axis || model.props.axis;
+        axis = axis || pAxis || model.props.axis;
 
         return {
             accept: model.getScope(),
@@ -129,7 +133,8 @@ class DropItem extends React.Component {
 
                 const currentDirection = this.getHoverDirection(
                     monitor,
-                    targetDOM
+                    targetDOM,
+                    axis
                 );
                 const lastHoverDirection = this._lastHoverDirection;
                 this._lastHoverDirection = currentDirection;

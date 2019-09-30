@@ -1,0 +1,106 @@
+.pivot-container-02 {
+    font-size: 12px;
+    .field-item {
+        padding: 5px 10px;
+        border-bottom: 1px solid #f2f2f2;
+        cursor: pointer;
+        line-height: 20px;
+    }
+
+    .list-header {
+        padding: 5px 10px;
+        border-bottom: 1px solid #d5d5d5;
+        background: #f7f7f7;
+    }
+
+    .pivot-field-list {
+        margin-right: 5px;
+        width: 150px;
+        flex: none;
+        border: 1px solid #d5d5d5;
+        overflow: auto;
+    }
+
+    .drop-column-wrapper,
+    .drop-row-wrapper,
+    .drop-value-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        border: 1px solid #d5d5d5;
+        margin-bottom: 5px;
+        margin-right: 5px;
+
+        .drop-field-label {
+            padding: 5px 10px;
+            border-bottom: 1px solid #d5d5d5;
+            background: #f7f7f7;
+            flex: none;
+        }
+
+        .drop-field-list {
+            flex: 1;
+            overflow: auto;
+        }
+    }
+
+    .field-drop-list {
+        &.can-drop {
+            background: #effef3;
+        }
+
+        &.is-over {
+            background: #c6ffd5;
+        }
+
+        height: 100%;
+        .field-drop-item {
+            padding: 1px;
+            padding-bottom: 0;
+            border: 1px solid transparent;
+            background: #fff;
+
+            &.hover-dir-up {
+                border-top: 1px solid green;
+            }
+
+            &.hover-dir-down {
+                border-bottom: 1px solid green;
+            }
+
+            &-inner {
+                cursor: pointer;
+                padding: 3px 10px;
+                border: 1px solid #f2f2f2;
+                cursor: pointer;
+                line-height: 20px;
+            }
+
+            .item-close {
+                float: right;
+                vertical-align: top;
+                display: inline-block;
+                padding: 0 2px;
+            }
+        }
+    }
+
+    .pivot-field-result {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .result-drop {
+            flex: none;
+            height: 250px;
+            display: flex;
+        }
+
+        .result-data {
+            border: 1px solid #d5d5d5;
+            overflow: auto;
+            flex: 1;
+        }
+    }
+}

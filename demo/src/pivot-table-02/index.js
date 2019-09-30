@@ -40,12 +40,15 @@ function FieldItem({ field }) {
 function DropFieldContainer({ pid }) {
     const _canDrop = React.useCallback(
         ({ item, model }) => {
+            if (item.id === "∑" && (pid === "value" || pid === "filter"))
+                return false;
+
             if (pid === "value") return true;
 
-            const items = [
-                ...model.getItems("column"),
-                ...model.getItems("row")
-            ];
+            const items =
+                pid === "filter"
+                    ? model.getItems("filter")
+                    : [...model.getItems("column"), ...model.getItems("row")];
             const names = items.map(item => item.name);
             const ids = items.map(item => item.id);
 
@@ -59,8 +62,8 @@ function DropFieldContainer({ pid }) {
     );
 
     return (
-        <DropContainer pid={pid} canDrop={_canDrop} axis="horizontal">
-            {({ items, connectDropTarget, canDrop, isStrictlyOver }) => {
+        <DropContainer pid={pid} canDrop={_canDrop}>
+            {({ items, connectDropTarget, canDrop, isStrictlyOver, model }) => {
                 return (
                     <div
                         ref={connectDropTarget}
@@ -106,16 +109,18 @@ function DropFieldContainer({ pid }) {
                                                     item.type !== "number"
                                                         ? "(计数)"
                                                         : ""}{" "}
-                                                    <span
-                                                        className="item-close"
-                                                        onClick={() => {
-                                                            model.removeItem(
-                                                                item.id
-                                                            );
-                                                        }}
-                                                    >
-                                                        x
-                                                    </span>
+                                                    {item.id === "∑" ? null : (
+                                                        <span
+                                                            className="item-close"
+                                                            onClick={() => {
+                                                                model.removeItem(
+                                                                    item.id
+                                                                );
+                                                            }}
+                                                        >
+                                                            x
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
@@ -130,18 +135,44 @@ function DropFieldContainer({ pid }) {
     );
 }
 
+const E_VALUE_ITEM = {
+    id: "∑",
+    title: "∑数值",
+    name: "∑Values",
+    type: "number",
+    pid: "column"
+};
+
 export default () => {
     const [value, onChange] = React.useState([]);
+
+    const handleChange = React.useCallback(
+        items => {
+            const valueItems = items.filter(item => item.pid === "value");
+            const shouldShowEValue = valueItems.length > 1;
+            const EVI = items.filter(item => item.id === "∑");
+            if (shouldShowEValue) {
+                if (!EVI.length) {
+                    items.push({ ...E_VALUE_ITEM });
+                }
+            } else {
+                items = items.filter(item => item.id !== "∑");
+            }
+
+            onChange(items);
+        },
+        [value]
+    );
 
     return (
         <WebDesignDndProvider
             value={value}
             commitAction="drop"
-            onChange={onChange}
+            onChange={handleChange}
         >
             <DropEmptyContainer>
                 <div
-                    className="pivot-container"
+                    className="pivot-container-02"
                     style={{
                         position: "relative",
                         display: "flex",
@@ -160,16 +191,22 @@ export default () => {
                     </div>
                     <div className="pivot-field-result">
                         <div className="result-drop">
+                            <div className="drop-column-wrapper">
+                                <div className="drop-field-label">筛选</div>
+                                <div className="drop-field-list">
+                                    <DropFieldContainer pid="filter" />
+                                </div>
+                            </div>
                             <div className="drop-row-wrapper">
                                 <div className="drop-field-label">列</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="column" />
+                                    <DropFieldContainer pid="row" />
                                 </div>
                             </div>
                             <div className="drop-column-wrapper">
                                 <div className="drop-field-label">行</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="row" />
+                                    <DropFieldContainer pid="column" />
                                 </div>
                             </div>
                             <div className="drop-value-wrapper">

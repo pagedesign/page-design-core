@@ -8,6 +8,7 @@ import SortListAnimation from "./sort-list-animation";
 import DragLayer from "./drag-layer";
 import TodoList from "./todo-list";
 import PivotTable1 from "./pivot-table-01";
+import PivotTable2 from "./pivot-table-02";
 
 import "./style/index.scss";
 
@@ -24,6 +25,7 @@ export default () => {
                     <NavLink to="/drag-layer">自定义推拽层</NavLink>
                     <NavLink to="/todo-list">TodoList</NavLink>
                     <NavLink to="/pivot-table-01">多维分析</NavLink>
+                    <NavLink to="/pivot-table-02">数据透视</NavLink>
                 </div>
                 <div className="container">
                     <Switch>
@@ -41,6 +43,7 @@ export default () => {
                         />
                         <Route path="/drag-layer" component={DragLayer} />
                         <Route path="/pivot-table-01" component={PivotTable1} />
+                        <Route path="/pivot-table-02" component={PivotTable2} />
                     </Switch>
                 </div>
             </div>

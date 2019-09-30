@@ -1,0 +1,101 @@
+* {
+    box-sizing: border-box;
+}
+.pivot-container {
+    font-size: 12px;
+    .field-item {
+        padding: 5px 10px;
+        border-bottom: 1px solid #f2f2f2;
+        cursor: pointer;
+        line-height: 20px;
+    }
+
+    .list-header {
+        padding: 5px 10px;
+        border-bottom: 1px solid #d5d5d5;
+        background: #f7f7f7;
+    }
+
+    .pivot-field-list {
+        margin-right: 5px;
+        width: 150px;
+        flex: none;
+        border: 1px solid #d5d5d5;
+        overflow: auto;
+    }
+
+    .drop-column-wrapper,
+    .drop-row-wrapper,
+    .drop-value-wrapper {
+        display: flex;
+        border: 1px solid #d5d5d5;
+        margin-bottom: 5px;
+
+        .drop-field-label {
+            padding: 5px 8px;
+            flex: none;
+            border-right: 1px solid #d5d5d5;
+            background: #f7f7f7;
+        }
+
+        .drop-field-list {
+            flex: 1;
+        }
+    }
+
+    .field-drop-list {
+        &.can-drop {
+            background: #effef3;
+        }
+
+        &.is-over {
+            background: #c6ffd5;
+        }
+
+        height: 100%;
+        .field-drop-item {
+            display: inline-block;
+            height: 26px;
+            padding: 1px 1px;
+            border: 1px solid transparent;
+
+            &.hover-dir-left {
+                border-left: 1px solid green;
+            }
+
+            &.hover-dir-right {
+                border-right: 1px solid green;
+            }
+
+            &-inner {
+                cursor: pointer;
+                margin-top: 2px;
+                border-radius: 5px;
+                padding: 1px 10px;
+                background: #efefef;
+            }
+
+            .item-close {
+                vertical-align: top;
+                display: inline-block;
+                padding: 0 2px;
+            }
+        }
+    }
+
+    .pivot-field-result {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .result-drop {
+            flex: none;
+        }
+
+        .result-data {
+            border: 1px solid #d5d5d5;
+            overflow: auto;
+            flex: 1;
+        }
+    }
+}

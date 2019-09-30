@@ -57,7 +57,6 @@ export default class WebDesignModel extends React.Component {
     static defaultProps = {
         idField: "id",
         pidField: "pid",
-        indexField: "index",
         axis: "vertical",
         commitAction: COMMIT_ACTION_AUTO,
         onChange: null
@@ -173,7 +172,7 @@ export default class WebDesignModel extends React.Component {
     }
 
     addItem(item, pid = null) {
-        const { pidField, indexField } = this.props;
+        const { pidField } = this.props;
         item = normalizeItem(item, this.props);
 
         const items = this.getAllItems();
@@ -292,9 +291,15 @@ export default class WebDesignModel extends React.Component {
 
     clearTmpItems() {
         const items = this.getAllItems();
-        const newItems = items.filter(item => !item.__tmp__);
+        let hasTmp = false;
 
-        this.onChange(newItems);
+        const newItems = items.filter(item => {
+            const isTmp = item.__tmp__;
+            isTmp && (hasTmp = true);
+            return !isTmp;
+        });
+
+        hasTmp && this.onChange(newItems);
     }
 
     updateItemPid(item, pid = null) {
@@ -363,6 +368,7 @@ export default class WebDesignModel extends React.Component {
     //提交DragState中的数据
     commitDragStateItem() {
         const dragState = DragState.getState();
+        const canDrop = dragState.canDrop;
         const dragItem = dragState.item;
         const hoverPid = dragState.hoverPid;
         const hoverItem = dragState.hoverItem;
@@ -370,7 +376,7 @@ export default class WebDesignModel extends React.Component {
         const isDragging = dragState.isDragging;
         const isNew = dragState.isNew;
 
-        if (!isDragging) return;
+        if (!isDragging || !canDrop) return;
 
         DragState.reset();
 

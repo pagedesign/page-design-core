@@ -63,14 +63,14 @@ class DropContainer extends React.Component {
         const { pid = null, hover, canDrop, drop, collect } = this.props;
         const targetDOM = findDOMNode(this);
 
-        const designer = this.context;
+        const model = this.context;
 
-        const DropContainerContext = designer.DropContainerContext;
+        const DropContainerContext = model.DropContainerContext;
         const { isRootContainer } = React.useContext(DropContainerContext);
-        const commitAction = designer.props.commitAction;
+        const commitAction = model.props.commitAction;
 
         return {
-            accept: designer.getScope(),
+            accept: model.getScope(),
 
             canDrop(dragResult, monitor) {
                 if (canDrop) {
@@ -81,46 +81,34 @@ class DropContainer extends React.Component {
             },
 
             hover: (dragResult, monitor) => {
+                const canDrop = monitor.canDrop();
                 if (hover) {
                     hover(dragResult, monitor);
                 }
 
-                designer.fireEvent("onDragHoverContainer", {
+                model.fireEvent("onDragHoverContainer", {
                     target: pid,
                     targetDOM,
                     monitor,
                     ...dragResult
                 });
 
-                if (!monitor.canDrop()) {
-                    return;
-                }
-
-                //commitAction=COMMIT_ACTION_DROP时
-                //关于这段代码在场景一,场景二所在位置的表现：
-                //场景一：由于react-dnd在canDrop返回false的情况下也会触发，所以在COMMIT_ACTION_DROP且有嵌套情况下会出现问题
-                //好在react-dnd的hover触发顺序是先parent -> child 所以这种情况放在场景一比较合理。
-                //场景二：建议放在场景二，这时自定义属性canDrop需要慎重，另一种方式就是connectDropTarget完全交于用户自己处理就不会有场景一的问题。
-
-                //场景一
-                // DragState.setState({
-                //     hoverPid: pid,
-                //     hoverItem: undefined,
-                //     hoverDirection: DRAG_DIR_NONE
-                // });
-
                 const isStrictlyOver = monitor.isOver({ shallow: true });
                 if (!isStrictlyOver) return;
 
-                //场景二
                 DragState.setState({
+                    canDrop: monitor.canDrop(),
                     hoverPid: pid,
                     hoverItem: undefined,
                     hoverDirection: DRAG_DIR_NONE
                 });
 
+                if (!canDrop) {
+                    return;
+                }
+
                 if (commitAction === COMMIT_ACTION_AUTO) {
-                    designer.updateItemPid(dragResult.item, pid);
+                    model.updateItemPid(dragResult.item, pid);
                 }
             },
 
@@ -131,9 +119,9 @@ class DropContainer extends React.Component {
 
                 //在根节点统一commit
                 if (isRootContainer) {
-                    const isTmpItem = designer.isTmpItem(dragResult.item);
+                    const isTmpItem = model.isTmpItem(dragResult.item);
 
-                    designer.fireEvent("onDrop", {
+                    model.fireEvent("onDrop", {
                         target: pid,
                         targetDOM,
                         action: isTmpItem ? ACTION_ADD : ACTION_SORT,
@@ -141,9 +129,9 @@ class DropContainer extends React.Component {
                     });
 
                     if (commitAction === COMMIT_ACTION_AUTO) {
-                        designer.commitItem(dragResult.item);
+                        model.commitItem(dragResult.item);
                     } else if (commitAction === COMMIT_ACTION_DROP) {
-                        designer.commitDragStateItem();
+                        model.commitDragStateItem();
                     }
                 }
             },
@@ -165,9 +153,9 @@ class DropContainer extends React.Component {
     render() {
         const { pid = null, children, render } = this.props;
 
-        const designer = this.context;
+        const model = this.context;
 
-        const DropContainerContext = designer.DropContainerContext;
+        const DropContainerContext = model.DropContainerContext;
         const { isRootContainer } = React.useContext(DropContainerContext);
 
         invariant(
@@ -179,16 +167,16 @@ class DropContainer extends React.Component {
             this.getDropOptions()
         );
 
-        let items = designer.getItems(pid);
+        let items = model.getItems(pid);
         if (!collectedProps.isOver) {
-            items = items.filter(item => !designer.isTmpItem(item));
+            items = items.filter(item => !model.isTmpItem(item));
         }
 
         this._connectDropTarget = connectDropTarget;
 
         const props = {
             ...collectedProps,
-            model: designer,
+            model,
             connectDropTarget,
             items
         };

@@ -3,6 +3,7 @@ let state = {
     //drag item
     item: null,
     isNew: false,
+    canDrop: true,
     //hover container pid
     hoverPid: null,
     //hover item
@@ -25,6 +26,7 @@ function reset() {
     setState({
         item: null,
         isNew: false,
+        canDrop: true,
         hoverPid: null,
         hoverItem: null,
         hoverDirection: "none",

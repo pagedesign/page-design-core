@@ -5,7 +5,7 @@ import DropItem from "./DropItem";
 import WidgetItem from "./WidgetItem";
 import DragLayer from "./DragLayer";
 import { useModel } from "./hooks";
-
+import DropEmptyContainer from "./DropEmptyContainer";
 import ModelContext from "./ModelContext";
 
 const WebDesignContext = ModelContext;
@@ -19,5 +19,6 @@ export {
     DropContainer,
     DropItem,
     DragLayer,
-    getEmptyImage
+    getEmptyImage,
+    DropEmptyContainer
 };

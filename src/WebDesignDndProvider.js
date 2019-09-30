@@ -5,7 +5,7 @@ import { DndProvider } from "react-dnd";
 import Model from "./Model";
 
 export default class WebDesignDndProvider extends React.Component {
-    //TODO: 延迟释放
+    //TODO: 延迟释放?
     static defaultProps = {
         backend: HTML5Backend
     };
@@ -21,13 +21,11 @@ export default class WebDesignDndProvider extends React.Component {
     };
 
     render() {
-        const { children, backend, ...props } = this.props;
+        const { backend, ...props } = this.props;
 
         return (
             <DndProvider backend={backend}>
-                <Model {...props} ref={this.saveModel}>
-                    {children}
-                </Model>
+                <Model {...props} ref={this.saveModel} />
             </DndProvider>
         );
     }

@@ -36,9 +36,9 @@ class DropItem extends React.Component {
     _lastHoverDirection = DRAG_DIR_NONE;
 
     getHoverDirection(monitor, targetDOM = findDOMNode(this)) {
-        const designer = this.context;
+        const model = this.context;
         let { axis } = this.props;
-        axis = axis || designer.props.axis;
+        axis = axis || model.props.axis;
 
         const targetOffset = targetDOM.getBoundingClientRect();
 
@@ -78,20 +78,20 @@ class DropItem extends React.Component {
     getDropOptions() {
         let { item, axis, canDrop } = this.props;
         const targetDOM = findDOMNode(this);
-        const designer = this.context;
+        const model = this.context;
 
-        const commitAction = designer.props.commitAction;
+        const commitAction = model.props.commitAction;
 
-        axis = axis || designer.props.axis;
+        axis = axis || model.props.axis;
 
         return {
-            accept: designer.getScope(),
+            accept: model.getScope(),
             canDrop(dragResult, monitor) {
                 const dragItem = dragResult.item;
 
-                let ret = designer.isTmpItem(item)
+                let ret = model.isTmpItem(item)
                     ? false
-                    : !designer.isSameItem(item, dragItem);
+                    : !model.isSameItem(item, dragItem);
 
                 if (ret && canDrop) {
                     ret = canDrop(dragResult, monitor);
@@ -101,21 +101,15 @@ class DropItem extends React.Component {
             },
 
             hover: (dragResult, monitor) => {
+                const canDrop = monitor.canDrop();
                 const dragItem = dragResult.item;
 
-                designer.fireEvent("onDragHoverItem", {
+                model.fireEvent("onDragHoverItem", {
                     target: item,
                     targetDOM,
                     monitor,
                     ...dragResult
                 });
-
-                // const canDropRet = canDrop ? canDrop(dragItem, monitor) : true;
-                //|| !canDropRet
-                if (!monitor.canDrop()) {
-                    //|| designer.isSameItem(item, dragItem)
-                    return;
-                }
 
                 const isStrictlyOver = monitor.isOver({ shallow: true });
                 if (!isStrictlyOver) return;
@@ -128,10 +122,15 @@ class DropItem extends React.Component {
                 this._lastHoverDirection = currentDirection;
 
                 DragState.setState({
+                    canDrop,
                     hoverPid: undefined,
                     hoverItem: item,
                     hoverDirection: currentDirection
                 });
+
+                if (!canDrop) {
+                    return;
+                }
 
                 if (currentDirection !== lastHoverDirection) {
                     //TODO: 此处最好再加参数控制。当commitAction=COMMIT_ACTION_AUTO且不需要hoverDirection属性时不建议执行
@@ -144,9 +143,9 @@ class DropItem extends React.Component {
                         currentDirection === DRAG_DIR_UP ||
                         currentDirection === DRAG_DIR_LEFT
                     ) {
-                        designer.insertBefore(dragItem, item);
+                        model.insertBefore(dragItem, item);
                     } else {
-                        designer.insertAfter(dragItem, item);
+                        model.insertAfter(dragItem, item);
                     }
                 }
             },
@@ -157,9 +156,7 @@ class DropItem extends React.Component {
                     hoverDirection: DRAG_DIR_NONE,
                     isOver: monitor.isOver(),
                     isStrictlyOver: monitor.isOver({ shallow: true }),
-                    canDrop: designer.isTmpItem(item)
-                        ? false
-                        : monitor.canDrop()
+                    canDrop: model.isTmpItem(item) ? false : monitor.canDrop()
                 };
             }
         };
@@ -167,11 +164,11 @@ class DropItem extends React.Component {
 
     getDragOptions() {
         const { item, canDrag, beginDrag, endDrag } = this.props;
-        const designer = this.context;
+        const model = this.context;
 
         return {
             item: {
-                type: designer.getScope()
+                type: model.getScope()
             },
 
             canDrag(monitor) {
@@ -203,7 +200,7 @@ class DropItem extends React.Component {
                     dragDOM
                 });
 
-                designer.fireEvent("onDragStart", {
+                model.fireEvent("onDragStart", {
                     item,
                     dom,
                     action: ACTION_SORT
@@ -226,7 +223,7 @@ class DropItem extends React.Component {
                     endDrag(dragResult, monitor);
                 }
 
-                designer.fireEvent("onDragEnd", {
+                model.fireEvent("onDragEnd", {
                     ...dragResult,
                     action: ACTION_SORT
                 });
@@ -238,7 +235,7 @@ class DropItem extends React.Component {
                 return {
                     // monitor
                     isDragging:
-                        dragResult && designer.isSameItem(dragResult.item, item)
+                        dragResult && model.isSameItem(dragResult.item, item)
                 };
             }
         };
@@ -273,7 +270,7 @@ class DropItem extends React.Component {
         //fix: 当拖动节点在拖动状态被删除时导致react-dnd在drop后需要移动鼠标才及时触发endDrag问题
         const dragDOM = this._connectDragDOM;
         const dragState = DragState.getState();
-        if (dragState.isDragging && dragState.dragDOM === dragDOM) {
+        if (dragState.isDragging && dragDOM && dragState.dragDOM === dragDOM) {
             DragState.setState({
                 dragDOMIsRemove: true
             });
@@ -297,7 +294,7 @@ class DropItem extends React.Component {
 
     render() {
         const { children, render, item } = this.props;
-        const designer = this.context;
+        const model = this.context;
 
         const [collectedDropProps, connectDropTarget] = useDrop(
             this.getDropOptions()
@@ -328,7 +325,8 @@ class DropItem extends React.Component {
             ...collectedDropProps,
             ...collectedDragProps,
             item,
-            isTmp: designer.isTmpItem(item),
+            isTmp: model.isTmpItem(item),
+            model,
             connectDropTarget,
             connectDragTarget,
             connectDragAndDrop,

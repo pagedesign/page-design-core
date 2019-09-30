@@ -50,7 +50,7 @@ class WidgetItem extends React.Component {
         //fix: 当拖动节点在拖动状态被删除时导致react-dnd在drop后需要移动鼠标才及时触发endDrag问题
         const dragDOM = this._connectDragDOM;
         const dragState = DragState.getState();
-        if (dragState.isDragging && dragState.dragDOM === dragDOM) {
+        if (dragState.isDragging && dragDOM && dragState.dragDOM === dragDOM) {
             DragState.setState({
                 dragDOMIsRemove: true
             });
@@ -73,12 +73,12 @@ class WidgetItem extends React.Component {
 
     getDragOptions() {
         const { getInstance, canDrag, beginDrag, endDrag } = this.props;
-        const designer = this.context;
-        const commitAction = designer.props.commitAction;
+        const model = this.context;
+        const commitAction = model.props.commitAction;
 
         return {
             item: {
-                type: designer.getScope()
+                type: model.getScope()
             },
 
             canDrag(monitor) {
@@ -103,7 +103,7 @@ class WidgetItem extends React.Component {
                     );
                 }
 
-                designer.fireEvent("onDragStart", {
+                model.fireEvent("onDragStart", {
                     item,
                     dom,
                     action: ACTION_ADD
@@ -119,9 +119,7 @@ class WidgetItem extends React.Component {
                 });
 
                 if (commitAction === COMMIT_ACTION_AUTO) {
-                    designer.addTmpItem(item);
-                } else {
-                    //TODO: ?
+                    model.addTmpItem(item);
                 }
 
                 return {
@@ -142,12 +140,12 @@ class WidgetItem extends React.Component {
                     endDrag(dragResult, monitor);
                 }
 
-                designer.fireEvent("onDragEnd", {
+                model.fireEvent("onDragEnd", {
                     ...dragResult,
                     action: ACTION_ADD
                 });
 
-                designer.clearTmpItems();
+                model.clearTmpItems();
             },
 
             collect(monitor) {
@@ -161,6 +159,7 @@ class WidgetItem extends React.Component {
 
     render() {
         const { children, render } = this.props;
+        const model = this.context;
 
         const [collectProps, connectDragTarget, connectDragPreview] = useDrag(
             this.getDragOptions()
@@ -177,6 +176,7 @@ class WidgetItem extends React.Component {
 
         const props = {
             ...collectProps,
+            model,
             connectDragTarget,
             connectDragPreview
         };

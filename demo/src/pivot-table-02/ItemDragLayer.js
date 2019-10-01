@@ -21,6 +21,8 @@ export default function ItemDragLayer({ dom, differenceFromInitialOffset }) {
         cloneNode.style.boxSizing = "border-box";
         cloneNode.style.width = rect.width + "px";
         cloneNode.style.height = rect.height + "px";
+        cloneNode.style.padding = "5px 10px";
+        cloneNode.style.lineHeight = "20px";
         cloneNode.style.fontSize = "12px";
         cloneNode.style.cursor = "default";
 

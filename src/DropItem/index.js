@@ -4,8 +4,8 @@ import propTypes from "prop-types";
 import withHooks from "with-component-hooks";
 import { useDrop, useDrag } from "react-dnd";
 import {
-    ACTION_ADD,
-    ACTION_SORT,
+    EVENT_TYPE_ADD,
+    EVENT_TYPE_SORT,
     DRAG_DIR_UP,
     DRAG_DIR_LEFT,
     DRAG_DIR_RIGHT,
@@ -80,18 +80,18 @@ class DropItem extends React.Component {
     }
 
     getDropOptions() {
-        let { item, axis, canDrop, hover } = this.props;
+        let { item, axis, canDrop, hover, drop } = this.props;
         const targetDOM = findDOMNode(this);
         const model = this.context;
         const DropContainerContext = model.DropContainerContext;
         const { axis: pAxis } = React.useContext(DropContainerContext);
-        const commitAction = model.props.commitAction;
+        const { commitAction, axis: mAxis } = model.props;
 
-        axis = axis || pAxis || model.props.axis;
+        axis = axis || pAxis || mAxis;
 
         return {
             accept: model.getScope(),
-            canDrop(dragResult, monitor) {
+            canDrop: (dragResult, monitor) => {
                 const dragItem = dragResult.item;
 
                 let ret = model.isTmpItem(item)
@@ -101,6 +101,7 @@ class DropItem extends React.Component {
                 if (ret && canDrop) {
                     ret = canDrop({
                         ...dragResult,
+                        component: this,
                         monitor,
                         model
                     });
@@ -114,22 +115,16 @@ class DropItem extends React.Component {
                 if (hover) {
                     hover({
                         ...dragResult,
+                        component: this,
                         monitor,
                         model
                     });
                 }
 
-                const dragItem = dragResult.item;
-
-                model.fireEvent("onDragHoverItem", {
-                    target: item,
-                    targetDOM,
-                    monitor,
-                    ...dragResult
-                });
-
                 const isStrictlyOver = monitor.isOver({ shallow: true });
                 if (!isStrictlyOver) return;
+
+                const dragItem = dragResult.item;
 
                 const currentDirection = this.getHoverDirection(
                     monitor,
@@ -146,42 +141,63 @@ class DropItem extends React.Component {
                     hoverDirection: currentDirection
                 });
 
-                if (!canDrop) {
-                    return;
-                }
+                if (canDrop) {
+                    if (currentDirection !== lastHoverDirection) {
+                        //TODO: 此处最好再加参数控制。当commitAction=COMMIT_ACTION_AUTO且不需要hoverDirection属性时不建议执行
+                        //eg: && needHoverDirection
+                        this.forceUpdate();
+                    }
 
-                if (currentDirection !== lastHoverDirection) {
-                    //TODO: 此处最好再加参数控制。当commitAction=COMMIT_ACTION_AUTO且不需要hoverDirection属性时不建议执行
-                    //eg: && needHoverDirection
-                    this.forceUpdate();
-                }
-
-                if (commitAction === COMMIT_ACTION_AUTO) {
-                    if (
-                        currentDirection === DRAG_DIR_UP ||
-                        currentDirection === DRAG_DIR_LEFT
-                    ) {
-                        model.insertBefore(dragItem, item);
-                    } else {
-                        model.insertAfter(dragItem, item);
+                    if (commitAction === COMMIT_ACTION_AUTO) {
+                        if (
+                            currentDirection === DRAG_DIR_UP ||
+                            currentDirection === DRAG_DIR_LEFT
+                        ) {
+                            model.insertBefore(dragItem, item);
+                        } else {
+                            model.insertAfter(dragItem, item);
+                        }
                     }
                 }
+
+                model.fireEvent("onDragHoverItem", {
+                    target: item,
+                    targetDOM,
+                    monitor,
+                    component: this,
+                    model,
+                    ...dragResult
+                });
             },
 
             drop: (dragResult, monitor) => {
-                if (!monitor.didDrop()) {
-                    const isTmpItem = model.isTmpItem(dragResult.item);
-                    model.fireEvent("onDrop", {
-                        target: item,
-                        targetDOM,
-                        action: isTmpItem ? ACTION_ADD : ACTION_SORT,
-                        ...dragResult
+                if (drop) {
+                    drop({
+                        ...dragResult,
+                        component: this,
+                        monitor,
+                        model
                     });
+                }
+
+                if (!monitor.didDrop()) {
                     if (commitAction === COMMIT_ACTION_AUTO) {
                         model.commitItem(dragResult.item);
                     } else if (commitAction === COMMIT_ACTION_DROP) {
                         model.commitDragStateItem();
                     }
+
+                    const { isNew } = DragState.getState();
+                    // const isTmpItem = model.isTmpItem(dragResult.item);
+                    model.fireEvent("onDrop", {
+                        target: item,
+                        targetDOM,
+                        type: isNew ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
+                        monitor,
+                        component: this,
+                        model,
+                        ...dragResult
+                    });
                 }
             },
 
@@ -206,9 +222,10 @@ class DropItem extends React.Component {
                 type: model.getScope()
             },
 
-            canDrag(monitor) {
+            canDrag: monitor => {
                 if (canDrag) {
                     return canDrag({
+                        component: this,
                         monitor,
                         model
                     });
@@ -221,13 +238,13 @@ class DropItem extends React.Component {
                 const dragDOM = this._connectDragDOM;
 
                 if (beginDrag) {
-                    beginDrag(
-                        {
-                            item,
-                            dom
-                        },
-                        monitor
-                    );
+                    beginDrag({
+                        item,
+                        dom,
+                        component: this,
+                        monitor,
+                        model
+                    });
                 }
 
                 DragState.setState({
@@ -241,7 +258,10 @@ class DropItem extends React.Component {
                 model.fireEvent("onDragStart", {
                     item,
                     dom,
-                    action: ACTION_SORT
+                    type: EVENT_TYPE_SORT,
+                    model,
+                    monitor,
+                    component: this
                 });
 
                 return {
@@ -250,7 +270,7 @@ class DropItem extends React.Component {
                 };
             },
 
-            end(dragResult, monitor) {
+            end: (dragResult, monitor) => {
                 const { dragDOMIsRemove, dragDOM } = DragState.getState();
                 DragState.reset();
                 if (dragDOMIsRemove && dragDOM && dragDOM.parentNode) {
@@ -258,12 +278,20 @@ class DropItem extends React.Component {
                 }
 
                 if (endDrag) {
-                    endDrag(dragResult, monitor);
+                    endDrag({
+                        ...dragResult,
+                        model,
+                        monitor,
+                        component: this
+                    });
                 }
 
                 model.fireEvent("onDragEnd", {
                     ...dragResult,
-                    action: ACTION_SORT
+                    type: EVENT_TYPE_SORT,
+                    model,
+                    monitor,
+                    component: this
                 });
             },
 

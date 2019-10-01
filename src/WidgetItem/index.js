@@ -5,8 +5,8 @@ import { useDrag } from "react-dnd";
 import withHooks from "with-component-hooks";
 import ModelContext from "../ModelContext";
 import {
-    ACTION_ADD,
-    ACTION_SORT,
+    EVENT_TYPE_ADD,
+    EVENT_TYPE_SORT,
     COMMIT_ACTION_AUTO,
     COMMIT_ACTION_DROP
 } from "../constants";
@@ -81,11 +81,12 @@ class WidgetItem extends React.Component {
                 type: model.getScope()
             },
 
-            canDrag(monitor) {
+            canDrag: monitor => {
                 if (canDrag) {
                     return canDrag({
                         monitor,
-                        model
+                        model,
+                        component: this
                     });
                 }
 
@@ -97,20 +98,14 @@ class WidgetItem extends React.Component {
                 const dom = findDOMNode(this);
 
                 if (beginDrag) {
-                    beginDrag(
-                        {
-                            item,
-                            dom
-                        },
-                        monitor
-                    );
+                    beginDrag({
+                        item,
+                        dom,
+                        component: this,
+                        monitor,
+                        model
+                    });
                 }
-
-                model.fireEvent("onDragStart", {
-                    item,
-                    dom,
-                    action: ACTION_ADD
-                });
 
                 const dragDOM = this._connectDragDOM;
                 DragState.setState({
@@ -125,13 +120,22 @@ class WidgetItem extends React.Component {
                     model.addTmpItem(item);
                 }
 
+                model.fireEvent("onDragStart", {
+                    item,
+                    dom,
+                    type: EVENT_TYPE_ADD,
+                    model,
+                    monitor,
+                    component: this
+                });
+
                 return {
                     item,
                     dom
                 };
             },
 
-            end(dragResult, monitor) {
+            end: (dragResult, monitor) => {
                 const { dragDOMIsRemove, dragDOM } = DragState.getState();
                 DragState.reset();
 
@@ -140,15 +144,23 @@ class WidgetItem extends React.Component {
                 }
 
                 if (endDrag) {
-                    endDrag(dragResult, monitor);
+                    endDrag({
+                        ...dragResult,
+                        model,
+                        monitor,
+                        component: this
+                    });
                 }
+
+                model.clearTmpItems();
 
                 model.fireEvent("onDragEnd", {
                     ...dragResult,
-                    action: ACTION_ADD
+                    type: EVENT_TYPE_ADD,
+                    model,
+                    monitor,
+                    component: this
                 });
-
-                model.clearTmpItems();
             },
 
             collect(monitor) {

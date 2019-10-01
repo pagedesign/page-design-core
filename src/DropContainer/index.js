@@ -5,8 +5,8 @@ import propTypes from "prop-types";
 import withHooks from "with-component-hooks";
 import invariant from "invariant";
 import {
-    ACTION_ADD,
-    ACTION_SORT,
+    EVENT_TYPE_ADD,
+    EVENT_TYPE_SORT,
     DRAG_DIR_NONE,
     DRAG_DIR_UP,
     DRAG_DIR_LEFT,
@@ -69,17 +69,18 @@ class DropContainer extends React.Component {
 
         const model = this.context;
 
-        const DropContainerContext = model.DropContainerContext;
-        const { isRootContainer } = React.useContext(DropContainerContext);
+        // const DropContainerContext = model.DropContainerContext;
+        // const { isRootContainer } = React.useContext(DropContainerContext);
         const commitAction = model.props.commitAction;
 
         return {
             accept: model.getScope(),
 
-            canDrop(dragResult, monitor) {
+            canDrop: (dragResult, monitor) => {
                 if (canDrop) {
                     return canDrop({
                         ...dragResult,
+                        component: this,
                         monitor,
                         model
                     });
@@ -93,17 +94,11 @@ class DropContainer extends React.Component {
                 if (hover) {
                     hover({
                         ...dragResult,
+                        component: this,
                         monitor,
                         model
                     });
                 }
-
-                model.fireEvent("onDragHoverContainer", {
-                    target: pid,
-                    targetDOM,
-                    monitor,
-                    ...dragResult
-                });
 
                 const isStrictlyOver = monitor.isOver({ shallow: true });
                 if (!isStrictlyOver) return;
@@ -115,18 +110,30 @@ class DropContainer extends React.Component {
                     hoverDirection: DRAG_DIR_NONE
                 });
 
-                if (!canDrop) {
-                    return;
+                if (canDrop) {
+                    if (commitAction === COMMIT_ACTION_AUTO) {
+                        model.updateItemPid(dragResult.item, pid);
+                    }
                 }
 
-                if (commitAction === COMMIT_ACTION_AUTO) {
-                    model.updateItemPid(dragResult.item, pid);
-                }
+                model.fireEvent("onDragHoverContainer", {
+                    target: pid,
+                    targetDOM,
+                    monitor,
+                    component: this,
+                    model,
+                    ...dragResult
+                });
             },
 
             drop: (dragResult, monitor) => {
                 if (drop) {
-                    drop(dragResult, monitor);
+                    drop({
+                        ...dragResult,
+                        component: this,
+                        monitor,
+                        model
+                    });
                 }
 
                 // //在根节点统一commit时会出现问题，当根节点canDrop返回false时导致无法提交
@@ -136,7 +143,7 @@ class DropContainer extends React.Component {
                 //     model.fireEvent("onDrop", {
                 //         target: pid,
                 //         targetDOM,
-                //         action: isTmpItem ? ACTION_ADD : ACTION_SORT,
+                //         type: isTmpItem ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
                 //         ...dragResult
                 //     });
 
@@ -148,18 +155,23 @@ class DropContainer extends React.Component {
                 // }
 
                 if (!monitor.didDrop()) {
-                    const isTmpItem = model.isTmpItem(dragResult.item);
-                    model.fireEvent("onDrop", {
-                        target: pid,
-                        targetDOM,
-                        action: isTmpItem ? ACTION_ADD : ACTION_SORT,
-                        ...dragResult
-                    });
                     if (commitAction === COMMIT_ACTION_AUTO) {
                         model.commitItem(dragResult.item);
                     } else if (commitAction === COMMIT_ACTION_DROP) {
                         model.commitDragStateItem();
                     }
+
+                    const { isNew } = DragState.getState();
+                    // const isTmpItem = model.isTmpItem(dragResult.item);
+                    model.fireEvent("onDrop", {
+                        target: pid,
+                        targetDOM,
+                        type: isNew ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
+                        monitor,
+                        component: this,
+                        model,
+                        ...dragResult
+                    });
                 }
             },
 
@@ -195,7 +207,7 @@ class DropContainer extends React.Component {
         );
 
         let items = model.getItems(pid);
-        if (!collectedProps.isOver) {
+        if (!collectedProps.isStrictlyOver) {
             items = items.filter(item => !model.isTmpItem(item));
         }
 

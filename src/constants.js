@@ -1,5 +1,5 @@
-export const ACTION_ADD = "add";
-export const ACTION_SORT = "sort";
+export const EVENT_TYPE_ADD = "add";
+export const EVENT_TYPE_SORT = "sort";
 
 export const DRAG_DIR_UP = "up";
 export const DRAG_DIR_DOWN = "down";

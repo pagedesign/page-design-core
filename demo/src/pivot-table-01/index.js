@@ -78,6 +78,7 @@ function DropFieldContainer({ pid }) {
                                     key={item.id}
                                 >
                                     {({
+                                        isDragging,
                                         connectDropTarget,
                                         connectDragTarget,
                                         connectDragPreview,
@@ -87,6 +88,11 @@ function DropFieldContainer({ pid }) {
                                         connectDragPreview(getEmptyImage());
                                         return (
                                             <div
+                                                style={{
+                                                    opacity: isDragging
+                                                        ? 0.5
+                                                        : 1
+                                                }}
                                                 className={
                                                     "field-drop-item hover-dir-" +
                                                     hoverDirection

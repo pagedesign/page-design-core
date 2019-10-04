@@ -21,6 +21,7 @@
     ],
     "author": "nobo.zhou@foxmail.com",
     "license": "MIT",
+    "types": "index",
     "files": [
         "*.md",
         "lib"

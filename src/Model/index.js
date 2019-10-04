@@ -45,7 +45,9 @@ export default class WebDesignModel extends React.Component {
         onChange: propTypes.func,
         onDragStart: propTypes.func,
         onDragEnd: propTypes.func,
-        onDrop: propTypes.func
+        onDrop: propTypes.func,
+        onDragHoverContainer: propTypes.func,
+        onDragHoverItem: propTypes.func
     };
 
     static getDerivedStateFromProps(props, state) {

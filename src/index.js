@@ -6,6 +6,7 @@ import WidgetItem from "./WidgetItem";
 import DragLayer from "./DragLayer";
 import { useModel } from "./hooks";
 import DropEmptyContainer from "./DropEmptyContainer";
+import * as constants from "./constants";
 import ModelContext from "./ModelContext";
 
 const WebDesignContext = ModelContext;
@@ -13,6 +14,7 @@ const WebDesignContext = ModelContext;
 export { useModel };
 
 export {
+    constants,
     WebDesignContext,
     WebDesignDndProvider,
     WidgetItem,

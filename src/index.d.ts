@@ -7,13 +7,9 @@ import {
     ConnectDragPreview,
     ConnectDropTarget
 } from "react-dnd";
-import { number } from "prop-types";
+import * as constants from "./constants";
 
-export const AXIS_VERTICAL = "vertical";
-export const AXIS_HORIZONTAL = "horizontal";
-export const AXIS_BOTH = "both";
-
-declare namespace WebDesignDnd {
+declare namespace PageDesignCore {
     type EventType = "add" | "drop";
     type Axis = "vertical" | "horizontal" | "both";
     type CommitAction = "auto" | "drop";
@@ -54,7 +50,8 @@ declare namespace WebDesignDnd {
         target: any;
     }
 
-    interface WebDesignDndProviderProps {
+    interface ProviderProps {
+        backend: object;
         idField: string | "id";
         pidField: string | "pid";
         value?: Item[];
@@ -70,9 +67,9 @@ declare namespace WebDesignDnd {
         onDragHoverItem?: (e: DropHoverItemEvent) => void;
     }
 
-    type ModelProps = WebDesignDndProviderProps;
+    type ModelProps = ProviderProps;
 
-    interface WebDesignDndProviderState {
+    interface ProviderState {
         readonly scope: string;
         items: Item[];
     }
@@ -188,9 +185,9 @@ declare namespace WebDesignDnd {
         children: React.ReactNode | DragLayerRender;
     }
 
-    export class WebDesignDndProvider extends React.Component<
-        WebDesignDndProviderProps,
-        WebDesignDndProviderState
+    export class Provider extends React.Component<
+        ProviderProps,
+        ProviderState
     > {
         getModel(): Model;
         render(): JSX.Element;
@@ -215,12 +212,45 @@ declare namespace WebDesignDnd {
     export class DragLayer extends React.Component<DragLayerProps, {}> {
         render(): JSX.Element;
     }
+
+    export class DropEmptyContainer extends React.Component<{}, {}> {
+        render(): JSX.Element;
+    }
 }
 
-declare const WebDesignDndProvider = WebDesignDnd.WebDesignDndProvider;
-declare const WidgetItem = WebDesignDnd.WidgetItem;
-declare const DropItem = WebDesignDnd.DropItem;
-declare const DropContainer = WebDesignDnd.DropContainer;
-declare const DragLayer = WebDesignDnd.DragLayer;
+declare const useModel: () => PageDesignCore.Model;
+declare const ModelContext: React.Context;
+declare const constants: typeof constants;
+declare const getEmptyImage: () => HTMLImageElement;
+declare const DropEmptyContainer = PageDesignCore.DropEmptyContainer;
+declare const Provider = PageDesignCore.Provider;
+declare const WidgetItem = PageDesignCore.WidgetItem;
+declare const DropItem = PageDesignCore.DropItem;
+declare const DropContainer = PageDesignCore.DropContainer;
+declare const DragLayer = PageDesignCore.DragLayer;
 
-export { WebDesignDndProvider, WidgetItem, DropItem, DropContainer, DragLayer };
+export {
+    useModel,
+    ModelContext,
+    constants,
+    getEmptyImage,
+    DropEmptyContainer,
+    Provider,
+    WidgetItem,
+    DropItem,
+    DropContainer,
+    DragLayer
+};
+
+export default {
+    useModel,
+    ModelContext,
+    constants,
+    getEmptyImage,
+    DropEmptyContainer,
+    Provider,
+    WidgetItem,
+    DropItem,
+    DropContainer,
+    DragLayer
+};

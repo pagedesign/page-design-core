@@ -1,5 +1,5 @@
 {
-    "name": "web-design-dnd",
+    "name": "page-design-core",
     "version": "0.1.0",
     "description": "",
     "main": "lib/index.js",
@@ -11,25 +11,24 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/pagedesign/web-design-dnd.git"
+        "url": "git+https://github.com/pagedesign/page-design-core.git"
     },
     "keywords": [
-        "web-design-dnd",
+        "page-design-core",
         "drag-and-drop",
         "react-dnd",
         "designer"
     ],
     "author": "nobo.zhou@foxmail.com",
     "license": "MIT",
-    "types": "index",
     "files": [
         "*.md",
         "lib"
     ],
     "bugs": {
-        "url": "https://github.com/pagedesign/web-design-dnd/issues"
+        "url": "https://github.com/pagedesign/page-design-core/issues"
     },
-    "homepage": "https://github.com/pagedesign/web-design-dnd#readme",
+    "homepage": "https://github.com/pagedesign/page-design-core#readme",
     "dependencies": {
         "@babel/runtime": "^7.4.5",
         "@babel/runtime-corejs2": "^7.4.5",

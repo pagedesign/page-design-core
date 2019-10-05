@@ -2,12 +2,28 @@ import React from "react";
 import {
     DragSourceMonitor,
     DropTargetMonitor,
+    DragLayerMonitor,
     ConnectDragSource,
     ConnectDragPreview,
     ConnectDropTarget
 } from "react-dnd";
+import { number } from "prop-types";
+
+export const AXIS_VERTICAL = "vertical";
+export const AXIS_HORIZONTAL = "horizontal";
+export const AXIS_BOTH = "both";
 
 declare namespace WebDesignDnd {
+    type EventType = "add" | "drop";
+    type Axis = "vertical" | "horizontal" | "both";
+    type CommitAction = "auto" | "drop";
+    type HoverDirection = "up" | "down" | "left" | "right" | "none";
+
+    interface Point {
+        x: number;
+        y: number;
+    }
+
     interface Item {
         id: string | number;
         pid: string | number | null;
@@ -23,7 +39,7 @@ declare namespace WebDesignDnd {
     }
 
     interface DragStartEvent extends DragAndDropEvent {
-        type: "add" | "sort";
+        type: EventType;
     }
 
     interface DragEndEvent extends DragStartEvent {}
@@ -39,10 +55,12 @@ declare namespace WebDesignDnd {
     }
 
     interface WebDesignDndProviderProps {
+        idField: string | "id";
+        pidField: string | "pid";
         value?: Item[];
         defaultValue?: Item[];
-        axis?: "vertical" | "horizontal" | "both";
-        commitAction?: "auto" | "drop";
+        axis?: Axis;
+        commitAction?: CommitAction;
         children?: React.ReactNode;
         onChange?: (items: Item[]) => void;
         onDragStart?: (e: DragStartEvent) => void;
@@ -51,6 +69,8 @@ declare namespace WebDesignDnd {
         onDragHoverContainer?: (e: DragHoverContainerEvent) => void;
         onDragHoverItem?: (e: DropHoverItemEvent) => void;
     }
+
+    type ModelProps = WebDesignDndProviderProps;
 
     interface WebDesignDndProviderState {
         readonly scope: string;
@@ -97,7 +117,7 @@ declare namespace WebDesignDnd {
 
     interface DropItemRenderProps {
         monitor: DropTargetMonitor;
-        hoverDirection: "up" | "down" | "left" | "right";
+        hoverDirection: HoverDirection;
         isOver: boolean;
         isStrictlyOver: boolean;
         canDrop: boolean;
@@ -115,7 +135,7 @@ declare namespace WebDesignDnd {
 
     interface DropItemProps {
         item: Item;
-        axis?: "vertical" | "horizontal" | "both";
+        axis?: Axis;
         children?: React.ReactNode | DropItemRender;
         render?: DropItemRender;
         canDrop?: (props: CanDropOptions) => boolean;
@@ -133,6 +153,7 @@ declare namespace WebDesignDnd {
         model: Model;
         connectDropTarget: ConnectDropTarget;
         items: Items[];
+        [propName: string]: any;
     }
 
     type DropContainerRender = (props: DropContainerRenderProps) => JSX.Element;
@@ -140,7 +161,7 @@ declare namespace WebDesignDnd {
     interface DropContainerProps {
         pid: propTypes.any;
         children?: React.ReactNode | DropContainerRender;
-        axis?: "vertical" | "horizontal" | "both";
+        axis?: Axis;
         render?: DropContainerRender;
         collect?: (monitor: DropTargetMonitor) => {};
         canDrop?: (props: CanDropOptions) => boolean;
@@ -148,14 +169,34 @@ declare namespace WebDesignDnd {
         drop?: (props: DropOptions) => void;
     }
 
+    interface DragLayerRenderProps {
+        item: Item | null;
+        dom: HTMLElement | null;
+        monitor: DragLayerMonitor;
+        type: any;
+        isDragging: boolean;
+        initialClientOffset: Point | null;
+        initialSourceClientOffset: Point | null;
+        clientOffset: Point | null;
+        differenceFromInitialOffset: Point | null;
+        sourceClientOffset: Point | null;
+    }
+
+    type DragLayerRender = (props: DragLayerRenderProps) => JSX.Element;
+
+    interface DragLayerProps {
+        children: React.ReactNode | DragLayerRender;
+    }
+
     export class WebDesignDndProvider extends React.Component<
         WebDesignDndProviderProps,
         WebDesignDndProviderState
     > {
+        getModel(): Model;
         render(): JSX.Element;
     }
 
-    export class Model extends React.Component<WebDesignDndProviderProps, {}> {
+    export class Model extends React.Component<ModelProps, {}> {
         render(): JSX.Element;
     }
 
@@ -170,12 +211,16 @@ declare namespace WebDesignDnd {
     export class DropContainer extends React.Component<DropContainerProps, {}> {
         render(): JSX.Element;
     }
+
+    export class DragLayer extends React.Component<DragLayerProps, {}> {
+        render(): JSX.Element;
+    }
 }
 
 declare const WebDesignDndProvider = WebDesignDnd.WebDesignDndProvider;
-declare const Model = WebDesignDnd.Model;
 declare const WidgetItem = WebDesignDnd.WidgetItem;
 declare const DropItem = WebDesignDnd.DropItem;
 declare const DropContainer = WebDesignDnd.DropContainer;
+declare const DragLayer = WebDesignDnd.DragLayer;
 
-export { WebDesignDndProvider, Model, WidgetItem, DropItem, DropContainer };
+export { WebDesignDndProvider, WidgetItem, DropItem, DropContainer, DragLayer };

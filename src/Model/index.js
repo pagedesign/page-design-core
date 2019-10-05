@@ -125,7 +125,7 @@ export default class WebDesignModel extends React.Component {
 
     getChildren(id = null, items = this.state.items) {
         const { pidField } = this.props;
-        return items.filter(item => item[pidField] == id);
+        return items.filter(item => item && item[pidField] == id);
     }
 
     getAllItems() {

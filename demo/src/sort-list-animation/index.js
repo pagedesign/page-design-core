@@ -1,5 +1,5 @@
 import React from "react";
-import { WebDesignDndProvider, DropContainer, DropItem } from "@/src";
+import { Provider, DropContainer, DropItem } from "@/src";
 
 const dataset = [];
 
@@ -80,8 +80,8 @@ export default () => {
     const [value, onChange] = React.useState(dataset);
 
     return (
-        <WebDesignDndProvider value={value} onChange={onChange}>
+        <Provider value={value} onChange={onChange}>
             <DropContainer>{renderList}</DropContainer>
-        </WebDesignDndProvider>
+        </Provider>
     );
 };

@@ -5,7 +5,7 @@ import AnimateContainer from "./AnimateContainer";
 import DropContainerDemo from "./DropContainerDemo";
 import DropContainerWithChildDemo from "./DropContainerWithChildDemo";
 
-import { WebDesignDndProvider, WidgetItem, DragLayer } from "@/src";
+import { Provider, WidgetItem, DragLayer } from "@/src";
 
 import widgets from "./widgets";
 
@@ -51,7 +51,7 @@ export default function App() {
     }
 
     return (
-        <WebDesignDndProvider
+        <Provider
             // 受控
             value={metadata.items}
             onChange={onChange}
@@ -119,6 +119,6 @@ export default function App() {
                 />
                 <DragLayerDemo />
             </div>
-        </WebDesignDndProvider>
+        </Provider>
     );
 }

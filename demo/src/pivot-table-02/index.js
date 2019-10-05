@@ -1,7 +1,7 @@
 import React from "react";
 import cx from "classnames";
 import {
-    WebDesignDndProvider,
+    Provider,
     DropContainer,
     DropItem,
     DragLayer,
@@ -171,7 +171,7 @@ export default () => {
     );
 
     return (
-        <WebDesignDndProvider
+        <Provider
             value={value}
             commitAction="drop"
             onChange={handleChange}
@@ -234,6 +234,6 @@ export default () => {
                     </DragLayer>
                 </div>
             </DropEmptyContainer>
-        </WebDesignDndProvider>
+        </Provider>
     );
 };

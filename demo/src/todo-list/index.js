@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    WebDesignDndProvider,
+    Provider,
     DropContainer,
     DropItem,
     DragLayer,
@@ -115,7 +115,7 @@ export default () => {
     const [value, onChange] = React.useState(dataset);
 
     return (
-        <WebDesignDndProvider
+        <Provider
             value={value}
             onChange={onChange}
             commitAction="drop"
@@ -229,6 +229,6 @@ export default () => {
                     }}
                 </DragLayer>
             </div>
-        </WebDesignDndProvider>
+        </Provider>
     );
 };

@@ -207,7 +207,8 @@ class DropContainer extends React.Component {
         );
 
         let items = model.getItems(pid);
-        if (!collectedProps.isStrictlyOver) {
+        if (!collectedProps.isOver) {
+            //collectedProps.isStrictlyOver
             items = items.filter(item => !model.isTmpItem(item));
         }
 

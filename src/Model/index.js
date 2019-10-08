@@ -313,15 +313,16 @@ export default class WebDesignModel extends React.Component {
 
     updateItemPid(item, pid = null) {
         const { idField, pidField } = this.props;
-        const id = item[idField];
-        const idx = this.getItemIndex(id);
 
         if (item[pidField] === pid) return true;
+
+        const id = item[idField];
+        const items = this.getAllItems();
 
         /**
          * 局部环路检测
          * 如: {id: A, pid: null}  {id: B, pid: A}
-         * 这是如果updateItemPid(A, B) 结果为:
+         * 如果updateItemPid(A, B) 结果为:
          * {id: A, pid: B}  {id: B, pid: A}
          *
          */
@@ -332,29 +333,16 @@ export default class WebDesignModel extends React.Component {
             }
         }
 
-        // 同级节点转变为子节点时顺序处理
-        if (pid) {
-            const pidIndex = this.getItemIndex(pid);
-            const childs = this.getChildren(pid);
+        const idx = this.getItemIndex(id, items);
 
-            if (childs.length) {
-                const firstItem = childs[0];
-                const lastItem = childs[childs.length - 1];
+        if (idx === -1) return false;
 
-                if (idx > pidIndex) {
-                    this.insertAfter(item, lastItem);
-                } else {
-                    this.insertBefore(item, firstItem);
-                }
-                return true;
-            }
-        }
+        item[pidField] = pid;
+        //将当前項添加至尾部
+        items.splice(idx, 1);
+        items.push(item);
 
-        if (idx !== -1) {
-            item[pidField] = pid;
-        }
-
-        this.onChange(this.getAllItems());
+        this.onChange(items);
 
         return true;
     }

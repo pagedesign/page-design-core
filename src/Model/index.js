@@ -229,7 +229,7 @@ export default class WebDesignModel extends React.Component {
     }
 
     insertBefore(item, bItem) {
-        if (this.isSameItem(item, bItem)) return;
+        if (this.isSameItem(item, bItem)) return false;
 
         const { idField, pidField } = this.props;
         const items = this.getAllItems();
@@ -244,7 +244,7 @@ export default class WebDesignModel extends React.Component {
                 prevItem[idField] === item[idField] &&
                 prevItem[pidField] === bItem[pidField]
             ) {
-                return;
+                return false;
             }
         }
 
@@ -261,10 +261,12 @@ export default class WebDesignModel extends React.Component {
         items.splice(idx, 0, item);
 
         this.onChange(items);
+
+        return true;
     }
 
     insertAfter(item, prevItem) {
-        if (this.isSameItem(item, prevItem)) return;
+        if (this.isSameItem(item, prevItem)) return false;
 
         const { idField, pidField } = this.props;
         const items = this.getAllItems();
@@ -279,7 +281,7 @@ export default class WebDesignModel extends React.Component {
                 nextItem[idField] === item[idField] &&
                 nextItem[pidField] === prevItem[pidField]
             ) {
-                return;
+                return false;
             }
         }
 
@@ -296,6 +298,8 @@ export default class WebDesignModel extends React.Component {
         items.splice(idx, 1, items[idx], item);
 
         this.onChange(items);
+
+        return true;
     }
 
     clearTmpItems() {
@@ -314,10 +318,9 @@ export default class WebDesignModel extends React.Component {
     updateItemPid(item, pid = null) {
         const { idField, pidField } = this.props;
 
-        if (item[pidField] === pid) return true;
+        if (item[pidField] === pid) return false;
 
         const id = item[idField];
-        const items = this.getAllItems();
 
         /**
          * 局部环路检测
@@ -333,6 +336,7 @@ export default class WebDesignModel extends React.Component {
             }
         }
 
+        const items = this.getAllItems();
         const idx = this.getItemIndex(id, items);
 
         if (idx === -1) return false;

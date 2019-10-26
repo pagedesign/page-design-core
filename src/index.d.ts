@@ -156,7 +156,7 @@ declare namespace PageDesignCore {
     type DropContainerRender = (props: DropContainerRenderProps) => JSX.Element;
 
     interface DropContainerProps {
-        pid: propTypes.any;
+        pid: any;
         children?: React.ReactNode | DropContainerRender;
         axis?: Axis;
         render?: DropContainerRender;

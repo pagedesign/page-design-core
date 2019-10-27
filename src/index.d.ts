@@ -219,7 +219,7 @@ declare namespace PageDesignCore {
 }
 
 declare const useModel: () => PageDesignCore.Model;
-declare const ModelContext: React.Context;
+declare const ModelContext: React.Context<PageDesignCore.Model>;
 declare const constants: typeof constants;
 declare const getEmptyImage: () => HTMLImageElement;
 declare const DropEmptyContainer = PageDesignCore.DropEmptyContainer;

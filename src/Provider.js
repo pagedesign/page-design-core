@@ -6,6 +6,7 @@ import Model from "./Model";
 
 export default class PageDesignCoreProvider extends React.Component {
     static defaultProps = {
+        context: window,
         backend: HTML5Backend
     };
 
@@ -20,10 +21,10 @@ export default class PageDesignCoreProvider extends React.Component {
     };
 
     render() {
-        const { backend, ...props } = this.props;
+        const { backend, context, ...props } = this.props;
 
         return (
-            <DndProvider backend={backend}>
+            <DndProvider backend={backend} context={context}>
                 <Model {...props} ref={this.saveModel} />
             </DndProvider>
         );

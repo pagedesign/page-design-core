@@ -5,7 +5,9 @@
     "main": "lib/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "transform-es src -d lib -c -w --corejs false",
+        "start": "transform-es src -d lib -c -w",
+        "cjs": "transform-es src -d lib -t cjs -c",
+        "esm": "transform-es src -d esm -t esm -c",
         "demo": "node scripts/server",
         "docs": "node scripts/docs"
     },
@@ -23,6 +25,7 @@
     "license": "MIT",
     "files": [
         "*.md",
+        "esm",
         "lib"
     ],
     "bugs": {
@@ -30,52 +33,33 @@
     },
     "homepage": "https://github.com/pagedesign/page-design-core#readme",
     "dependencies": {
-        "@babel/runtime": "^7.4.5",
-        "@babel/runtime-corejs2": "^7.4.5",
+        "@babel/runtime": "^7.7.1",
         "invariant": "^2.2.4",
-        "lodash": "^4.17.11",
+        "lodash": "^4.17.15",
         "prop-types": "^15.7.2",
-        "react": "^16.8.6",
-        "react-dnd": "^9.3.4",
-        "react-dnd-html5-backend": "^9.3.4",
-        "react-dom": "^16.8.6",
-        "react-is": "^16.8.6",
+        "react": "^16.11.0",
+        "react-dnd": "^9.4.0",
+        "react-dnd-html5-backend": "^9.4.0",
+        "react-dom": "^16.11.0",
+        "react-is": "^16.11.0",
         "warning": "^4.0.3",
         "with-component-hooks": "^1.0.0"
     },
     "devDependencies": {
-        "@babel/plugin-transform-modules-amd": "^7.2.0",
-        "@babel/plugin-transform-modules-commonjs": "^7.4.4",
-        "@babel/plugin-transform-modules-systemjs": "^7.4.4",
-        "@babel/plugin-transform-modules-umd": "^7.2.0",
-        "async-validator": "^1.11.2",
-        "autoprefixer": "^9.6.0",
-        "babel-eslint": "^10.0.1",
-        "babel-loader": "^8.0.6",
-        "babel-preset-packez": "^0.2.0",
         "classnames": "^2.2.6",
-        "css-loader": "^2.1.1",
-        "eslint": "^5.16.0",
-        "eslint-config-packez": "^0.3.0",
-        "eslint-loader": "^2.1.2",
-        "json5-loader": "^2.0.0",
-        "mini-css-extract-plugin": "^0.6.0",
-        "node-sass": "^4.12.0",
-        "packez": "^2.0.4",
-        "postcss": "^7.0.16",
-        "postcss-flexbugs-fixes": "^4.1.0",
-        "postcss-loader": "^3.0.0",
-        "postcss-preset-env": "^6.6.0",
-        "react-router-dom": "^5.0.1",
-        "sass-loader": "^7.1.0",
-        "style-loader": "^0.23.1",
-        "styled-components": "^4.3.2",
-        "transform-es": "^2.3.0"
+        "node-sass": "^4.13.0",
+        "packez": "^2.5.4",
+        "react-router-dom": "^5.1.2",
+        "sass-loader": "^8.0.0",
+        "transform-es": "^3.3.2"
     },
     "browserslist": [
-        ">0.2%",
+        ">= .25%",
         "not dead",
-        "not ie <= 11",
-        "not op_mini all"
+        "not op_mini all",
+        "not Android 4.4.3-4.4.4",
+        "not ios_saf < 10",
+        "not Chrome < 50",
+        "firefox ESR"
     ]
 }

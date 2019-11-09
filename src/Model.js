@@ -3,7 +3,7 @@ import propTypes from "prop-types";
 import find from "lodash/find";
 import last from "lodash/last";
 import findIndex from "lodash/findIndex";
-import ModelContext from "../ModelContext";
+import ModelContext from "./ModelContext";
 import DragState from "./DragState";
 import {
     COMMIT_ACTION_AUTO,
@@ -13,7 +13,7 @@ import {
     AXIS_VERTICAL,
     AXIS_HORIZONTAL,
     AXIS_BOTH
-} from "../constants";
+} from "./constants";
 
 function randomStr(prefix = "") {
     return (

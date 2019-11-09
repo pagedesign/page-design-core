@@ -3,15 +3,15 @@ import { findDOMNode } from "react-dom";
 import propTypes from "prop-types";
 import { useDrag } from "react-dnd";
 import withHooks from "with-component-hooks";
-import ModelContext from "../ModelContext";
+import ModelContext from "./ModelContext";
 import {
     EVENT_TYPE_ADD,
     EVENT_TYPE_SORT,
     COMMIT_ACTION_AUTO,
     COMMIT_ACTION_DROP
-} from "../constants";
-import { isNodeInDocument } from "../utils";
-import DragState from "../Model/DragState";
+} from "./constants";
+import { isNodeInDocument } from "./utils";
+import DragState from "./DragState";
 
 class WidgetItem extends React.Component {
     static contextType = ModelContext;

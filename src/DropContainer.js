@@ -15,9 +15,9 @@ import {
     AXIS_VERTICAL,
     AXIS_HORIZONTAL,
     AXIS_BOTH
-} from "../constants";
-import ModelContext from "../ModelContext";
-import DragState from "../Model/DragState";
+} from "./constants";
+import ModelContext from "./ModelContext";
+import DragState from "./DragState";
 
 class DropContainer extends React.Component {
     static contextType = ModelContext;

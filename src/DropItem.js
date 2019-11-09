@@ -16,11 +16,11 @@ import {
     AXIS_VERTICAL,
     AXIS_HORIZONTAL,
     AXIS_BOTH
-} from "../constants";
-import ModelContext from "../ModelContext";
-import { isNodeInDocument, getHoverDirection } from "../utils";
+} from "./constants";
+import ModelContext from "./ModelContext";
+import { isNodeInDocument, getHoverDirection } from "./utils";
 
-import DragState from "../Model/DragState";
+import DragState from "./DragState";
 
 class DropItem extends React.Component {
     static contextType = ModelContext;

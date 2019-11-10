@@ -360,9 +360,9 @@ children 为函数时，`props`属性说明：
 
 返回一个透明图片作为占位元素
 
-## hooks
+## useModel hook
 
--   `useModel` 获取数据模型对象
+获取数据模型对象
 
 ## contains
 

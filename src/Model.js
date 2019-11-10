@@ -1,8 +1,6 @@
 import React from "react";
 import propTypes from "prop-types";
-import find from "lodash/find";
-import last from "lodash/last";
-import findIndex from "lodash/findIndex";
+import { last, find, findIndex } from "./utils";
 import ModelContext from "./ModelContext";
 import DragState from "./DragState";
 import {
@@ -36,20 +34,7 @@ function normalizeItem(item, props) {
     return item;
 }
 
-export default class WebDesignModel extends React.Component {
-    static propTypes = {
-        value: propTypes.array,
-        defaultValue: propTypes.array,
-        axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
-        commitAction: propTypes.oneOf([COMMIT_ACTION_AUTO, COMMIT_ACTION_DROP]),
-        onChange: propTypes.func,
-        onDragStart: propTypes.func,
-        onDragEnd: propTypes.func,
-        onDrop: propTypes.func,
-        onDragHoverContainer: propTypes.func,
-        onDragHoverItem: propTypes.func
-    };
-
+class Model extends React.Component {
     static getDerivedStateFromProps(props, state) {
         if (props.value) {
             props.value.forEach(item => normalizeItem(item, props));
@@ -101,31 +86,18 @@ export default class WebDesignModel extends React.Component {
     }
 
     fireEvent(eventName, ev) {
-        const { onDragStart, onDragEnd, onDrop } = this.props;
+        const props = this.props;
 
-        const events = {
-            onDragStart,
-            onDragEnd,
-            onDrop
-        };
-
-        const handler = events[eventName];
+        const handler = props[eventName];
 
         if (handler) {
             handler(ev);
         }
     }
 
-    getItems(pid = null) {
-        const { pidField } = this.props;
-        const items = this.getAllItems();
-
-        return items.filter(item => item && item[pidField] == pid);
-    }
-
     getChildren(id = null, items = this.state.items) {
         const { pidField } = this.props;
-        return items.filter(item => item && item[pidField] == id);
+        return items.filter(item => item && item[pidField] === id);
     }
 
     getAllItems() {
@@ -140,14 +112,14 @@ export default class WebDesignModel extends React.Component {
 
         if (!node) return pids;
 
-        if (!node[pidField]) return pids;
+        if (node[pidField] == null) return pids;
 
         let currentFieldId = node[pidField];
         let pNode;
         while ((pNode = this.getItem(currentFieldId))) {
             pids.push(pNode[idField]);
             currentFieldId = pNode[pidField];
-            if (!currentFieldId) break;
+            if (currentFieldId == null) break;
         }
 
         return pids;
@@ -371,7 +343,7 @@ export default class WebDesignModel extends React.Component {
         const dragState = DragState.getState();
         const canDrop = dragState.canDrop;
         const dragItem = dragState.item;
-        const hoverPid = dragState.hoverPid;
+        const hoverContainerId = dragState.hoverContainerId;
         const hoverItem = dragState.hoverItem;
         const hoverDirection = dragState.hoverDirection;
         const isDragging = dragState.isDragging;
@@ -400,13 +372,14 @@ export default class WebDesignModel extends React.Component {
                 moveItem();
             } else {
                 //新增
-                this.addItem(dragItem, hoverPid);
+                this.addItem(dragItem, hoverContainerId);
             }
         } else {
             if (hoverItem) {
                 moveItem();
             } else {
-                const childs = this.getItems(hoverPid);
+                // const childs = this.getItems(hoverContainerId);
+                const childs = this.getChildren(hoverContainerId);
                 const isExist = find(childs, item =>
                     this.isSameItem(item, dragItem)
                 );
@@ -415,7 +388,7 @@ export default class WebDesignModel extends React.Component {
                     if (childs.length) {
                         this.insertAfter(dragItem, last(childs));
                     } else {
-                        this.updateItemPid(dragItem, hoverPid);
+                        this.updateItemPid(dragItem, hoverContainerId);
                     }
                 }
             }
@@ -427,30 +400,9 @@ export default class WebDesignModel extends React.Component {
     }
 
     getModel() {
-        return Object.create(this);
-        // return {
-        //     DropContainerContext: this.DropContainerContext,
-        //     isSameItem: this.isSameItem.bind(this),
-        //     getScope: this.getScope.bind(this),
-        //     fireEvent: this.fireEvent.bind(this),
-        //     addItem: this.addItem.bind(this),
-        //     addTmpItem: this.addTmpItem.bind(this),
-        //     getPids: this.getPids.bind(this),
-        //     updateItem: this.updateItem.bind(this),
-        //     getItems: this.getItems.bind(this),
-        //     getAllItems: this.getAllItems.bind(this),
-        //     removeItem: this.removeItem.bind(this),
-        //     getItemIndex: this.getItemIndex.bind(this),
-        //     getItem: this.getItem.bind(this),
-        //     insertBefore: this.insertBefore.bind(this),
-        //     insertAfter: this.insertAfter.bind(this),
-        //     clearTmpItems: this.clearTmpItems.bind(this),
-        //     commitItem: this.commitItem.bind(this),
-        //     isTmpItem: this.isTmpItem.bind(this),
-        //     updateItemPid: this.updateItemPid.bind(this),
-        //     setItemDragging: this.setItemDragging.bind(this),
-        //     isDragging: this.isDragging.bind(this)
-        // };
+        return {
+            model: this
+        };
     }
 
     render() {
@@ -463,3 +415,23 @@ export default class WebDesignModel extends React.Component {
         );
     }
 }
+
+Model.propTypes = {
+    idField: propTypes.string,
+    pidField: propTypes.string,
+    value: propTypes.array,
+    defaultValue: propTypes.array,
+    axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+    commitAction: propTypes.oneOf([COMMIT_ACTION_AUTO, COMMIT_ACTION_DROP]),
+    onChange: propTypes.func,
+    onDragStart: propTypes.func,
+    onDragEnd: propTypes.func,
+    onDrop: propTypes.func,
+    onDropToItem: propTypes.func,
+    onDropToContainer: propTypes.func,
+    onDragHover: propTypes.func,
+    onDragHoverContainer: propTypes.func,
+    onDragHoverItem: propTypes.func
+};
+
+export default Model;

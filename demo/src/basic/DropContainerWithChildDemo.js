@@ -2,7 +2,7 @@ import React from "react";
 import { DropContainer, DropItem } from "@/src";
 export default function DropContainerWithChildDemo({ title, canDrop }) {
     return (
-        <DropContainer pid="parent" canDrop={canDrop}>
+        <DropContainer id="parent" canDrop={canDrop}>
             {({ items, monitor, canDrop, connectDropTarget }) => {
                 return (
                     <div
@@ -47,7 +47,7 @@ export default function DropContainerWithChildDemo({ title, canDrop }) {
                             );
                         })}
 
-                        <DropContainer pid="child" canDrop={() => false}>
+                        <DropContainer id="child" canDrop={() => true}>
                             {({
                                 items,
                                 monitor,

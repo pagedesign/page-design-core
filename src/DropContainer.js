@@ -22,19 +22,8 @@ import DragState from "./DragState";
 class DropContainer extends React.Component {
     static contextType = ModelContext;
 
-    static propTypes = {
-        children: propTypes.oneOfType([propTypes.func, propTypes.node]),
-        axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
-        render: propTypes.func,
-        pid: propTypes.any,
-        collect: propTypes.func,
-        canDrop: propTypes.func,
-        hover: propTypes.func,
-        drop: propTypes.func
-    };
-
     static defaultProps = {
-        pid: null
+        id: null
     };
 
     _connectDropTarget = null;
@@ -63,11 +52,15 @@ class DropContainer extends React.Component {
         this._connectDropTarget(null);
     }
 
+    getModel() {
+        return this.context.model;
+    }
+
     getDropOptions() {
-        const { pid = null, hover, canDrop, drop, collect } = this.props;
+        const { id = null, hover, canDrop, drop } = this.props;
         const targetDOM = findDOMNode(this);
 
-        const model = this.context;
+        const model = this.getModel();
 
         // const DropContainerContext = model.DropContainerContext;
         // const { isRootContainer } = React.useContext(DropContainerContext);
@@ -105,25 +98,28 @@ class DropContainer extends React.Component {
 
                 DragState.setState({
                     canDrop: monitor.canDrop(),
-                    hoverPid: pid,
+                    hoverContainerId: id,
                     hoverItem: undefined,
                     hoverDirection: DRAG_DIR_NONE
                 });
 
                 if (canDrop) {
                     if (commitAction === COMMIT_ACTION_AUTO) {
-                        model.updateItemPid(dragResult.item, pid);
+                        model.updateItemPid(dragResult.item, id);
                     }
                 }
 
-                model.fireEvent("onDragHoverContainer", {
-                    target: pid,
+                const e = {
+                    target: id,
                     targetDOM,
                     monitor,
                     component: this,
                     model,
                     ...dragResult
-                });
+                };
+
+                model.fireEvent("onDragHoverContainer", e);
+                model.fireEvent("onDragHover", e);
             },
 
             drop: (dragResult, monitor) => {
@@ -141,7 +137,7 @@ class DropContainer extends React.Component {
                 //     const isTmpItem = model.isTmpItem(dragResult.item);
 
                 //     model.fireEvent("onDrop", {
-                //         target: pid,
+                //         target: id,
                 //         targetDOM,
                 //         type: isTmpItem ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
                 //         ...dragResult
@@ -163,50 +159,49 @@ class DropContainer extends React.Component {
 
                     const { isNew } = DragState.getState();
                     // const isTmpItem = model.isTmpItem(dragResult.item);
-                    model.fireEvent("onDrop", {
-                        target: pid,
+                    const e = {
+                        target: id,
                         targetDOM,
                         type: isNew ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
                         monitor,
                         component: this,
                         model,
                         ...dragResult
-                    });
+                    };
+                    model.fireEvent("onDropToContainer", e);
+                    model.fireEvent("onDrop", e);
                 }
             },
 
             collect: monitor => {
-                const ext = collect ? collect(monitor) : {};
-
                 return {
                     monitor,
                     canDrop: monitor.canDrop(),
                     isOver: monitor.isOver(),
-                    isStrictlyOver: monitor.isOver({ shallow: true }),
-                    ...ext
+                    isStrictlyOver: monitor.isOver({ shallow: true })
                 };
             }
         };
     }
 
     render() {
-        const { pid = null, children, render, axis } = this.props;
+        const { id, children, render, axis } = this.props;
 
-        const model = this.context;
+        const model = this.getModel();
 
         const DropContainerContext = model.DropContainerContext;
         const { isRootContainer } = React.useContext(DropContainerContext);
 
         invariant(
-            isRootContainer ? true : pid != null,
-            "sub DropContainer props.pid miss."
+            isRootContainer ? true : id != null,
+            "sub DropContainer id is required."
         );
 
         const [collectedProps, connectDropTarget] = useDrop(
             this.getDropOptions()
         );
 
-        let items = model.getItems(pid);
+        let items = model.getChildren(id);
         if (!collectedProps.isOver) {
             //collectedProps.isStrictlyOver
             items = items.filter(item => !model.isTmpItem(item));
@@ -241,5 +236,15 @@ class DropContainer extends React.Component {
         );
     }
 }
+
+DropContainer.propTypes = {
+    children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+    axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+    render: propTypes.func,
+    id: propTypes.any,
+    canDrop: propTypes.func,
+    hover: propTypes.func,
+    drop: propTypes.func
+};
 
 export default withHooks(DropContainer);

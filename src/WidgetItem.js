@@ -16,15 +16,6 @@ import DragState from "./DragState";
 class WidgetItem extends React.Component {
     static contextType = ModelContext;
 
-    static propTypes = {
-        children: propTypes.oneOfType([propTypes.func, propTypes.node]),
-        render: propTypes.func,
-        getInstance: propTypes.func.isRequired,
-        canDrag: propTypes.func,
-        beginDrag: propTypes.func,
-        endDrag: propTypes.func
-    };
-
     _connectDragDOM = null;
 
     _connectDragTarget = null;
@@ -36,6 +27,10 @@ class WidgetItem extends React.Component {
 
     componentDidMount() {
         this.connectDragTarget();
+    }
+
+    getModel() {
+        return this.context.model;
     }
 
     connectDragTarget() {
@@ -73,7 +68,7 @@ class WidgetItem extends React.Component {
 
     getDragOptions() {
         const { getInstance, canDrag, beginDrag, endDrag } = this.props;
-        const model = this.context;
+        const model = this.getModel();
         const commitAction = model.props.commitAction;
 
         return {
@@ -174,7 +169,7 @@ class WidgetItem extends React.Component {
 
     render() {
         const { children, render } = this.props;
-        const model = this.context;
+        const model = this.getModel();
 
         const [collectProps, connectDragTarget, connectDragPreview] = useDrag(
             this.getDragOptions()
@@ -205,5 +200,14 @@ class WidgetItem extends React.Component {
             : null;
     }
 }
+
+WidgetItem.propTypes = {
+    children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+    render: propTypes.func,
+    getInstance: propTypes.func.isRequired,
+    canDrag: propTypes.func,
+    beginDrag: propTypes.func,
+    endDrag: propTypes.func
+};
 
 export default withHooks(WidgetItem);

@@ -7,7 +7,7 @@ import {
     DragLayer,
     WidgetItem,
     getEmptyImage,
-    DropEmptyContainer
+    DropArea
 } from "@/src";
 import fields from "./fields";
 import ItemDragLayer from "./ItemDragLayer";
@@ -37,7 +37,7 @@ function FieldItem({ field }) {
     );
 }
 
-function DropFieldContainer({ pid }) {
+function DropFieldContainer({ id: pid }) {
     const _canDrop = React.useCallback(
         ({ item, model }) => {
             if (item.id === "∑" && (pid === "value" || pid === "filter"))
@@ -47,8 +47,11 @@ function DropFieldContainer({ pid }) {
 
             const items =
                 pid === "filter"
-                    ? model.getItems("filter")
-                    : [...model.getItems("column"), ...model.getItems("row")];
+                    ? model.getChildren("filter")
+                    : [
+                          ...model.getChildren("column"),
+                          ...model.getChildren("row")
+                      ];
             const names = items.map(item => item.name);
             const ids = items.map(item => item.id);
 
@@ -62,7 +65,7 @@ function DropFieldContainer({ pid }) {
     );
 
     return (
-        <DropContainer pid={pid} canDrop={_canDrop}>
+        <DropContainer id={pid} canDrop={_canDrop}>
             {({ items, connectDropTarget, canDrop, isStrictlyOver, model }) => {
                 return (
                     <div
@@ -171,12 +174,8 @@ export default () => {
     );
 
     return (
-        <Provider
-            value={value}
-            commitAction="drop"
-            onChange={handleChange}
-        >
-            <DropEmptyContainer>
+        <Provider value={value} commitAction="drop" onChange={handleChange}>
+            <DropArea>
                 <div
                     className="pivot-container-02"
                     style={{
@@ -200,25 +199,25 @@ export default () => {
                             <div className="drop-column-wrapper">
                                 <div className="drop-field-label">筛选</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="filter" />
+                                    <DropFieldContainer id="filter" />
                                 </div>
                             </div>
                             <div className="drop-row-wrapper">
                                 <div className="drop-field-label">列</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="row" />
+                                    <DropFieldContainer id="row" />
                                 </div>
                             </div>
                             <div className="drop-column-wrapper">
                                 <div className="drop-field-label">行</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="column" />
+                                    <DropFieldContainer id="column" />
                                 </div>
                             </div>
                             <div className="drop-value-wrapper">
                                 <div className="drop-field-label">值</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="value" />
+                                    <DropFieldContainer id="value" />
                                 </div>
                             </div>
                         </div>
@@ -233,7 +232,7 @@ export default () => {
                         }}
                     </DragLayer>
                 </div>
-            </DropEmptyContainer>
+            </DropArea>
         </Provider>
     );
 };

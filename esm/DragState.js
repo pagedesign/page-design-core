@@ -1,23 +1,13 @@
 
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
-
+import _extends from "@babel/runtime/helpers/extends";
 var state = {
   //part1
   //drag item
   item: null,
   isNew: false,
   canDrop: true,
-  //hover container pid
-  hoverPid: null,
+  //hover container id
+  hoverContainerId: null,
   //hover item
   hoverItem: null,
   hoverDirection: "none",
@@ -28,7 +18,7 @@ var state = {
 };
 
 function setState(newState) {
-  state = (0, _extends2.default)({}, state, {}, newState);
+  state = _extends({}, state, {}, newState);
 }
 
 function reset() {
@@ -36,7 +26,7 @@ function reset() {
     item: null,
     isNew: false,
     canDrop: true,
-    hoverPid: null,
+    hoverContainerId: null,
     hoverItem: null,
     hoverDirection: "none",
     dragDOMIsRemove: false,
@@ -49,9 +39,8 @@ function getState() {
   return state;
 }
 
-var _default = {
+export default {
   setState: setState,
   getState: getState,
   reset: reset
 };
-exports.default = _default;

@@ -106,12 +106,12 @@ export default function App() {
                     })}
                 </div>
                 <DropContainerDemo title="A" />
-                <DropContainerDemo pid="b" title="B" />
+                <DropContainerDemo id="b" title="B" />
                 <AnimateContainer />
 
                 <DropContainerWithChildDemo title="Parent" />
                 <DropContainerDemo
-                    pid="d"
+                    id="d"
                     title="D"
                     canDrop={item => {
                         return item.xtype === "EX_TEXTAREA_FIELD";

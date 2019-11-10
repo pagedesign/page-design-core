@@ -111,7 +111,7 @@ export default () => {
                     width: 600
                 }}
             >
-                <DropContainer pid="a">
+                <DropContainer id="a">
                     {({ items, monitor, canDrop, connectDropTarget }) => (
                         <div
                             ref={connectDropTarget}
@@ -134,7 +134,7 @@ export default () => {
                         width: 20
                     }}
                 ></div>
-                <DropContainer pid="b">
+                <DropContainer id="b">
                     {({ items, monitor, canDrop, connectDropTarget }) => (
                         <div
                             ref={connectDropTarget}

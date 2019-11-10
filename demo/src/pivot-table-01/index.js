@@ -7,7 +7,7 @@ import {
     DragLayer,
     WidgetItem,
     getEmptyImage,
-    DropEmptyContainer
+    DropArea
 } from "@/src";
 import fields from "./fields";
 import ItemDragLayer from "./ItemDragLayer";
@@ -37,14 +37,14 @@ function FieldItem({ field }) {
     );
 }
 
-function DropFieldContainer({ pid }) {
+function DropFieldContainer({ id: pid }) {
     const _canDrop = React.useCallback(
         ({ item, model }) => {
             if (pid === "value") return true;
 
             const items = [
-                ...model.getItems("column"),
-                ...model.getItems("row")
+                ...model.getChildren("column"),
+                ...model.getChildren("row")
             ];
             const names = items.map(item => item.name);
             const ids = items.map(item => item.id);
@@ -59,7 +59,7 @@ function DropFieldContainer({ pid }) {
     );
 
     return (
-        <DropContainer pid={pid} canDrop={_canDrop} axis="horizontal">
+        <DropContainer id={pid} canDrop={_canDrop} axis="horizontal">
             {({ items, connectDropTarget, canDrop, isStrictlyOver }) => {
                 return (
                     <div
@@ -140,12 +140,8 @@ export default () => {
     const [value, onChange] = React.useState([]);
 
     return (
-        <Provider
-            value={value}
-            commitAction="drop"
-            onChange={onChange}
-        >
-            <DropEmptyContainer>
+        <Provider value={value} commitAction="drop" onChange={onChange}>
+            <DropArea>
                 <div
                     className="pivot-container"
                     style={{
@@ -169,19 +165,19 @@ export default () => {
                             <div className="drop-row-wrapper">
                                 <div className="drop-field-label">列</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="column" />
+                                    <DropFieldContainer id="column" />
                                 </div>
                             </div>
                             <div className="drop-column-wrapper">
                                 <div className="drop-field-label">行</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="row" />
+                                    <DropFieldContainer id="row" />
                                 </div>
                             </div>
                             <div className="drop-value-wrapper">
                                 <div className="drop-field-label">值</div>
                                 <div className="drop-field-list">
-                                    <DropFieldContainer pid="value" />
+                                    <DropFieldContainer id="value" />
                                 </div>
                             </div>
                         </div>
@@ -196,7 +192,7 @@ export default () => {
                         }}
                     </DragLayer>
                 </div>
-            </DropEmptyContainer>
+            </DropArea>
         </Provider>
     );
 };

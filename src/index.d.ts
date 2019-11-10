@@ -10,7 +10,7 @@ import {
 import * as constants from "./constants";
 
 declare namespace PageDesignCore {
-    type EventType = "add" | "drop";
+    type EventType = "add" | "sort";
     type Axis = "vertical" | "horizontal" | "both";
     type CommitAction = "auto" | "drop";
     type HoverDirection = "up" | "down" | "left" | "right" | "none";
@@ -40,15 +40,24 @@ declare namespace PageDesignCore {
 
     interface DragEndEvent extends DragStartEvent {}
 
-    interface DropEvent extends DragStartEvent {
+    interface DropToItemEvent extends DragStartEvent {
         target: Item;
         targetDOM: HTMLElement;
     }
 
-    interface DropHoverItemEvent extends DropEvent {}
-    interface DragHoverContainerEvent extends DropEvent {
-        target: any;
+    interface DropToContainerEvent extends DragStartEvent {
+        target: string | number | null;
+        targetDOM: HTMLElement;
     }
+
+    interface DropEvent extends DragStartEvent {
+        target: Item | string | number | null;
+        targetDOM: HTMLElement;
+    }
+
+    interface DragHoverItemEvent extends DropToItemEvent {}
+    interface DragHoverContainerEvent extends DropToContainerEvent {}
+    interface DragHoverEvent extends DropEvent {}
 
     interface ProviderProps {
         backend: object;
@@ -62,9 +71,12 @@ declare namespace PageDesignCore {
         onChange?: (items: Item[]) => void;
         onDragStart?: (e: DragStartEvent) => void;
         onDragEnd?: (e: DragEndEvent) => void;
+        onDropToItem?: (e: DropToItemEvent) => void;
+        onDropToContainer?: (e: DropToContainerEvent) => void;
         onDrop?: (e: DropEvent) => void;
         onDragHoverContainer?: (e: DragHoverContainerEvent) => void;
-        onDragHoverItem?: (e: DropHoverItemEvent) => void;
+        onDragHoverItem?: (e: DragHoverItemEvent) => void;
+        onDragHover?: (e: DragHoverEvent) => void;
     }
 
     type ModelProps = ProviderProps;
@@ -156,11 +168,10 @@ declare namespace PageDesignCore {
     type DropContainerRender = (props: DropContainerRenderProps) => JSX.Element;
 
     interface DropContainerProps {
-        pid: any;
+        id: any;
         children?: React.ReactNode | DropContainerRender;
         axis?: Axis;
         render?: DropContainerRender;
-        collect?: (monitor: DropTargetMonitor) => {};
         canDrop?: (props: CanDropOptions) => boolean;
         hover?: (props: DragHoverOptions) => void;
         drop?: (props: DropOptions) => void;
@@ -213,7 +224,7 @@ declare namespace PageDesignCore {
         render(): JSX.Element;
     }
 
-    export class DropEmptyContainer extends React.Component<{}, {}> {
+    export class DropArea extends React.Component<{}, {}> {
         render(): JSX.Element;
     }
 }
@@ -222,7 +233,7 @@ declare const useModel: () => PageDesignCore.Model;
 declare const ModelContext: React.Context<PageDesignCore.Model>;
 declare const constants: typeof constants;
 declare const getEmptyImage: () => HTMLImageElement;
-declare const DropEmptyContainer = PageDesignCore.DropEmptyContainer;
+declare const DropArea = PageDesignCore.DropArea;
 declare const Provider = PageDesignCore.Provider;
 declare const WidgetItem = PageDesignCore.WidgetItem;
 declare const DropItem = PageDesignCore.DropItem;
@@ -234,7 +245,7 @@ export {
     ModelContext,
     constants,
     getEmptyImage,
-    DropEmptyContainer,
+    DropArea,
     Provider,
     WidgetItem,
     DropItem,
@@ -247,7 +258,7 @@ export default {
     ModelContext,
     constants,
     getEmptyImage,
-    DropEmptyContainer,
+    DropArea,
     Provider,
     WidgetItem,
     DropItem,

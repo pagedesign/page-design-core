@@ -115,11 +115,7 @@ export default () => {
     const [value, onChange] = React.useState(dataset);
 
     return (
-        <Provider
-            value={value}
-            onChange={onChange}
-            commitAction="drop"
-        >
+        <Provider value={value} onChange={onChange} commitAction="drop">
             <div
                 style={{
                     position: "relative",
@@ -129,7 +125,7 @@ export default () => {
                     width: 800
                 }}
             >
-                <DropContainer pid="nostart">
+                <DropContainer id="nostart">
                     {({ items, monitor, canDrop, connectDropTarget }) => (
                         <div
                             style={{
@@ -161,7 +157,7 @@ export default () => {
                         width: 20
                     }}
                 ></div>
-                <DropContainer pid="pending">
+                <DropContainer id="pending">
                     {({ items, monitor, canDrop, connectDropTarget }) => (
                         <div
                             style={{
@@ -194,7 +190,7 @@ export default () => {
                         width: 20
                     }}
                 ></div>
-                <DropContainer pid="done">
+                <DropContainer id="done">
                     {({ items, monitor, canDrop, connectDropTarget }) => (
                         <div
                             style={{

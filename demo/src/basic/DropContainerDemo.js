@@ -1,9 +1,9 @@
 import React from "react";
 import { DropContainer, DropItem } from "@/src";
 
-export default function DropContainerDemo({ pid = null, title, canDrop }) {
+export default function DropContainerDemo({ id = null, title, canDrop }) {
     return (
-        <DropContainer pid={pid} canDrop={canDrop}>
+        <DropContainer id={id} canDrop={canDrop}>
             {({ items, monitor, canDrop, connectDropTarget }) => {
                 return (
                     <div

@@ -1,17 +1,4 @@
 
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getRectDirection = getRectDirection;
-exports.isBeforeRect = isBeforeRect;
-exports.getHoverDirection = getHoverDirection;
-exports.isNodeInDocument = isNodeInDocument;
-exports.last = last;
-exports.findIndex = findIndex;
-exports.find = find;
-
 /**
  * 判断指定坐标在指定矩形上的位置
  *
@@ -23,7 +10,7 @@ exports.find = find;
  * @param {number} py 待检测坐标y(一般位鼠标y坐标)
  * @returns {number} 1:up 2:down 3:left 4:right -1:center(对角线上)
  */
-function getRectDirection(x, y, width, height, px, py) {
+export function getRectDirection(x, y, width, height, px, py) {
   var y_ac = ((y + height) * px - y * px + y * (x + width) - (y + height) * x) / (x + width - x);
   var y_bd = (y * px - (y + height) * px + (y + height) * (x + width) - y * x) / (x + width - x);
 
@@ -58,13 +45,11 @@ function getRectDirection(x, y, width, height, px, py) {
     }
   }
 }
-
-function isBeforeRect() {
+export function isBeforeRect() {
   var ret = getRectDirection.apply(void 0, arguments);
   return ret === 1 || ret === 3;
 }
-
-function getHoverDirection() {
+export function getHoverDirection() {
   var ret = getRectDirection.apply(void 0, arguments);
   var dir = "down";
 
@@ -80,17 +65,14 @@ function getHoverDirection() {
 
   return dir;
 }
-
-function isNodeInDocument(node) {
+export function isNodeInDocument(node) {
   return document.body.contains(node);
 }
-
-function last(array) {
+export function last(array) {
   var length = array == null ? 0 : array.length;
   return length ? array[length - 1] : undefined;
 }
-
-function findIndex(array, predicate) {
+export function findIndex(array, predicate) {
   if (array == null) {
     throw new TypeError('"this" is null or not defined');
   }
@@ -116,8 +98,7 @@ function findIndex(array, predicate) {
 
   return -1;
 }
-
-function find(array, predicate) {
+export function find(array, predicate) {
   var idx = findIndex(array, predicate);
   return array[idx];
 }

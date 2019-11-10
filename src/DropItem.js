@@ -25,19 +25,11 @@ import DragState from "./DragState";
 class DropItem extends React.Component {
     static contextType = ModelContext;
 
-    static propTypes = {
-        children: propTypes.oneOfType([propTypes.func, propTypes.node]),
-        render: propTypes.func,
-        item: propTypes.object.isRequired,
-        axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
-        canDrop: propTypes.func,
-        hover: propTypes.func,
-        canDrag: propTypes.func,
-        beginDrag: propTypes.func,
-        endDrag: propTypes.func
-    };
-
     _lastHoverDirection = DRAG_DIR_NONE;
+
+    getModel() {
+        return this.context.model;
+    }
 
     getHoverDirection(
         monitor,
@@ -82,7 +74,7 @@ class DropItem extends React.Component {
     getDropOptions() {
         let { item, axis, canDrop, hover, drop } = this.props;
         const targetDOM = findDOMNode(this);
-        const model = this.context;
+        const model = this.getModel();
         const DropContainerContext = model.DropContainerContext;
         const { axis: pAxis } = React.useContext(DropContainerContext);
         const { commitAction, axis: mAxis } = model.props;
@@ -136,7 +128,7 @@ class DropItem extends React.Component {
 
                 DragState.setState({
                     canDrop,
-                    hoverPid: undefined,
+                    hoverContainerId: undefined,
                     hoverItem: item,
                     hoverDirection: currentDirection
                 });
@@ -160,14 +152,17 @@ class DropItem extends React.Component {
                     }
                 }
 
-                model.fireEvent("onDragHoverItem", {
+                const e = {
                     target: item,
                     targetDOM,
                     monitor,
                     component: this,
                     model,
                     ...dragResult
-                });
+                };
+
+                model.fireEvent("onDragHoverItem", e);
+                model.fireEvent("onDragHover", e);
             },
 
             drop: (dragResult, monitor) => {
@@ -189,7 +184,7 @@ class DropItem extends React.Component {
 
                     const { isNew } = DragState.getState();
                     // const isTmpItem = model.isTmpItem(dragResult.item);
-                    model.fireEvent("onDrop", {
+                    const e = {
                         target: item,
                         targetDOM,
                         type: isNew ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
@@ -197,7 +192,9 @@ class DropItem extends React.Component {
                         component: this,
                         model,
                         ...dragResult
-                    });
+                    };
+                    model.fireEvent("onDropToItem", e);
+                    model.fireEvent("onDrop", e);
                 }
             },
 
@@ -215,7 +212,7 @@ class DropItem extends React.Component {
 
     getDragOptions() {
         const { item, canDrag, beginDrag, endDrag } = this.props;
-        const model = this.context;
+        const model = this.getModel();
 
         return {
             item: {
@@ -360,7 +357,7 @@ class DropItem extends React.Component {
 
     render() {
         const { children, render, item } = this.props;
-        const model = this.context;
+        const model = this.getModel();
 
         const [collectedDropProps, connectDropTarget] = useDrop(
             this.getDropOptions()
@@ -382,10 +379,10 @@ class DropItem extends React.Component {
         );
         this._connectDragPreview = connectDragPreview;
 
-        const connectDragAndDrop = dom => {
+        const connectDragAndDrop = React.useCallback(dom => {
             this._connectDropTarget(dom);
             this._connectDragTarget(dom);
-        };
+        }, []);
 
         const props = {
             ...collectedDropProps,
@@ -415,5 +412,17 @@ class DropItem extends React.Component {
             : null;
     }
 }
+
+DropItem.propTypes = {
+    item: propTypes.object.isRequired,
+    children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+    render: propTypes.func,
+    axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+    canDrop: propTypes.func,
+    hover: propTypes.func,
+    canDrag: propTypes.func,
+    beginDrag: propTypes.func,
+    endDrag: propTypes.func
+};
 
 export default withHooks(DropItem);

@@ -76,3 +76,41 @@ export function getHoverDirection(...a) {
 export function isNodeInDocument(node) {
     return document.body.contains(node);
 }
+
+export function last(array) {
+    var length = array == null ? 0 : array.length;
+    return length ? array[length - 1] : undefined;
+}
+
+export function findIndex(array, predicate) {
+    if (array == null) {
+        throw new TypeError('"this" is null or not defined');
+    }
+
+    var o = Object(array);
+
+    var len = o.length >>> 0;
+
+    if (typeof predicate !== "function") {
+        throw new TypeError("predicate must be a function");
+    }
+
+    var k = 0;
+
+    while (k < len) {
+        var kValue = o[k];
+        if (predicate(kValue, k, o)) {
+            return k;
+        }
+
+        k++;
+    }
+
+    return -1;
+}
+
+export function find(array, predicate) {
+    const idx = findIndex(array, predicate);
+
+    return array[idx];
+}

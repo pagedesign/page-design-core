@@ -3,6 +3,7 @@
     "version": "0.2.0",
     "description": "",
     "main": "lib/index.js",
+    "module": "esm/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "transform-es src -d lib -c -w",
@@ -35,7 +36,6 @@
     "dependencies": {
         "@babel/runtime": "^7.7.1",
         "invariant": "^2.2.4",
-        "lodash": "^4.17.15",
         "prop-types": "^15.7.2",
         "react": "^16.11.0",
         "react-dnd": "^9.4.0",
@@ -46,6 +46,8 @@
         "with-component-hooks": "^1.0.0"
     },
     "devDependencies": {
+        "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+        "lodash": "^4.17.15",
         "classnames": "^2.2.6",
         "node-sass": "^4.13.0",
         "packez": "^2.5.4",

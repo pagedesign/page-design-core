@@ -20,8 +20,8 @@ let idx = 1;
 function DragLayerDemo() {
     return (
         <DragLayer>
-            {({ isDragging }) =>
-                !isDragging ? null : (
+            {({ isDragging, ...rest }) => {
+                return !isDragging ? null : (
                     <div
                         style={{
                             padding: 5,
@@ -33,8 +33,8 @@ function DragLayerDemo() {
                     >
                         dragLayer: isDragging...
                     </div>
-                )
-            }
+                );
+            }}
         </DragLayer>
     );
 }

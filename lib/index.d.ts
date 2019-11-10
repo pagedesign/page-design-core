@@ -1,4 +1,5 @@
 import React from "react";
+import { NativeTypes } from "react-dnd-html5-backend";
 import {
     DragSourceMonitor,
     DropTargetMonitor,
@@ -59,6 +60,8 @@ declare namespace PageDesignCore {
     interface DragHoverContainerEvent extends DropToContainerEvent {}
     interface DragHoverEvent extends DropEvent {}
 
+    type ProviderRender = (model: Model) => React.ReactNode;
+
     interface ProviderProps {
         backend: object;
         idField: string | "id";
@@ -67,7 +70,7 @@ declare namespace PageDesignCore {
         defaultValue?: Item[];
         axis?: Axis;
         commitAction?: CommitAction;
-        children?: React.ReactNode;
+        children?: React.ReactNode | ProviderRender;
         onChange?: (items: Item[]) => void;
         onDragStart?: (e: DragStartEvent) => void;
         onDragEnd?: (e: DragEndEvent) => void;
@@ -181,7 +184,7 @@ declare namespace PageDesignCore {
         item: Item | null;
         dom: HTMLElement | null;
         monitor: DragLayerMonitor;
-        type: any;
+        // type: any;
         isDragging: boolean;
         initialClientOffset: Point | null;
         initialSourceClientOffset: Point | null;
@@ -224,7 +227,7 @@ declare namespace PageDesignCore {
         render(): JSX.Element;
     }
 
-    export class DropArea extends React.Component<{}, {}> {
+    export class DropZone extends React.Component<{}, {}> {
         render(): JSX.Element;
     }
 }
@@ -233,7 +236,7 @@ declare const useModel: () => PageDesignCore.Model;
 declare const ModelContext: React.Context<PageDesignCore.Model>;
 declare const constants: typeof constants;
 declare const getEmptyImage: () => HTMLImageElement;
-declare const DropArea = PageDesignCore.DropArea;
+declare const DropZone = PageDesignCore.DropZone;
 declare const Provider = PageDesignCore.Provider;
 declare const WidgetItem = PageDesignCore.WidgetItem;
 declare const DropItem = PageDesignCore.DropItem;
@@ -245,12 +248,13 @@ export {
     ModelContext,
     constants,
     getEmptyImage,
-    DropArea,
+    DropZone,
     Provider,
     WidgetItem,
     DropItem,
     DropContainer,
-    DragLayer
+    DragLayer,
+    NativeTypes
 };
 
 export default {
@@ -258,10 +262,11 @@ export default {
     ModelContext,
     constants,
     getEmptyImage,
-    DropArea,
+    DropZone,
     Provider,
     WidgetItem,
     DropItem,
     DropContainer,
-    DragLayer
+    DragLayer,
+    NativeTypes
 };

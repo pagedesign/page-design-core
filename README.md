@@ -23,6 +23,10 @@ render(){
 
 ## Provider Options
 
+### children
+
+`ReactNode | (model: Model) => JSX.Element`
+
 ### defaultValue
 
 `Item[]`
@@ -340,15 +344,15 @@ children 为函数时，`props`属性说明：
 -   `differenceFromInitialOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
 -   `sourceClientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
 
-## DropArea
+## DropZone
 
 当前组件辅助于拖拽时鼠标指针样式不变为 `none`，提升交互效果，通常紧跟 `Provider`以前使用，例如：
 
 ```
 <PageDesignCore.Provider>
-    <DropArea>
+    <DropZone>
     ...
-    </DropArea>
+    </DropZone>
 </PageDesignCore.Provider>
 ```
 
@@ -361,6 +365,40 @@ children 为函数时，`props`属性说明：
 -   `useModel` 获取数据模型对象
 
 ## contains
+
+## Model Apis
+
+> model 类主要用于操作项目列表
+
+### getChildren(id: any) => Item[]
+
+获取指定 id 的子项目列表
+
+### getItem(id: any) => Item | undefined
+
+获取指定 id 的项目对象
+
+### isDragging(id?: any) => boolean
+
+如果 id 不传代表检测当前是否处于拖拽中，如果传 id 则返回当前组件是否处于拖拽中
+
+### getDraggingItem(id: any) => Item | null
+
+返回处于拖拽中的项目对象
+
+### removeItem(id: any) => void;
+
+移除指定 id 的项目对象
+
+### addItem(item:Item, pid: any) => void;
+
+添加项目
+
+### addItems(items: Item[], pid: any) => void;
+
+批量添加项目
+
+> 这里只列举了可能常用的 api，其他高级 api 建议自行处理。
 
 ```ts
 export const EVENT_TYPE_ADD = "add";
@@ -594,7 +632,7 @@ export class DragLayer extends React.Component<DragLayerProps, {}> {
     render(): JSX.Element;
 }
 
-export class DropArea extends React.Component<{}, {}> {
+export class DropZone extends React.Component<{}, {}> {
     render(): JSX.Element;
 }
 ```

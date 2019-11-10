@@ -25,6 +25,10 @@ import DragState from "./DragState";
 class DropItem extends React.Component {
     static contextType = ModelContext;
 
+    static defaultProps = {
+        accepts: []
+    };
+
     _lastHoverDirection = DRAG_DIR_NONE;
 
     getModel() {
@@ -72,7 +76,7 @@ class DropItem extends React.Component {
     }
 
     getDropOptions() {
-        let { item, axis, canDrop, hover, drop } = this.props;
+        let { item, axis, canDrop, hover, drop, accepts } = this.props;
         const targetDOM = findDOMNode(this);
         const model = this.getModel();
         const DropContainerContext = model.DropContainerContext;
@@ -82,13 +86,17 @@ class DropItem extends React.Component {
         axis = axis || pAxis || mAxis;
 
         return {
-            accept: model.getScope(),
+            accept: [model.getScope(), ...accepts],
             canDrop: (dragResult, monitor) => {
                 const dragItem = dragResult.item;
 
                 let ret = model.isTmpItem(item)
                     ? false
                     : !model.isSameItem(item, dragItem);
+
+                if (ret) {
+                    ret = !model.contains(dragItem, item);
+                }
 
                 if (ret && canDrop) {
                     ret = canDrop({
@@ -418,6 +426,7 @@ DropItem.propTypes = {
     children: propTypes.oneOfType([propTypes.func, propTypes.node]),
     render: propTypes.func,
     axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+    accepts: propTypes.array,
     canDrop: propTypes.func,
     hover: propTypes.func,
     canDrag: propTypes.func,

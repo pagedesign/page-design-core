@@ -3,10 +3,7 @@ import _assertThisInitialized from "@babel/runtime/helpers/assertThisInitialized
 import _inheritsLoose from "@babel/runtime/helpers/inheritsLoose";
 import _defineProperty from "@babel/runtime/helpers/defineProperty";
 import React from "react";
-import propTypes from "prop-types"; // import last from "lodash/last";
-// import find from "lodash/find";
-// import findIndex from "lodash/findIndex";
-
+import propTypes from "prop-types";
 import { last, find, findIndex } from "./utils";
 import ModelContext from "./ModelContext";
 import DragState from "./DragState";
@@ -24,16 +21,16 @@ function normalizeItem(item, props) {
   var idField = props.idField;
   var pidField = props.pidField;
   item[idField] = item[idField] === undefined ? randomStr("item_") : item[idField];
-  item[pidField] = item[pidField] === undefined ? null : item[pidField];
+  item[pidField] = item[pidField] === undefined ? props.rootId : item[pidField];
   return item;
 }
 
-var WebDesignModel =
+var Model =
 /*#__PURE__*/
 function (_React$Component) {
-  _inheritsLoose(WebDesignModel, _React$Component);
+  _inheritsLoose(Model, _React$Component);
 
-  function WebDesignModel() {
+  function Model() {
     var _this;
 
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -55,7 +52,7 @@ function (_React$Component) {
     return _this;
   }
 
-  WebDesignModel.getDerivedStateFromProps = function getDerivedStateFromProps(props, state) {
+  Model.getDerivedStateFromProps = function getDerivedStateFromProps(props, state) {
     if (props.value) {
       props.value.forEach(function (item) {
         return normalizeItem(item, props);
@@ -67,7 +64,7 @@ function (_React$Component) {
     };
   };
 
-  var _proto = WebDesignModel.prototype;
+  var _proto = Model.prototype;
 
   _proto.getDragState = function getDragState() {
     return DragState.getState();
@@ -101,6 +98,15 @@ function (_React$Component) {
     }
   };
 
+  _proto.contains = function contains(parentNode, childNode) {
+    var idField = this.props.idField;
+    if (!childNode) return false;
+    var parentId = parentNode[idField];
+    var childId = childNode[idField];
+    var pids = this.getPids(childId);
+    return pids.indexOf(parentId) !== -1;
+  };
+
   _proto.getChildren = function getChildren(id, items) {
     if (id === void 0) {
       id = null;
@@ -118,6 +124,17 @@ function (_React$Component) {
 
   _proto.getAllItems = function getAllItems() {
     return [].concat(this.state.items);
+  };
+
+  _proto.isRootId = function isRootId(id) {
+    var rootId = this.props.rootId;
+    var isRootId = id == null || rootId === id; //id存在但无法找到节点
+
+    if (!isRootId) {
+      isRootId = !!this.getItem(id);
+    }
+
+    return isRootId;
   } //获取组件的所有父级ID
   ;
 
@@ -128,14 +145,14 @@ function (_React$Component) {
     var pids = [];
     var node = this.getItem(id);
     if (!node) return pids;
-    if (!node[pidField]) return pids;
+    if (this.isRootId(node.pidField)) return pids;
     var currentFieldId = node[pidField];
     var pNode;
 
     while (pNode = this.getItem(currentFieldId)) {
       pids.push(pNode[idField]);
       currentFieldId = pNode[pidField];
-      if (!currentFieldId) break;
+      if (this.isRootId(currentFieldId)) break;
     }
 
     return pids;
@@ -183,13 +200,34 @@ function (_React$Component) {
     this.onChange(items);
   };
 
+  _proto.addItems = function addItems(items, pid) {
+    var _this2 = this;
+
+    if (items === void 0) {
+      items = [];
+    }
+
+    if (pid === void 0) {
+      pid = null;
+    }
+
+    var pidField = this.props.pidField;
+    items = items.map(function (item) {
+      return normalizeItem(item, _this2.props);
+    });
+    items.forEach(function (item) {
+      return item[pidField] = pid;
+    });
+    this.onChange([].concat(this.getAllItems(), items));
+  };
+
   _proto.addTmpItem = function addTmpItem(item, pid) {
     item.__tmp__ = true;
     this.addItem(item, pid);
   };
 
   _proto.removeItem = function removeItem(id) {
-    var _this2 = this;
+    var _this3 = this;
 
     var idField = this.props.idField;
     var items = this.getAllItems(); //移除指定项目及子项目
@@ -198,7 +236,7 @@ function (_React$Component) {
       var shouldRemove = item[idField] === id;
 
       if (!shouldRemove) {
-        var pids = _this2.getPids(item[idField]);
+        var pids = _this3.getPids(item[idField]);
 
         shouldRemove = pids.indexOf(id) > -1;
       }
@@ -209,16 +247,24 @@ function (_React$Component) {
   };
 
   _proto.getItemIndex = function getItemIndex(id, items) {
-    var idField = this.props.idField;
-    items = items || this.getAllItems();
+    if (items === void 0) {
+      items = this.state.items;
+    }
+
+    //this.getAllItems()
+    var idField = this.props.idField; // items = items || this.getAllItems();
+
     return findIndex(items, function (item) {
       return item[idField] === id;
     });
   };
 
-  _proto.getItem = function getItem(id) {
+  _proto.getItem = function getItem(id, items) {
+    if (items === void 0) {
+      items = this.state.items;
+    }
+
     var idField = this.props.idField;
-    var items = this.getAllItems();
     return find(items, function (item) {
       return item && item[idField] === id;
     });
@@ -230,8 +276,7 @@ function (_React$Component) {
         idField = _this$props2.idField,
         pidField = _this$props2.pidField;
     var items = this.getAllItems();
-    var id = bItem[idField]; // const bItem = this.getItem(id);
-    //判断是否需要移动
+    var id = bItem[idField]; //判断是否需要移动
 
     var _idx = this.getItemIndex(id);
 
@@ -252,7 +297,10 @@ function (_React$Component) {
 
     item[pidField] = bItem[pidField]; //插入操作
 
-    var idx = this.getItemIndex(id, items);
+    var idx = findIndex(items, function (item) {
+      return item[idField] === id;
+    }); //this.getItemIndex(id, items);
+
     items.splice(idx, 0, item);
     this.onChange(items);
     return true;
@@ -264,8 +312,7 @@ function (_React$Component) {
         idField = _this$props3.idField,
         pidField = _this$props3.pidField;
     var items = this.getAllItems();
-    var id = prevItem[idField]; // const prevItem = this.getItem(id);
-    //判断是否需要移动
+    var id = prevItem[idField]; //判断是否需要移动
 
     var _idx = this.getItemIndex(id);
 
@@ -358,7 +405,7 @@ function (_React$Component) {
   ;
 
   _proto.commitDragStateItem = function commitDragStateItem() {
-    var _this3 = this;
+    var _this4 = this;
 
     var dragState = DragState.getState();
     var canDrop = dragState.canDrop;
@@ -373,9 +420,9 @@ function (_React$Component) {
 
     var moveItem = function moveItem() {
       if (hoverDirection === DRAG_DIR_UP || hoverDirection === DRAG_DIR_LEFT) {
-        _this3.insertBefore(dragItem, hoverItem);
+        _this4.insertBefore(dragItem, hoverItem);
       } else {
-        _this3.insertAfter(dragItem, hoverItem);
+        _this4.insertAfter(dragItem, hoverItem);
       }
     };
 
@@ -394,10 +441,9 @@ function (_React$Component) {
       if (hoverItem) {
         moveItem();
       } else {
-        // const childs = this.getItems(hoverContainerId);
         var childs = this.getChildren(hoverContainerId);
         var isExist = find(childs, function (item) {
-          return _this3.isSameItem(item, dragItem);
+          return _this4.isSameItem(item, dragItem);
         });
 
         if (!isExist) {
@@ -409,6 +455,24 @@ function (_React$Component) {
         }
       }
     }
+  };
+
+  _proto.isDragging = function isDragging(id) {
+    var idField = this.props.idField;
+    var dragState = DragState.getState();
+    var isDragging = dragState.isDragging;
+    if (!isDragging) return false;
+
+    if (id !== undefined) {
+      return dragState.item && dragState.item[idField] === id;
+    }
+
+    return true;
+  };
+
+  _proto.getDraggingItem = function getDraggingItem() {
+    var dragState = DragState.getState();
+    return dragState.item;
   };
 
   _proto.isTmpItem = function isTmpItem(item) {
@@ -425,13 +489,14 @@ function (_React$Component) {
     var children = this.props.children;
     return React.createElement(ModelContext.Provider, {
       value: this.getModel()
-    }, children);
+    }, typeof children === "function" ? children(this) : children);
   };
 
-  return WebDesignModel;
+  return Model;
 }(React.Component);
 
-_defineProperty(WebDesignModel, "defaultProps", {
+_defineProperty(Model, "defaultProps", {
+  rootId: null,
   idField: "id",
   pidField: "pid",
   axis: AXIS_VERTICAL,
@@ -439,7 +504,7 @@ _defineProperty(WebDesignModel, "defaultProps", {
   onChange: null
 });
 
-WebDesignModel.propTypes = process.env.NODE_ENV !== "production" ? {
+Model.propTypes = process.env.NODE_ENV !== "production" ? {
   idField: propTypes.string,
   pidField: propTypes.string,
   value: propTypes.array,
@@ -456,4 +521,4 @@ WebDesignModel.propTypes = process.env.NODE_ENV !== "production" ? {
   onDragHoverContainer: propTypes.func,
   onDragHoverItem: propTypes.func
 } : {};
-export default WebDesignModel;
+export default Model;

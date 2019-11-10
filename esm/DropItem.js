@@ -90,7 +90,8 @@ function (_React$Component) {
         axis = _this$props.axis,
         _canDrop = _this$props.canDrop,
         _hover = _this$props.hover,
-        _drop = _this$props.drop;
+        _drop = _this$props.drop,
+        accepts = _this$props.accepts;
     var targetDOM = findDOMNode(this);
     var model = this.getModel();
     var DropContainerContext = model.DropContainerContext;
@@ -103,10 +104,14 @@ function (_React$Component) {
         mAxis = _model$props.axis;
     axis = axis || pAxis || mAxis;
     return {
-      accept: model.getScope(),
+      accept: [model.getScope()].concat(accepts),
       canDrop: function canDrop(dragResult, monitor) {
         var dragItem = dragResult.item;
         var ret = model.isTmpItem(item) ? false : !model.isSameItem(item, dragItem);
+
+        if (ret) {
+          ret = !model.contains(dragItem, item);
+        }
 
         if (ret && _canDrop) {
           ret = _canDrop(_extends({}, dragResult, {
@@ -410,11 +415,16 @@ function (_React$Component) {
 
 _defineProperty(DropItem, "contextType", ModelContext);
 
+_defineProperty(DropItem, "defaultProps", {
+  accepts: []
+});
+
 DropItem.propTypes = process.env.NODE_ENV !== "production" ? {
+  item: propTypes.object.isRequired,
   children: propTypes.oneOfType([propTypes.func, propTypes.node]),
   render: propTypes.func,
-  item: propTypes.object.isRequired,
   axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+  accepts: propTypes.array,
   canDrop: propTypes.func,
   hover: propTypes.func,
   canDrag: propTypes.func,

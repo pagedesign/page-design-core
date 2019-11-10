@@ -7,7 +7,7 @@ import {
     DragLayer,
     WidgetItem,
     getEmptyImage,
-    DropArea
+    DropZone
 } from "@/src";
 import fields from "./fields";
 import ItemDragLayer from "./ItemDragLayer";
@@ -175,7 +175,7 @@ export default () => {
 
     return (
         <Provider value={value} commitAction="drop" onChange={handleChange}>
-            <DropArea>
+            <DropZone>
                 <div
                     className="pivot-container-02"
                     style={{
@@ -232,7 +232,7 @@ export default () => {
                         }}
                     </DragLayer>
                 </div>
-            </DropArea>
+            </DropZone>
         </Provider>
     );
 };

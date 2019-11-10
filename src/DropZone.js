@@ -4,7 +4,7 @@ import { useDrop } from "react-dnd";
 import withHooks from "with-component-hooks";
 import ModelContext from "./ModelContext";
 
-class DropArea extends React.Component {
+class DropZone extends React.Component {
     static contextType = ModelContext;
 
     _connectDropTarget = null;
@@ -45,4 +45,4 @@ class DropArea extends React.Component {
     }
 }
 
-export default withHooks(DropArea);
+export default withHooks(DropZone);

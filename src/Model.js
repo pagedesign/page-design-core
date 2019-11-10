@@ -29,7 +29,8 @@ function normalizeItem(item, props) {
     item[idField] =
         item[idField] === undefined ? randomStr(`item_`) : item[idField];
 
-    item[pidField] = item[pidField] === undefined ? null : item[pidField];
+    item[pidField] =
+        item[pidField] === undefined ? props.rootId : item[pidField];
 
     return item;
 }
@@ -45,6 +46,7 @@ class Model extends React.Component {
     }
 
     static defaultProps = {
+        rootId: null,
         idField: "id",
         pidField: "pid",
         axis: AXIS_VERTICAL,
@@ -95,6 +97,18 @@ class Model extends React.Component {
         }
     }
 
+    contains(parentNode, childNode) {
+        const { idField } = this.props;
+
+        if (!childNode) return false;
+
+        const parentId = parentNode[idField];
+        const childId = childNode[idField];
+        const pids = this.getPids(childId);
+
+        return pids.indexOf(parentId) !== -1;
+    }
+
     getChildren(id = null, items = this.state.items) {
         const { pidField } = this.props;
         return items.filter(item => item && item[pidField] === id);
@@ -102,6 +116,18 @@ class Model extends React.Component {
 
     getAllItems() {
         return [...this.state.items];
+    }
+
+    isRootId(id) {
+        const { rootId } = this.props;
+        let isRootId = id == null || rootId === id;
+
+        //id存在但无法找到节点
+        if (!isRootId) {
+            isRootId = !!this.getItem(id);
+        }
+
+        return isRootId;
     }
 
     //获取组件的所有父级ID
@@ -112,14 +138,14 @@ class Model extends React.Component {
 
         if (!node) return pids;
 
-        if (node[pidField] == null) return pids;
+        if (this.isRootId(node.pidField)) return pids;
 
         let currentFieldId = node[pidField];
         let pNode;
         while ((pNode = this.getItem(currentFieldId))) {
             pids.push(pNode[idField]);
             currentFieldId = pNode[pidField];
-            if (currentFieldId == null) break;
+            if (this.isRootId(currentFieldId)) break;
         }
 
         return pids;
@@ -165,6 +191,16 @@ class Model extends React.Component {
         this.onChange(items);
     }
 
+    addItems(items = [], pid = null) {
+        const { pidField } = this.props;
+
+        items = items.map(item => normalizeItem(item, this.props));
+
+        items.forEach(item => (item[pidField] = pid));
+
+        this.onChange([...this.getAllItems(), ...items]);
+    }
+
     addTmpItem(item, pid) {
         item.__tmp__ = true;
         this.addItem(item, pid);
@@ -188,15 +224,15 @@ class Model extends React.Component {
         this.onChange(ret);
     }
 
-    getItemIndex(id, items) {
+    getItemIndex(id, items = this.state.items) {
+        //this.getAllItems()
         const { idField } = this.props;
-        items = items || this.getAllItems();
+        // items = items || this.getAllItems();
         return findIndex(items, item => item[idField] === id);
     }
 
-    getItem(id) {
+    getItem(id, items = this.state.items) {
         const { idField } = this.props;
-        const items = this.getAllItems();
         return find(items, item => item && item[idField] === id);
     }
 
@@ -206,7 +242,6 @@ class Model extends React.Component {
         const { idField, pidField } = this.props;
         const items = this.getAllItems();
         const id = bItem[idField];
-        // const bItem = this.getItem(id);
 
         //判断是否需要移动
         const _idx = this.getItemIndex(id);
@@ -229,7 +264,7 @@ class Model extends React.Component {
         item[pidField] = bItem[pidField];
 
         //插入操作
-        const idx = this.getItemIndex(id, items);
+        const idx = findIndex(items, item => item[idField] === id); //this.getItemIndex(id, items);
         items.splice(idx, 0, item);
 
         this.onChange(items);
@@ -243,7 +278,6 @@ class Model extends React.Component {
         const { idField, pidField } = this.props;
         const items = this.getAllItems();
         const id = prevItem[idField];
-        // const prevItem = this.getItem(id);
 
         //判断是否需要移动
         const _idx = this.getItemIndex(id);
@@ -378,7 +412,6 @@ class Model extends React.Component {
             if (hoverItem) {
                 moveItem();
             } else {
-                // const childs = this.getItems(hoverContainerId);
                 const childs = this.getChildren(hoverContainerId);
                 const isExist = find(childs, item =>
                     this.isSameItem(item, dragItem)
@@ -393,6 +426,26 @@ class Model extends React.Component {
                 }
             }
         }
+    }
+
+    isDragging(id) {
+        const { idField } = this.props;
+        const dragState = DragState.getState();
+        const isDragging = dragState.isDragging;
+
+        if (!isDragging) return false;
+
+        if (id !== undefined) {
+            return dragState.item && dragState.item[idField] === id;
+        }
+
+        return true;
+    }
+
+    getDraggingItem() {
+        const dragState = DragState.getState();
+
+        return dragState.item;
     }
 
     isTmpItem(item) {
@@ -410,7 +463,7 @@ class Model extends React.Component {
 
         return (
             <ModelContext.Provider value={this.getModel()}>
-                {children}
+                {typeof children === "function" ? children(this) : children}
             </ModelContext.Provider>
         );
     }

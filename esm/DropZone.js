@@ -8,12 +8,12 @@ import { useDrop } from "react-dnd";
 import withHooks from "with-component-hooks";
 import ModelContext from "./ModelContext";
 
-var DropArea =
+var DropZone =
 /*#__PURE__*/
 function (_React$Component) {
-  _inheritsLoose(DropArea, _React$Component);
+  _inheritsLoose(DropZone, _React$Component);
 
-  function DropArea() {
+  function DropZone() {
     var _this;
 
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -27,7 +27,7 @@ function (_React$Component) {
     return _this;
   }
 
-  var _proto = DropArea.prototype;
+  var _proto = DropZone.prototype;
 
   _proto.connectDropTarget = function connectDropTarget() {
     var dom = findDOMNode(this);
@@ -63,9 +63,9 @@ function (_React$Component) {
     return this.props.children;
   };
 
-  return DropArea;
+  return DropZone;
 }(React.Component);
 
-_defineProperty(DropArea, "contextType", ModelContext);
+_defineProperty(DropZone, "contextType", ModelContext);
 
-export default withHooks(DropArea);
+export default withHooks(DropZone);

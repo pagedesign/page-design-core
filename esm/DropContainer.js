@@ -68,24 +68,27 @@ function (_React$Component) {
         id = _this$props$id === void 0 ? null : _this$props$id,
         _hover = _this$props.hover,
         _canDrop = _this$props.canDrop,
-        _drop = _this$props.drop;
+        _drop = _this$props.drop,
+        accepts = _this$props.accepts;
     var targetDOM = findDOMNode(this);
     var model = this.getModel(); // const DropContainerContext = model.DropContainerContext;
     // const { isRootContainer } = React.useContext(DropContainerContext);
 
     var commitAction = model.props.commitAction;
     return {
-      accept: model.getScope(),
+      accept: [model.getScope()].concat(accepts),
       canDrop: function canDrop(dragResult, monitor) {
-        if (_canDrop) {
-          return _canDrop(_extends({}, dragResult, {
+        var ret = !model.contains(dragResult.item, model.getItem(id));
+
+        if (ret && _canDrop) {
+          ret = _canDrop(_extends({}, dragResult, {
             component: _this2,
             monitor: monitor,
             model: model
           }));
         }
 
-        return true;
+        return ret;
       },
       hover: function hover(dragResult, monitor) {
         var canDrop = monitor.canDrop();
@@ -237,12 +240,14 @@ function (_React$Component) {
 _defineProperty(DropContainer, "contextType", ModelContext);
 
 _defineProperty(DropContainer, "defaultProps", {
-  id: null
+  id: null,
+  accepts: []
 });
 
 DropContainer.propTypes = process.env.NODE_ENV !== "production" ? {
   children: propTypes.oneOfType([propTypes.func, propTypes.node]),
   axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+  accepts: propTypes.array,
   render: propTypes.func,
   id: propTypes.any,
   canDrop: propTypes.func,

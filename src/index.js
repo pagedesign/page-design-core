@@ -1,11 +1,11 @@
-import { getEmptyImage } from "react-dnd-html5-backend";
+import { getEmptyImage, NativeTypes } from "react-dnd-html5-backend";
 import Provider from "./Provider";
 import DropContainer from "./DropContainer";
 import DropItem from "./DropItem";
 import WidgetItem from "./WidgetItem";
 import DragLayer from "./DragLayer";
 import { useModel } from "./hooks";
-import DropArea from "./DropArea";
+import DropZone from "./DropZone";
 import * as constants from "./constants";
 import ModelContext from "./ModelContext";
 
@@ -19,7 +19,8 @@ export {
     DropItem,
     DragLayer,
     getEmptyImage,
-    DropArea
+    DropZone,
+    NativeTypes
 };
 
 export default {
@@ -32,5 +33,6 @@ export default {
     DropItem,
     DragLayer,
     getEmptyImage,
-    DropArea
+    DropZone,
+    NativeTypes
 };

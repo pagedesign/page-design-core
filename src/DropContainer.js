@@ -23,7 +23,8 @@ class DropContainer extends React.Component {
     static contextType = ModelContext;
 
     static defaultProps = {
-        id: null
+        id: null,
+        accepts: []
     };
 
     _connectDropTarget = null;
@@ -57,7 +58,7 @@ class DropContainer extends React.Component {
     }
 
     getDropOptions() {
-        const { id = null, hover, canDrop, drop } = this.props;
+        const { id = null, hover, canDrop, drop, accepts } = this.props;
         const targetDOM = findDOMNode(this);
 
         const model = this.getModel();
@@ -67,11 +68,13 @@ class DropContainer extends React.Component {
         const commitAction = model.props.commitAction;
 
         return {
-            accept: model.getScope(),
+            accept: [model.getScope(), ...accepts],
 
             canDrop: (dragResult, monitor) => {
-                if (canDrop) {
-                    return canDrop({
+                let ret = !model.contains(dragResult.item, model.getItem(id));
+
+                if (ret && canDrop) {
+                    ret = canDrop({
                         ...dragResult,
                         component: this,
                         monitor,
@@ -79,7 +82,7 @@ class DropContainer extends React.Component {
                     });
                 }
 
-                return true;
+                return ret;
             },
 
             hover: (dragResult, monitor) => {
@@ -240,6 +243,7 @@ class DropContainer extends React.Component {
 DropContainer.propTypes = {
     children: propTypes.oneOfType([propTypes.func, propTypes.node]),
     axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+    accepts: propTypes.array,
     render: propTypes.func,
     id: propTypes.any,
     canDrop: propTypes.func,

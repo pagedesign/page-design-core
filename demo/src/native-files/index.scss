@@ -1,0 +1,28 @@
+.native-files-panel {
+    width: 500px;
+    margin: 0 auto;
+    margin-top: 30px;
+    border: 1px solid gray;
+    h3 {
+        padding: 5px;
+        margin: 0;
+        text-align: center;
+        font-size: 18px;
+        border-bottom: 1px solid gray;
+    }
+    .files-list {
+        min-height: 350px;
+        max-height: 500px;
+        overflow: auto;
+    }
+    .drag-over {
+        background: #f1fff4;
+    }
+
+    .file-item {
+        cursor: pointer;
+        &:not(.is-dragging):hover {
+            background: cornsilk;
+        }
+    }
+}

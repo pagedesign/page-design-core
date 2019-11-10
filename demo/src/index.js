@@ -9,6 +9,7 @@ import DragLayer from "./drag-layer";
 import TodoList from "./todo-list";
 import PivotTable1 from "./pivot-table-01";
 import PivotTable2 from "./pivot-table-02";
+import NativeFiels from "./native-files";
 
 import "./style/index.scss";
 
@@ -26,6 +27,7 @@ export default () => {
                     <NavLink to="/todo-list">TodoList</NavLink>
                     <NavLink to="/pivot-table-01">多维分析</NavLink>
                     <NavLink to="/pivot-table-02">数据透视</NavLink>
+                    <NavLink to="/native-files">本地文件</NavLink>
                 </div>
                 <div className="container">
                     <Switch>
@@ -44,6 +46,7 @@ export default () => {
                         <Route path="/drag-layer" component={DragLayer} />
                         <Route path="/pivot-table-01" component={PivotTable1} />
                         <Route path="/pivot-table-02" component={PivotTable2} />
+                        <Route path="/native-files" component={NativeFiels} />
                     </Switch>
                 </div>
             </div>

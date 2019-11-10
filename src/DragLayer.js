@@ -7,7 +7,7 @@ export default ({ children }) => {
         return {
             ...dragResult,
             monitor,
-            type: monitor.getItemType(),
+            // type: monitor.getItemType(), // 可能造成干扰
             isDragging: monitor.isDragging(),
             initialClientOffset: monitor.getInitialClientOffset(),
             initialSourceClientOffset: monitor.getInitialSourceClientOffset(),

@@ -350,9 +350,9 @@ children 为函数时，`props`属性说明：
 
 ```
 <PageDesignCore.Provider>
-    <DropZone>
-    ...
-    </DropZone>
+    <div>
+        ...
+    </div>
 </PageDesignCore.Provider>
 ```
 

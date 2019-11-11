@@ -3,6 +3,7 @@ import React from "react";
 import { HashRouter, Switch, Route, NavLink, Redirect } from "react-router-dom";
 
 import Basic from "./basic";
+import FormDesigner from "./form-designer";
 import SortList from "./sort-list";
 import SortListAnimation from "./sort-list-animation";
 import DragLayer from "./drag-layer";
@@ -18,7 +19,7 @@ export default () => {
         <HashRouter>
             <div className="app-demo">
                 <div className="left-nav">
-                    <NavLink to="/basic">基本功能</NavLink>
+                    <NavLink to="/form-designer">表单设计器</NavLink>
                     <NavLink to="/sort-list">列表排序</NavLink>
                     <NavLink to="/sort-list-animation">
                         列表排序(动画效果)
@@ -28,14 +29,16 @@ export default () => {
                     <NavLink to="/pivot-table-01">多维分析</NavLink>
                     <NavLink to="/pivot-table-02">数据透视</NavLink>
                     <NavLink to="/native-files">本地文件</NavLink>
+                    <NavLink to="/basic">其他</NavLink>
                 </div>
                 <div className="container">
                     <Switch>
                         <Route
                             path="/"
                             exact
-                            render={() => <Redirect to="/basic" />}
+                            render={() => <Redirect to="/form-designer" />}
                         />
+                        <Route path="/form-designer" component={FormDesigner} />
                         <Route path="/basic" component={Basic} />
                         <Route path="/sort-list" component={SortList} />
                         <Route path="/todo-list" component={TodoList} />

@@ -1,6 +1,7 @@
 import React from "react";
 import propTypes from "prop-types";
 import { last, find, findIndex } from "./utils";
+import DropZone from "./DropZone";
 import ModelContext from "./ModelContext";
 import DragState from "./DragState";
 import {
@@ -104,7 +105,10 @@ class Model extends React.Component {
 
         const parentId = parentNode[idField];
         const childId = childNode[idField];
+
         const pids = this.getPids(childId);
+
+        pids.push(childId);
 
         return pids.indexOf(parentId) !== -1;
     }
@@ -124,7 +128,7 @@ class Model extends React.Component {
 
         //id存在但无法找到节点
         if (!isRootId) {
-            isRootId = !!this.getItem(id);
+            isRootId = !this.getItem(id);
         }
 
         return isRootId;
@@ -132,20 +136,16 @@ class Model extends React.Component {
 
     //获取组件的所有父级ID
     getPids(id) {
-        const { idField, pidField } = this.props;
+        const { pidField } = this.props;
         const pids = [];
         let node = this.getItem(id);
+        while (node) {
+            const pid = node[pidField];
 
-        if (!node) return pids;
+            if (this.isRootId(pid)) break;
 
-        if (this.isRootId(node.pidField)) return pids;
-
-        let currentFieldId = node[pidField];
-        let pNode;
-        while ((pNode = this.getItem(currentFieldId))) {
-            pids.push(pNode[idField]);
-            currentFieldId = pNode[pidField];
-            if (this.isRootId(currentFieldId)) break;
+            pids.push(pid);
+            node = this.getItem(pid);
         }
 
         return pids;
@@ -328,6 +328,9 @@ class Model extends React.Component {
 
         const id = item[idField];
 
+        //自身引用
+        if (id === pid) return false;
+
         /**
          * 局部环路检测
          * 如: {id: A, pid: null}  {id: B, pid: A}
@@ -463,7 +466,9 @@ class Model extends React.Component {
 
         return (
             <ModelContext.Provider value={this.getModel()}>
-                {typeof children === "function" ? children(this) : children}
+                <DropZone>
+                    {typeof children === "function" ? children(this) : children}
+                </DropZone>
             </ModelContext.Provider>
         );
     }

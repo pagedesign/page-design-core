@@ -174,6 +174,7 @@ class DropItem extends React.Component {
             },
 
             drop: (dragResult, monitor) => {
+                DragState.reset();
                 if (drop) {
                     drop({
                         ...dragResult,

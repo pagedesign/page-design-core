@@ -95,7 +95,6 @@ class DropContainer extends React.Component {
                         model
                     });
                 }
-
                 const isStrictlyOver = monitor.isOver({ shallow: true });
                 if (!isStrictlyOver) return;
 
@@ -126,6 +125,8 @@ class DropContainer extends React.Component {
             },
 
             drop: (dragResult, monitor) => {
+                DragState.reset();
+
                 if (drop) {
                     drop({
                         ...dragResult,

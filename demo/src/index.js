@@ -20,14 +20,14 @@ export default () => {
             <div className="app-demo">
                 <div className="left-nav">
                     <NavLink to="/form-designer">表单设计器</NavLink>
+                    <NavLink to="/todo-list">TodoList</NavLink>
+                    <NavLink to="/pivot-table-01">多维分析</NavLink>
+                    <NavLink to="/pivot-table-02">数据透视</NavLink>
                     <NavLink to="/sort-list">列表排序</NavLink>
                     <NavLink to="/sort-list-animation">
                         列表排序(动画效果)
                     </NavLink>
                     <NavLink to="/drag-layer">自定义推拽层</NavLink>
-                    <NavLink to="/todo-list">TodoList</NavLink>
-                    <NavLink to="/pivot-table-01">多维分析</NavLink>
-                    <NavLink to="/pivot-table-02">数据透视</NavLink>
                     <NavLink to="/native-files">本地文件</NavLink>
                     <NavLink to="/basic">其他</NavLink>
                 </div>

@@ -179,6 +179,8 @@ function (_React$Component) {
         model.fireEvent("onDragHover", e);
       },
       drop: function drop(dragResult, monitor) {
+        DragState.reset();
+
         if (_drop) {
           _drop(_extends({}, dragResult, {
             component: _this2,

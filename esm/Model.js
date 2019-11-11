@@ -5,6 +5,7 @@ import _defineProperty from "@babel/runtime/helpers/defineProperty";
 import React from "react";
 import propTypes from "prop-types";
 import { last, find, findIndex } from "./utils";
+import DropZone from "./DropZone";
 import ModelContext from "./ModelContext";
 import DragState from "./DragState";
 import { COMMIT_ACTION_AUTO, COMMIT_ACTION_DROP, DRAG_DIR_UP, DRAG_DIR_LEFT, AXIS_VERTICAL, AXIS_HORIZONTAL, AXIS_BOTH } from "./constants";
@@ -104,6 +105,7 @@ function (_React$Component) {
     var parentId = parentNode[idField];
     var childId = childNode[idField];
     var pids = this.getPids(childId);
+    pids.push(childId);
     return pids.indexOf(parentId) !== -1;
   };
 
@@ -131,7 +133,7 @@ function (_React$Component) {
     var isRootId = id == null || rootId === id; //id存在但无法找到节点
 
     if (!isRootId) {
-      isRootId = !!this.getItem(id);
+      isRootId = !this.getItem(id);
     }
 
     return isRootId;
@@ -139,20 +141,15 @@ function (_React$Component) {
   ;
 
   _proto.getPids = function getPids(id) {
-    var _this$props = this.props,
-        idField = _this$props.idField,
-        pidField = _this$props.pidField;
+    var pidField = this.props.pidField;
     var pids = [];
     var node = this.getItem(id);
-    if (!node) return pids;
-    if (this.isRootId(node.pidField)) return pids;
-    var currentFieldId = node[pidField];
-    var pNode;
 
-    while (pNode = this.getItem(currentFieldId)) {
-      pids.push(pNode[idField]);
-      currentFieldId = pNode[pidField];
-      if (this.isRootId(currentFieldId)) break;
+    while (node) {
+      var pid = node[pidField];
+      if (this.isRootId(pid)) break;
+      pids.push(pid);
+      node = this.getItem(pid);
     }
 
     return pids;
@@ -272,9 +269,9 @@ function (_React$Component) {
 
   _proto.insertBefore = function insertBefore(item, bItem) {
     if (this.isSameItem(item, bItem)) return false;
-    var _this$props2 = this.props,
-        idField = _this$props2.idField,
-        pidField = _this$props2.pidField;
+    var _this$props = this.props,
+        idField = _this$props.idField,
+        pidField = _this$props.pidField;
     var items = this.getAllItems();
     var id = bItem[idField]; //判断是否需要移动
 
@@ -308,9 +305,9 @@ function (_React$Component) {
 
   _proto.insertAfter = function insertAfter(item, prevItem) {
     if (this.isSameItem(item, prevItem)) return false;
-    var _this$props3 = this.props,
-        idField = _this$props3.idField,
-        pidField = _this$props3.pidField;
+    var _this$props2 = this.props,
+        idField = _this$props2.idField,
+        pidField = _this$props2.pidField;
     var items = this.getAllItems();
     var id = prevItem[idField]; //判断是否需要移动
 
@@ -357,11 +354,13 @@ function (_React$Component) {
       pid = null;
     }
 
-    var _this$props4 = this.props,
-        idField = _this$props4.idField,
-        pidField = _this$props4.pidField;
+    var _this$props3 = this.props,
+        idField = _this$props3.idField,
+        pidField = _this$props3.pidField;
     if (item[pidField] === pid) return false;
-    var id = item[idField];
+    var id = item[idField]; //自身引用
+
+    if (id === pid) return false;
     /**
      * 局部环路检测
      * 如: {id: A, pid: null}  {id: B, pid: A}
@@ -489,7 +488,7 @@ function (_React$Component) {
     var children = this.props.children;
     return React.createElement(ModelContext.Provider, {
       value: this.getModel()
-    }, typeof children === "function" ? children(this) : children);
+    }, React.createElement(DropZone, null, typeof children === "function" ? children(this) : children));
   };
 
   return Model;

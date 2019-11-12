@@ -1,4 +1,4 @@
 export default {
-    xtype: "EX_TEXT_FIELD",
+    xtype: "TextField",
     title: "文本"
 };

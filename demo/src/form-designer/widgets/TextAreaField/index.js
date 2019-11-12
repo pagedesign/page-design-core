@@ -1,4 +1,4 @@
 export default {
-    xtype: "TextareaField",
+    xtype: "TextAreaField",
     title: "多行文本"
 };

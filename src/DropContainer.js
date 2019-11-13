@@ -145,7 +145,6 @@ class DropContainer extends React.Component {
                     }
 
                     const { isNew } = DragState.getState();
-                    // const isTmpItem = model.isTmpItem(dragResult.item);
                     const e = {
                         target: id,
                         targetDOM,

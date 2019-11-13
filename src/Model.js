@@ -387,8 +387,6 @@ class Model extends React.Component {
 
         if (!isDragging || !canDrop) return;
 
-        DragState.reset();
-
         const moveItem = () => {
             if (
                 hoverDirection === DRAG_DIR_UP ||

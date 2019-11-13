@@ -193,7 +193,6 @@ class DropItem extends React.Component {
                     }
 
                     const { isNew } = DragState.getState();
-                    // const isTmpItem = model.isTmpItem(dragResult.item);
                     const e = {
                         target: item,
                         targetDOM,

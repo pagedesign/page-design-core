@@ -156,6 +156,8 @@ export default class FormDesigner extends React.Component {
     render() {
         const { items } = this.state;
 
+        return "comming soon...";
+
         return (
             <Provider
                 value={items}

@@ -45,9 +45,9 @@ render(){
 
 影响`DropItem`的`hoverDirection` 计算方式。
 
--   为`vertical`时`hoverDirection`有效值为: `"up" | "bottom" | "none"`
--   为`horizontal`时`hoverDirection`有效值为: `"left" | "right" | "none"`
--   为`both`时`hoverDirection`有效值为: `""up" | "bottom" | left" | "right" | "none"`
+- 为`vertical`时`hoverDirection`有效值为: `"up" | "bottom" | "none"`
+- 为`horizontal`时`hoverDirection`有效值为: `"left" | "right" | "none"`
+- 为`both`时`hoverDirection`有效值为: `""up" | "bottom" | left" | "right" | "none"`
 
 示例:
 
@@ -63,8 +63,8 @@ render(){
 
 区别：
 
--   `auto`：拖拽过程中实时改变拖拽目标的位置
--   `drop`：拖拽过程中不改变位置，释放目标后改变拖拽目标位置
+- `auto`：拖拽过程中实时改变拖拽目标的位置
+- `drop`：拖拽过程中不改变位置，释放目标后改变拖拽目标位置
 
 > 如果设置为`drop`时，通常需要配合`hoverDirection`来实现拖拽的视觉效果
 
@@ -92,12 +92,12 @@ render(){
 
 开始拖拽时触发
 
--   `DragStartEvent.type` 拖拽模式：`add`（新增模式，`WidgetItem`触发） 或 `sort` （排序模式，`DropItem`触发）
--   `DragStartEvent.item` 拖拽项目
--   `DragStartEvent.dom` 拖拽项目 DOM 元素
--   `DragStartEvent.component` 拖拽项目对象
--   `DragStartEvent.monitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-source-monitor
--   `DragStartEvent.model` 数据模型对象 `Model`
+- `DragStartEvent.type` 拖拽模式：`add`（新增模式，`WidgetItem`触发） 或 `sort` （排序模式，`DropItem`触发）
+- `DragStartEvent.item` 拖拽项目
+- `DragStartEvent.dom` 拖拽项目 DOM 元素
+- `DragStartEvent.component` 拖拽项目对象
+- `DragStartEvent.monitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-source-monitor
+- `DragStartEvent.model` 数据模型对象 `Model`
 
 ### onDragEnd
 
@@ -115,8 +115,8 @@ render(){
 
 属性同`onDragStart`，另外两个属性：
 
--   `DropEvent.target: Item` 释放目标项目
--   `DropEvent.targetDOM` 释放目标 DOM 元素
+- `DropEvent.target: Item` 释放目标项目
+- `DropEvent.targetDOM` 释放目标 DOM 元素
 
 ### onDropToContainer
 
@@ -126,8 +126,8 @@ render(){
 
 属性同`onDragStart`，另外两个属性：
 
--   `DropEvent.target: string | number | null` 释放目标项目
--   `DropEvent.targetDOM: HTMLElement` 释放目标 DOM 元素
+- `DropEvent.target: string | number | null` 释放目标项目
+- `DropEvent.targetDOM: HTMLElement` 释放目标 DOM 元素
 
 ### onDrop
 
@@ -137,8 +137,8 @@ render(){
 
 属性同`onDragStart`，另外两个属性：
 
--   `DropEvent.target: Item | string | number | null` 释放目标项目
--   `DropEvent.targetDOM` 释放目标 DOM 元素
+- `DropEvent.target: Item | string | number | null` 释放目标项目
+- `DropEvent.targetDOM` 释放目标 DOM 元素
 
 > 注：当释放目标为`DropContainer`时`DropEvent.target`的类型为`string | number | null`，如果释放目标为`DropItem`是`DropEvent.target`的类型为`Item`
 >
@@ -180,13 +180,13 @@ render(){
 
 children 为函数时，`props`参数说明：
 
--   `props.monitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
--   `props.isOver: boolean` 拖拽项目是否经过当前组件，效果同`monitor.isOver()`
--   `props.isStrictlyOver: boolean` 拖拽项目是否经过当前组件（不进行冒泡），效果同`monitor.isOver({ shallow: true })`
--   `props.model` 数据模型对象 `Model`
--   `props.connectDropTarget: (dom) => void` 拖拽释放关联，使指定 DOM 元素具备接收`drop`能力。 eg: `connectDropTarget(dom)`
--   `props.items: Item[]` 当前容器的子项目，效果类似`model.getChildren(id)`，但不建议通过`model`的方式自行获取
--   `props.canDrop: boolean` 当前容器是否能接收目标 `boolean`
+- `props.monitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
+- `props.isOver: boolean` 拖拽项目是否经过当前组件，效果同`monitor.isOver()`
+- `props.isStrictlyOver: boolean` 拖拽项目是否经过当前组件（不进行冒泡），效果同`monitor.isOver({ shallow: true })`
+- `props.model` 数据模型对象 `Model`
+- `props.connectDropTarget: (dom) => void` 拖拽释放关联，使指定 DOM 元素具备接收`drop`能力。 eg: `connectDropTarget(dom)`
+- `props.items: Item[]` 当前容器的子项目，效果类似`model.getChildren(id)`，但不建议通过`model`的方式自行获取
+- `props.canDrop: boolean` 当前容器是否能接收目标 `boolean`
 
 ### render
 
@@ -204,11 +204,11 @@ children 为函数时，`props`参数说明：
 
 限制`DropContainer`是否能接收拖拽项目
 
--   `CanDropOptions.item` 拖拽项目
--   `CanDropOptions.dom` 拖拽项目 DOM 元素
--   `CanDropOptions.monitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
--   `CanDropOptions.model` 数据模型对象 `Model`
--   `CanDropOptions.component` 当前`DropContainer`对象
+- `CanDropOptions.item` 拖拽项目
+- `CanDropOptions.dom` 拖拽项目 DOM 元素
+- `CanDropOptions.monitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
+- `CanDropOptions.model` 数据模型对象 `Model`
+- `CanDropOptions.component` 当前`DropContainer`对象
 
 > 注：`canDrop` 和 `connectDropTarget` 实现效果类似
 
@@ -240,19 +240,19 @@ children 为函数时，`props`参数说明：
 
 children 为函数时，`props`属性说明：
 
--   `item:Item` 项目对象
--   `isDragging: boolean` 当前组件是否处于拖拽中
--   `isOver: boolean` 推拽中的项目是否正经过当前组件，可能是冒泡触发，效果同`monitor.isOver()`
--   `isStrictlyOver: boolean` 推拽中的项目是否正经过当前组件，效果同`monitor.isOver({ shallow: true })`
--   `canDrop: boolean` 当前组件是否能接收拖拽目标目标，只有使用了`connectDropTarget`才可能为`true`
--   `hoverDirection: "up" | "down" | "left" | "right" | "none"` 拖拽项目经过当前组件所在的位置，通过对角线进行分割的四块区域。受`axis`影响
--   `isTmp: boolean` 拖拽节点处于未提交状态，通常在拖拽`WidgetItem`时有效，如果不是自行操作 model，那么当前字段基本都为`false`
--   `model: Model` 数据模型对象
--   `monitor: DragSourceMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
--   `connectDropTarget:dom => void` 使指定 DOM 元素具备接收`drop`能力。
--   `connectDragTarget:dom => void` 使指定 DOM 元素具备拖拽`drag`的能力。
--   `connectDragPreview:dom => void` 使用指定的 DOM 元素作为 `drag`的预览效果，如果不设置则使用系统默认，通常情况不需要设置，但下在配合`DragLayer`下一般使用一个透明图片作为占位符，例如: `connectDragPreview(getEmptyImage())`。
--   `connectDragAndDrop:dom => void` 使指定 DOM 元素具备 `drag` 和 `drop` 能力。
+- `item:Item` 项目对象
+- `isDragging: boolean` 当前组件是否处于拖拽中
+- `isOver: boolean` 推拽中的项目是否正经过当前组件，可能是冒泡触发，效果同`monitor.isOver()`
+- `isStrictlyOver: boolean` 推拽中的项目是否正经过当前组件，效果同`monitor.isOver({ shallow: true })`
+- `canDrop: boolean` 当前组件是否能接收拖拽目标目标，只有使用了`connectDropTarget`才可能为`true`
+- `hoverDirection: "up" | "down" | "left" | "right" | "none"` 拖拽项目经过当前组件所在的位置，通过对角线进行分割的四块区域。受`axis`影响
+- `isTmp: boolean` 拖拽节点处于未提交状态，通常在拖拽`WidgetItem`时有效，如果不是自行操作 model，那么当前字段基本都为`false`
+- `model: Model` 数据模型对象
+- `monitor: DragSourceMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
+- `connectDropTarget:dom => void` 使指定 DOM 元素具备接收`drop`能力。
+- `connectDragSource:dom => void` 使指定 DOM 元素具备拖拽`drag`的能力。
+- `connectDragPreview:dom => void` 使用指定的 DOM 元素作为 `drag`的预览效果，如果不设置则使用系统默认，通常情况不需要设置，但下在配合`DragLayer`下一般使用一个透明图片作为占位符，例如: `connectDragPreview(getEmptyImage())`。
+- `connectDragAndDrop:dom => void` 使指定 DOM 元素具备 `drag` 和 `drop` 能力。
 
 ### render
 
@@ -276,9 +276,9 @@ children 为函数时，`props`属性说明：
 
 `DropItem`是否能能拖拽，`props`属性如下：
 
--   `monitor:DragSourceMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-source-monitor
--   `model: Model` 数据模型对象
--   `component: DropItem` 当前`DropItem`对象
+- `monitor:DragSourceMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-source-monitor
+- `model: Model` 数据模型对象
+- `component: DropItem` 当前`DropItem`对象
 
 ### beginDrag
 
@@ -306,11 +306,11 @@ children 为函数时，`props`属性说明：
 
 children 为函数时，`props`属性说明：
 
--   `isDragging: boolean` 当前组件是否处于拖拽中
--   `model: Model` 数据模型对象
--   `monitor: DragSourceMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
--   `connectDragTarget:dom => void` 使指定 DOM 元素具备拖拽`drag`的能力。
--   `connectDragPreview:dom => void` 使用指定的 DOM 元素作为 `drag`的预览效果，如果不设置则使用系统默认，通常情况不需要设置，但下在配合`DragLayer`下一般使用一个透明图片作为占位符，例如: `connectDragPreview(getEmptyImage())`。
+- `isDragging: boolean` 当前组件是否处于拖拽中
+- `model: Model` 数据模型对象
+- `monitor: DragSourceMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
+- `connectDragSource:dom => void` 使指定 DOM 元素具备拖拽`drag`的能力。
+- `connectDragPreview:dom => void` 使用指定的 DOM 元素作为 `drag`的预览效果，如果不设置则使用系统默认，通常情况不需要设置，但下在配合`DragLayer`下一般使用一个透明图片作为占位符，例如: `connectDragPreview(getEmptyImage())`。
 
 ### render
 
@@ -334,15 +334,15 @@ children 为函数时，`props`属性说明：
 
 children 为函数时，`props`属性说明：
 
--   `item: Item | null` 如果不为`null`的情况，item 组件处于拖拽中
--   `dom: HTMLElement | null` 如果不为`null`的情况，为拖拽中组件的 DOM 元素
--   `isDragging: boolean` 组件是否处于拖拽中。
--   `monitor: DragLayerMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
--   `initialClientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
--   `initialSourceClientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
--   `clientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
--   `differenceFromInitialOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
--   `sourceClientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
+- `item: Item | null` 如果不为`null`的情况，item 组件处于拖拽中
+- `dom: HTMLElement | null` 如果不为`null`的情况，为拖拽中组件的 DOM 元素
+- `isDragging: boolean` 组件是否处于拖拽中。
+- `monitor: DragLayerMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
+- `initialClientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
+- `initialSourceClientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
+- `clientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
+- `differenceFromInitialOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
+- `sourceClientOffset: Point | null` 参考：http://react-dnd.github.io/react-dnd/docs/api/drag-layer-monitor
 
 ## DropZone
 
@@ -427,43 +427,43 @@ type CommitAction = "auto" | "drop";
 type HoverDirection = "up" | "down" | "left" | "right" | "none";
 
 interface Point {
-    x: number;
-    y: number;
+  x: number;
+  y: number;
 }
 
 interface Item {
-    id: string | number;
-    pid: string | number | null;
-    [propName: string]: any;
+  id: string | number;
+  pid: string | number | null;
+  [propName: string]: any;
 }
 
 interface DragAndDropEvent {
-    item: Item;
-    dom: HTMLElement;
-    component: any;
-    monitor: DragSourceMonitor | DropTargetMonitor;
-    model: Model;
+  item: Item;
+  dom: HTMLElement;
+  component: any;
+  monitor: DragSourceMonitor | DropTargetMonitor;
+  model: Model;
 }
 
 interface DragStartEvent extends DragAndDropEvent {
-    type: EventType;
+  type: EventType;
 }
 
 interface DragEndEvent extends DragStartEvent {}
 
 interface DropToItemEvent extends DragStartEvent {
-    target: Item;
-    targetDOM: HTMLElement;
+  target: Item;
+  targetDOM: HTMLElement;
 }
 
 interface DropToContainerEvent extends DragStartEvent {
-    target: string | number | null;
-    targetDOM: HTMLElement;
+  target: string | number | null;
+  targetDOM: HTMLElement;
 }
 
 interface DropEvent extends DragStartEvent {
-    target: Item | string | number | null;
-    targetDOM: HTMLElement;
+  target: Item | string | number | null;
+  targetDOM: HTMLElement;
 }
 
 interface DragHoverItemEvent extends DropToItemEvent {}
@@ -471,41 +471,41 @@ interface DragHoverContainerEvent extends DropToContainerEvent {}
 interface DragHoverEvent extends DropEvent {}
 
 interface ProviderProps {
-    backend: object;
-    idField: string | "id";
-    pidField: string | "pid";
-    value?: Item[];
-    defaultValue?: Item[];
-    axis?: Axis;
-    commitAction?: CommitAction;
-    children?: React.ReactNode;
-    onChange?: (items: Item[]) => void;
-    onDragStart?: (e: DragStartEvent) => void;
-    onDragEnd?: (e: DragEndEvent) => void;
-    onDropToItem?: (e: DropToItemEvent) => void;
-    onDropToContainer?: (e: DropToContainerEvent) => void;
-    onDrop?: (e: DropEvent) => void;
-    onDragHoverContainer?: (e: DragHoverContainerEvent) => void;
-    onDragHoverItem?: (e: DragHoverItemEvent) => void;
-    onDragHover?: (e: DragHoverEvent) => void;
+  backend: object;
+  idField: string | "id";
+  pidField: string | "pid";
+  value?: Item[];
+  defaultValue?: Item[];
+  axis?: Axis;
+  commitAction?: CommitAction;
+  children?: React.ReactNode;
+  onChange?: (items: Item[]) => void;
+  onDragStart?: (e: DragStartEvent) => void;
+  onDragEnd?: (e: DragEndEvent) => void;
+  onDropToItem?: (e: DropToItemEvent) => void;
+  onDropToContainer?: (e: DropToContainerEvent) => void;
+  onDrop?: (e: DropEvent) => void;
+  onDragHoverContainer?: (e: DragHoverContainerEvent) => void;
+  onDragHoverItem?: (e: DragHoverItemEvent) => void;
+  onDragHover?: (e: DragHoverEvent) => void;
 }
 
 type ModelProps = ProviderProps;
 
 interface ProviderState {
-    readonly scope: string;
-    items: Item[];
+  readonly scope: string;
+  items: Item[];
 }
 
 interface CanDragOptions {
-    monitor: DragSourceMonitor;
-    model: Model;
-    component: WidgetItem;
+  monitor: DragSourceMonitor;
+  model: Model;
+  component: WidgetItem;
 }
 
 interface CanDropOptions extends CanDragOptions {
-    item: Item;
-    dom: HTMLElement;
+  item: Item;
+  dom: HTMLElement;
 }
 
 interface DragHoverOptions extends CanDropOptions {}
@@ -517,122 +517,122 @@ interface EndDragOptions extends BeginDragOptions {}
 interface DropOptions extends CanDropOptions {}
 
 interface WidgetItemRenderProps {
-    monitor: DragSourceMonitor;
-    isDragging: boolean;
-    model: Model;
-    connectDragTarget: ConnectDragSource;
-    connectDragPreview: ConnectDragPreview;
+  monitor: DragSourceMonitor;
+  isDragging: boolean;
+  model: Model;
+  connectDragSource: ConnectDragSource;
+  connectDragPreview: ConnectDragPreview;
 }
 
 type WidgetItemRender = (props: WidgetItemRenderProps) => JSX.Element;
 
 interface WidgetItemProps {
-    getInstance: () => Item;
-    children?: React.ReactNode | WidgetItemRender;
-    render?: WidgetItemRender;
-    canDrag?: (props: CanDragOptions) => boolean;
-    beginDrag?: (props: BeginDragOptions) => void;
-    endDrag?: (props: EndDragOptions) => void;
+  getInstance: () => Item;
+  children?: React.ReactNode | WidgetItemRender;
+  render?: WidgetItemRender;
+  canDrag?: (props: CanDragOptions) => boolean;
+  beginDrag?: (props: BeginDragOptions) => void;
+  endDrag?: (props: EndDragOptions) => void;
 }
 
 interface DropItemRenderProps {
-    monitor: DropTargetMonitor;
-    hoverDirection: HoverDirection;
-    isOver: boolean;
-    isStrictlyOver: boolean;
-    canDrop: boolean;
-    isDragging: boolean;
-    item: Item;
-    isTmp: boolean;
-    model: Model;
-    connectDropTarget: ConnectDropTarget;
-    connectDragTarget: ConnectDragSource;
-    connectDragAndDrop: (dom: HTMLElement) => void;
-    connectDragPreview: ConnectDragPreview;
+  monitor: DropTargetMonitor;
+  hoverDirection: HoverDirection;
+  isOver: boolean;
+  isStrictlyOver: boolean;
+  canDrop: boolean;
+  isDragging: boolean;
+  item: Item;
+  isTmp: boolean;
+  model: Model;
+  connectDropTarget: ConnectDropTarget;
+  connectDragSource: ConnectDragSource;
+  connectDragAndDrop: (dom: HTMLElement) => void;
+  connectDragPreview: ConnectDragPreview;
 }
 
 type DropItemRender = (props: DropItemRenderProps) => JSX.Element;
 
 interface DropItemProps {
-    item: Item;
-    axis?: Axis;
-    children?: React.ReactNode | DropItemRender;
-    render?: DropItemRender;
-    canDrop?: (props: CanDropOptions) => boolean;
-    hover?: (props: DragHoverOptions) => void;
-    canDrag?: (props: CanDragOptions) => void;
-    beginDrag?: (props: BeginDragOptions) => void;
-    endDrag?: (props: EndDragOptions) => void;
+  item: Item;
+  axis?: Axis;
+  children?: React.ReactNode | DropItemRender;
+  render?: DropItemRender;
+  canDrop?: (props: CanDropOptions) => boolean;
+  hover?: (props: DragHoverOptions) => void;
+  canDrag?: (props: CanDragOptions) => void;
+  beginDrag?: (props: BeginDragOptions) => void;
+  endDrag?: (props: EndDragOptions) => void;
 }
 
 interface DropContainerRenderProps {
-    monitor: DropTargetMonitor;
-    canDrop: boolean;
-    isOver: boolean;
-    isStrictlyOver: boolean;
-    model: Model;
-    connectDropTarget: ConnectDropTarget;
-    items: Items[];
-    [propName: string]: any;
+  monitor: DropTargetMonitor;
+  canDrop: boolean;
+  isOver: boolean;
+  isStrictlyOver: boolean;
+  model: Model;
+  connectDropTarget: ConnectDropTarget;
+  items: Items[];
+  [propName: string]: any;
 }
 
 type DropContainerRender = (props: DropContainerRenderProps) => JSX.Element;
 
 interface DropContainerProps {
-    id: any;
-    children?: React.ReactNode | DropContainerRender;
-    axis?: Axis;
-    render?: DropContainerRender;
-    canDrop?: (props: CanDropOptions) => boolean;
-    hover?: (props: DragHoverOptions) => void;
-    drop?: (props: DropOptions) => void;
+  id: any;
+  children?: React.ReactNode | DropContainerRender;
+  axis?: Axis;
+  render?: DropContainerRender;
+  canDrop?: (props: CanDropOptions) => boolean;
+  hover?: (props: DragHoverOptions) => void;
+  drop?: (props: DropOptions) => void;
 }
 
 interface DragLayerRenderProps {
-    item: Item | null;
-    dom: HTMLElement | null;
-    monitor: DragLayerMonitor;
-    type: any;
-    isDragging: boolean;
-    initialClientOffset: Point | null;
-    initialSourceClientOffset: Point | null;
-    clientOffset: Point | null;
-    differenceFromInitialOffset: Point | null;
-    sourceClientOffset: Point | null;
+  item: Item | null;
+  dom: HTMLElement | null;
+  monitor: DragLayerMonitor;
+  type: any;
+  isDragging: boolean;
+  initialClientOffset: Point | null;
+  initialSourceClientOffset: Point | null;
+  clientOffset: Point | null;
+  differenceFromInitialOffset: Point | null;
+  sourceClientOffset: Point | null;
 }
 
 type DragLayerRender = (props: DragLayerRenderProps) => JSX.Element;
 
 interface DragLayerProps {
-    children: React.ReactNode | DragLayerRender;
+  children: React.ReactNode | DragLayerRender;
 }
 
 export class Provider extends React.Component<ProviderProps, ProviderState> {
-    getModel(): Model;
-    render(): JSX.Element;
+  getModel(): Model;
+  render(): JSX.Element;
 }
 
 export class Model extends React.Component<ModelProps, {}> {
-    render(): JSX.Element;
+  render(): JSX.Element;
 }
 
 export class WidgetItem extends React.Component<WidgetItemProps, {}> {
-    render(): JSX.Element;
+  render(): JSX.Element;
 }
 
 export class DropItem extends React.Component<DropItemProps, {}> {
-    render(): JSX.Element;
+  render(): JSX.Element;
 }
 
 export class DropContainer extends React.Component<DropContainerProps, {}> {
-    render(): JSX.Element;
+  render(): JSX.Element;
 }
 
 export class DragLayer extends React.Component<DragLayerProps, {}> {
-    render(): JSX.Element;
+  render(): JSX.Element;
 }
 
 export class DropZone extends React.Component<{}, {}> {
-    render(): JSX.Element;
+  render(): JSX.Element;
 }
 ```

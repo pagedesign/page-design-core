@@ -18,27 +18,27 @@ class WidgetItem extends React.Component {
 
     _connectDragDOM = null;
 
-    _connectDragTarget = null;
+    _connectDragSource = null;
     _connectDragPreview = null;
 
     componentDidUpdate() {
-        this.connectDragTarget();
+        this.connectDragSource();
     }
 
     componentDidMount() {
-        this.connectDragTarget();
+        this.connectDragSource();
     }
 
     getModel() {
         return this.context.model;
     }
 
-    connectDragTarget() {
+    connectDragSource() {
         const children = this.props.children;
 
         if (!children || typeof children === "function") return;
 
-        this._connectDragTarget(findDOMNode(this));
+        this._connectDragSource(findDOMNode(this));
     }
 
     componentWillUnmount() {
@@ -62,7 +62,7 @@ class WidgetItem extends React.Component {
             }, 0);
         }
 
-        this._connectDragTarget(null);
+        this._connectDragSource(null);
         this._connectDragPreview(null);
     }
 
@@ -171,23 +171,23 @@ class WidgetItem extends React.Component {
         const { children, render } = this.props;
         const model = this.getModel();
 
-        const [collectProps, connectDragTarget, connectDragPreview] = useDrag(
+        const [collectProps, connectDragSource, connectDragPreview] = useDrag(
             this.getDragOptions()
         );
 
-        this._connectDragTarget = React.useCallback(
+        this._connectDragSource = React.useCallback(
             dom => {
                 this._connectDragDOM = dom;
-                connectDragTarget(dom);
+                connectDragSource(dom);
             },
-            [connectDragTarget]
+            [connectDragSource]
         );
         this._connectDragPreview = connectDragPreview;
 
         const props = {
             ...collectProps,
             model,
-            connectDragTarget,
+            connectDragSource,
             connectDragPreview
         };
 

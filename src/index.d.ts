@@ -112,7 +112,7 @@ declare namespace PageDesignCore {
         monitor: DragSourceMonitor;
         isDragging: boolean;
         model: Model;
-        connectDragTarget: ConnectDragSource;
+        connectDragSource: ConnectDragSource;
         connectDragPreview: ConnectDragPreview;
     }
 
@@ -138,7 +138,7 @@ declare namespace PageDesignCore {
         isTmp: boolean;
         model: Model;
         connectDropTarget: ConnectDropTarget;
-        connectDragTarget: ConnectDragSource;
+        connectDragSource: ConnectDragSource;
         connectDragAndDrop: (dom: HTMLElement) => void;
         connectDragPreview: ConnectDragPreview;
     }

@@ -15,7 +15,7 @@ import {
     COMMIT_ACTION_AUTO,
     AXIS_VERTICAL,
     AXIS_HORIZONTAL,
-    AXIS_BOTH
+    AXIS_BOTH,
 } from "./constants";
 import ModelContext from "./ModelContext";
 import { isNodeInDocument, getHoverDirection } from "./utils";
@@ -26,7 +26,7 @@ class DropItem extends React.Component {
     static contextType = ModelContext;
 
     static defaultProps = {
-        accepts: []
+        accepts: [],
     };
 
     _lastHoverDirection = DRAG_DIR_NONE;
@@ -103,7 +103,7 @@ class DropItem extends React.Component {
                         ...dragResult,
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
 
@@ -117,7 +117,7 @@ class DropItem extends React.Component {
                         ...dragResult,
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
 
@@ -138,7 +138,7 @@ class DropItem extends React.Component {
                     canDrop,
                     hoverContainerId: undefined,
                     hoverItem: item,
-                    hoverDirection: currentDirection
+                    hoverDirection: currentDirection,
                 });
 
                 if (canDrop) {
@@ -166,7 +166,7 @@ class DropItem extends React.Component {
                     monitor,
                     component: this,
                     model,
-                    ...dragResult
+                    ...dragResult,
                 };
 
                 model.fireEvent("onDragHoverItem", e);
@@ -174,13 +174,14 @@ class DropItem extends React.Component {
             },
 
             drop: (dragResult, monitor) => {
+                const dragState = DragState.getState();
                 DragState.reset();
                 if (drop) {
                     drop({
                         ...dragResult,
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
 
@@ -188,7 +189,7 @@ class DropItem extends React.Component {
                     if (commitAction === COMMIT_ACTION_AUTO) {
                         model.commitItem(dragResult.item);
                     } else if (commitAction === COMMIT_ACTION_DROP) {
-                        model.commitDragStateItem();
+                        model.commitDragStateItem(dragState);
                     }
 
                     const { isNew } = DragState.getState();
@@ -200,7 +201,7 @@ class DropItem extends React.Component {
                         monitor,
                         component: this,
                         model,
-                        ...dragResult
+                        ...dragResult,
                     };
                     model.fireEvent("onDropToItem", e);
                     model.fireEvent("onDrop", e);
@@ -213,9 +214,9 @@ class DropItem extends React.Component {
                     hoverDirection: DRAG_DIR_NONE,
                     isOver: monitor.isOver(),
                     isStrictlyOver: monitor.isOver({ shallow: true }),
-                    canDrop: model.isTmpItem(item) ? false : monitor.canDrop()
+                    canDrop: model.isTmpItem(item) ? false : monitor.canDrop(),
                 };
-            }
+            },
         };
     }
 
@@ -225,7 +226,7 @@ class DropItem extends React.Component {
 
         return {
             item: {
-                type: model.getScope()
+                type: model.getScope(),
             },
 
             canDrag: monitor => {
@@ -233,7 +234,7 @@ class DropItem extends React.Component {
                     return canDrag({
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
                 return true;
@@ -249,7 +250,7 @@ class DropItem extends React.Component {
                         dom,
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
 
@@ -258,7 +259,7 @@ class DropItem extends React.Component {
                     isNew: false,
                     dragDOMIsRemove: false,
                     isDragging: true,
-                    dragDOM
+                    dragDOM,
                 });
 
                 model.fireEvent("onDragStart", {
@@ -267,12 +268,12 @@ class DropItem extends React.Component {
                     type: EVENT_TYPE_SORT,
                     model,
                     monitor,
-                    component: this
+                    component: this,
                 });
 
                 return {
                     item,
-                    dom
+                    dom,
                 };
             },
 
@@ -288,7 +289,7 @@ class DropItem extends React.Component {
                         ...dragResult,
                         model,
                         monitor,
-                        component: this
+                        component: this,
                     });
                 }
 
@@ -297,7 +298,7 @@ class DropItem extends React.Component {
                     type: EVENT_TYPE_SORT,
                     model,
                     monitor,
-                    component: this
+                    component: this,
                 });
             },
 
@@ -307,16 +308,16 @@ class DropItem extends React.Component {
                 return {
                     // monitor
                     isDragging:
-                        dragResult && model.isSameItem(dragResult.item, item)
+                        dragResult && model.isSameItem(dragResult.item, item),
                 };
-            }
+            },
         };
     }
 
     _connectDragDOM = null;
 
     _connectDropTarget = null;
-    _connectDragTarget = null;
+    _connectDragSource = null;
     _connectDragPreview = null;
 
     componentDidUpdate() {
@@ -335,7 +336,7 @@ class DropItem extends React.Component {
         const dom = findDOMNode(this);
 
         this._connectDropTarget(dom);
-        this._connectDragTarget(dom);
+        this._connectDragSource(dom);
     }
 
     componentWillUnmount() {
@@ -344,7 +345,7 @@ class DropItem extends React.Component {
         const dragState = DragState.getState();
         if (dragState.isDragging && dragDOM && dragState.dragDOM === dragDOM) {
             DragState.setState({
-                dragDOMIsRemove: true
+                dragDOMIsRemove: true,
             });
 
             setTimeout(() => {
@@ -360,7 +361,7 @@ class DropItem extends React.Component {
         }
 
         this._connectDropTarget(null);
-        this._connectDragTarget(null);
+        this._connectDragSource(null);
         this._connectDragPreview(null);
     }
 
@@ -374,23 +375,23 @@ class DropItem extends React.Component {
 
         const [
             collectedDragProps,
-            connectDragTarget,
-            connectDragPreview
+            connectDragSource,
+            connectDragPreview,
         ] = useDrag(this.getDragOptions());
 
         this._connectDropTarget = connectDropTarget;
-        this._connectDragTarget = React.useCallback(
+        this._connectDragSource = React.useCallback(
             dom => {
                 this._connectDragDOM = dom;
-                connectDragTarget(dom);
+                connectDragSource(dom);
             },
-            [connectDragTarget]
+            [connectDragSource]
         );
         this._connectDragPreview = connectDragPreview;
 
         const connectDragAndDrop = React.useCallback(dom => {
             this._connectDropTarget(dom);
-            this._connectDragTarget(dom);
+            this._connectDragSource(dom);
         }, []);
 
         const props = {
@@ -400,9 +401,9 @@ class DropItem extends React.Component {
             isTmp: model.isTmpItem(item),
             model,
             connectDropTarget,
-            connectDragTarget,
+            connectDragSource,
             connectDragAndDrop,
-            connectDragPreview
+            connectDragPreview,
         };
 
         const { isStrictlyOver, isDragging, canDrop } = props;
@@ -432,7 +433,7 @@ DropItem.propTypes = {
     hover: propTypes.func,
     canDrag: propTypes.func,
     beginDrag: propTypes.func,
-    endDrag: propTypes.func
+    endDrag: propTypes.func,
 };
 
 export default withHooks(DropItem);

@@ -89,9 +89,9 @@ export default function App() {
                                     index: idx++
                                 })}
                             >
-                                {({ connectDragTarget }) => (
+                                {({ connectDragSource }) => (
                                     <div
-                                        ref={connectDragTarget}
+                                        ref={connectDragSource}
                                         style={{
                                             height: 32,
                                             lineHeight: `32px`,

@@ -14,7 +14,7 @@ import {
     COMMIT_ACTION_AUTO,
     AXIS_VERTICAL,
     AXIS_HORIZONTAL,
-    AXIS_BOTH
+    AXIS_BOTH,
 } from "./constants";
 import ModelContext from "./ModelContext";
 import DragState from "./DragState";
@@ -24,7 +24,7 @@ class DropContainer extends React.Component {
 
     static defaultProps = {
         id: null,
-        accepts: []
+        accepts: [],
     };
 
     _connectDropTarget = null;
@@ -78,7 +78,7 @@ class DropContainer extends React.Component {
                         ...dragResult,
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
 
@@ -92,7 +92,7 @@ class DropContainer extends React.Component {
                         ...dragResult,
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
                 const isStrictlyOver = monitor.isOver({ shallow: true });
@@ -102,7 +102,7 @@ class DropContainer extends React.Component {
                     canDrop: monitor.canDrop(),
                     hoverContainerId: id,
                     hoverItem: undefined,
-                    hoverDirection: DRAG_DIR_NONE
+                    hoverDirection: DRAG_DIR_NONE,
                 });
 
                 if (canDrop) {
@@ -117,7 +117,7 @@ class DropContainer extends React.Component {
                     monitor,
                     component: this,
                     model,
-                    ...dragResult
+                    ...dragResult,
                 };
 
                 model.fireEvent("onDragHoverContainer", e);
@@ -125,6 +125,7 @@ class DropContainer extends React.Component {
             },
 
             drop: (dragResult, monitor) => {
+                const dragState = DragState.getState();
                 DragState.reset();
 
                 if (drop) {
@@ -132,33 +133,15 @@ class DropContainer extends React.Component {
                         ...dragResult,
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
-
-                // //在根节点统一commit时会出现问题，当根节点canDrop返回false时导致无法提交
-                // if (isRootContainer) {
-                //     const isTmpItem = model.isTmpItem(dragResult.item);
-
-                //     model.fireEvent("onDrop", {
-                //         target: id,
-                //         targetDOM,
-                //         type: isTmpItem ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
-                //         ...dragResult
-                //     });
-
-                //     if (commitAction === COMMIT_ACTION_AUTO) {
-                //         model.commitItem(dragResult.item);
-                //     } else if (commitAction === COMMIT_ACTION_DROP) {
-                //         model.commitDragStateItem();
-                //     }
-                // }
 
                 if (!monitor.didDrop()) {
                     if (commitAction === COMMIT_ACTION_AUTO) {
                         model.commitItem(dragResult.item);
                     } else if (commitAction === COMMIT_ACTION_DROP) {
-                        model.commitDragStateItem();
+                        model.commitDragStateItem(dragState);
                     }
 
                     const { isNew } = DragState.getState();
@@ -170,7 +153,7 @@ class DropContainer extends React.Component {
                         monitor,
                         component: this,
                         model,
-                        ...dragResult
+                        ...dragResult,
                     };
                     model.fireEvent("onDropToContainer", e);
                     model.fireEvent("onDrop", e);
@@ -182,9 +165,9 @@ class DropContainer extends React.Component {
                     monitor,
                     canDrop: monitor.canDrop(),
                     isOver: monitor.isOver(),
-                    isStrictlyOver: monitor.isOver({ shallow: true })
+                    isStrictlyOver: monitor.isOver({ shallow: true }),
                 };
-            }
+            },
         };
     }
 
@@ -217,7 +200,7 @@ class DropContainer extends React.Component {
             ...collectedProps,
             model,
             connectDropTarget,
-            items
+            items,
         };
 
         const child = children
@@ -232,7 +215,7 @@ class DropContainer extends React.Component {
             <DropContainerContext.Provider
                 value={{
                     isRootContainer: false,
-                    axis
+                    axis,
                 }}
             >
                 {child}
@@ -249,7 +232,7 @@ DropContainer.propTypes = {
     id: propTypes.any,
     canDrop: propTypes.func,
     hover: propTypes.func,
-    drop: propTypes.func
+    drop: propTypes.func,
 };
 
 export default withHooks(DropContainer);

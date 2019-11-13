@@ -25,10 +25,10 @@ function FieldItem({ field }) {
                 };
             }}
         >
-            {({ connectDragTarget, connectDragPreview }) => {
+            {({ connectDragSource, connectDragPreview }) => {
                 connectDragPreview(getEmptyImage());
                 return (
-                    <div className="field-item" ref={connectDragTarget}>
+                    <div className="field-item" ref={connectDragSource}>
                         {field.title}
                     </div>
                 );
@@ -86,7 +86,7 @@ function DropFieldContainer({ id: pid }) {
                                     {({
                                         isDragging,
                                         connectDropTarget,
-                                        connectDragTarget,
+                                        connectDragSource,
                                         connectDragPreview,
                                         model,
                                         hoverDirection
@@ -107,7 +107,7 @@ function DropFieldContainer({ id: pid }) {
                                             >
                                                 <div
                                                     className="field-drop-item-inner"
-                                                    ref={connectDragTarget}
+                                                    ref={connectDragSource}
                                                 >
                                                     {item.title}
                                                     {pid === "value" &&

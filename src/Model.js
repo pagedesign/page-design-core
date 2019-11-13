@@ -11,7 +11,7 @@ import {
     DRAG_DIR_LEFT,
     AXIS_VERTICAL,
     AXIS_HORIZONTAL,
-    AXIS_BOTH
+    AXIS_BOTH,
 } from "./constants";
 
 function randomStr(prefix = "") {
@@ -42,7 +42,7 @@ class Model extends React.Component {
             props.value.forEach(item => normalizeItem(item, props));
         }
         return {
-            items: "value" in props ? props.value : state.items
+            items: "value" in props ? props.value : state.items,
         };
     }
 
@@ -52,17 +52,17 @@ class Model extends React.Component {
         pidField: "pid",
         axis: AXIS_VERTICAL,
         commitAction: COMMIT_ACTION_AUTO,
-        onChange: null
+        onChange: null,
     };
 
     DropContainerContext = React.createContext({
         isRootContainer: true,
-        axis: AXIS_VERTICAL
+        axis: AXIS_VERTICAL,
     });
 
     state = {
         scope: randomStr("scope_"),
-        items: this.props.defaultValue || []
+        items: this.props.defaultValue || [],
     };
 
     getDragState() {
@@ -75,7 +75,7 @@ class Model extends React.Component {
 
         if (!("value" in props)) {
             this.setState({
-                items
+                items,
             });
         }
 
@@ -376,8 +376,7 @@ class Model extends React.Component {
     }
 
     //提交DragState中的数据
-    commitDragStateItem() {
-        const dragState = DragState.getState();
+    commitDragStateItem(dragState) {
         const canDrop = dragState.canDrop;
         const dragItem = dragState.item;
         const hoverContainerId = dragState.hoverContainerId;
@@ -457,7 +456,7 @@ class Model extends React.Component {
 
     getModel() {
         return {
-            model: this
+            model: this,
         };
     }
 
@@ -489,7 +488,7 @@ Model.propTypes = {
     onDropToContainer: propTypes.func,
     onDragHover: propTypes.func,
     onDragHoverContainer: propTypes.func,
-    onDragHoverItem: propTypes.func
+    onDragHoverItem: propTypes.func,
 };
 
 export default Model;

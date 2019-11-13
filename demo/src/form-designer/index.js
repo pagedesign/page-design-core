@@ -50,9 +50,9 @@ function Widget({ widget }) {
                 id: randomStr()
             })}
         >
-            {({ connectDragTarget }) => {
+            {({ connectDragSource }) => {
                 return (
-                    <div ref={connectDragTarget} className="widget-item">
+                    <div ref={connectDragSource} className="widget-item">
                         {widget.title}
                     </div>
                 );

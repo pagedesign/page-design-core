@@ -2,15 +2,18 @@ import React from "react";
 import { findDOMNode } from "react-dom";
 import { useDrop } from "react-dnd";
 import withHooks from "with-component-hooks";
-import ModelContext from "./ModelContext";
+import { ModelContext, ModelContextValue } from "./ModelContext";
 
 class DropZone extends React.Component {
     static contextType = ModelContext;
 
-    _connectDropTarget = null;
+    context: ModelContextValue;
+
+    _connectDropTarget: (dom: HTMLElement | null) => void;
 
     connectDropTarget() {
         const dom = findDOMNode(this);
+
         this._connectDropTarget(dom);
     }
 
@@ -30,14 +33,12 @@ class DropZone extends React.Component {
         const model = this.context.model;
 
         return {
-            accept: model.getScope()
+            accept: model.getScope(),
         };
     }
 
     render() {
-        const [collectedProps, connectDropTarget] = useDrop(
-            this.getDropOptions()
-        );
+        const [, connectDropTarget] = useDrop(this.getDropOptions());
 
         this._connectDropTarget = connectDropTarget;
 

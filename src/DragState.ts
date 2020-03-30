@@ -1,4 +1,6 @@
-let state = {
+import { DragState } from "./types";
+
+let state: DragState = {
     //part1
     //drag item
     item: null,
@@ -12,13 +14,14 @@ let state = {
     //part2
     dragDOMIsRemove: false,
     isDragging: false,
-    currentDragDOM: null
+    currentDragDOM: null,
+    dragDOM: null,
 };
 
-function setState(newState) {
+function setState(newState: Partial<DragState>) {
     state = {
         ...state,
-        ...newState
+        ...newState,
     };
 }
 
@@ -32,7 +35,8 @@ function reset() {
         hoverDirection: "none",
         dragDOMIsRemove: false,
         isDragging: false,
-        currentDragDOM: null
+        currentDragDOM: null,
+        dragDOM: null,
     });
 }
 
@@ -43,5 +47,5 @@ function getState() {
 export default {
     setState,
     getState,
-    reset
+    reset,
 };

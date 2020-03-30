@@ -114,3 +114,7 @@ export function find(array, predicate) {
 
     return array[idx];
 }
+
+export function isFunction(value: any): value is (...args: any[]) => any {
+    return typeof value === "function";
+}

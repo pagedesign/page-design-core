@@ -6,7 +6,7 @@ import {
     DragLayerMonitor,
     ConnectDragSource,
     ConnectDragPreview,
-    ConnectDropTarget
+    ConnectDropTarget,
 } from "react-dnd";
 import * as constants from "./constants";
 
@@ -254,7 +254,7 @@ export {
     DropItem,
     DropContainer,
     DragLayer,
-    NativeTypes
+    NativeTypes,
 };
 
 export default {
@@ -268,5 +268,5 @@ export default {
     DropItem,
     DropContainer,
     DragLayer,
-    NativeTypes
+    NativeTypes,
 };

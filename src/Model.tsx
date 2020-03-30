@@ -1,8 +1,12 @@
 import React from "react";
-import propTypes from "prop-types";
-import { last, find, findIndex } from "./utils";
+// import propTypes from "prop-types";
+import { last, find, findIndex, isFunction } from "./utils";
 import DropZone from "./DropZone";
-import ModelContext from "./ModelContext";
+import {
+    ModelContext,
+    ModelContextValue,
+    DropContainerContextValue,
+} from "./ModelContext";
 import DragState from "./DragState";
 import {
     COMMIT_ACTION_AUTO,
@@ -13,6 +17,40 @@ import {
     AXIS_HORIZONTAL,
     AXIS_BOTH,
 } from "./constants";
+import { IdType } from "./types";
+
+type ItemId = IdType;
+
+interface Item extends Record<string | number, any> {
+    id: ItemId;
+    pid: ItemId;
+    __tmp__?: boolean;
+}
+
+interface ModelProps {
+    rootId: ItemId;
+    // idField: ItemId;
+    // pidField: ItemId;
+    axis: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
+    commitAction: typeof COMMIT_ACTION_AUTO | typeof COMMIT_ACTION_DROP;
+    value?: Item[];
+    defaultValue?: Item[];
+    children?: ((instance: Model) => React.ReactNode) | React.ReactNode;
+    onChange?(items: Item[]): void;
+    onDragStart?(): void;
+    onDragEnd?(): void;
+    onDrop?(): void;
+    onDropToItem?(): void;
+    onDropToContainer?(): void;
+    onDragHover?(): void;
+    onDragHoverContainer?(): void;
+    onDragHoverItem?(): void;
+}
+
+interface ModelState {
+    scope: string;
+    items: Item[];
+}
 
 function randomStr(prefix = "") {
     return (
@@ -23,44 +61,61 @@ function randomStr(prefix = "") {
     );
 }
 
-function normalizeItem(item, props) {
-    const idField = props.idField;
-    const pidField = props.pidField;
-
-    item[idField] =
-        item[idField] === undefined ? randomStr(`item_`) : item[idField];
-
-    item[pidField] =
-        item[pidField] === undefined ? props.rootId : item[pidField];
-
+function normalizeItem(item: Item, props: ModelProps) {
+    item.id = item.id === undefined ? randomStr(`item_`) : item.id;
+    item.pid = item.pid === undefined ? props.rootId : item.pid;
     return item;
 }
 
-class Model extends React.Component {
-    static getDerivedStateFromProps(props, state) {
-        if (props.value) {
-            props.value.forEach(item => normalizeItem(item, props));
-        }
+// Model.propTypes = {
+//     idField: propTypes.string,
+//     pidField: propTypes.string,
+//     value: propTypes.array,
+//     defaultValue: propTypes.array,
+//     axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+//     commitAction: propTypes.oneOf([COMMIT_ACTION_AUTO, COMMIT_ACTION_DROP]),
+//     onChange: propTypes.func,
+//     onDragStart: propTypes.func,
+//     onDragEnd: propTypes.func,
+//     onDrop: propTypes.func,
+//     onDropToItem: propTypes.func,
+//     onDropToContainer: propTypes.func,
+//     onDragHover: propTypes.func,
+//     onDragHoverContainer: propTypes.func,
+//     onDragHoverItem: propTypes.func,
+// };
+
+export class Model extends React.Component<Partial<ModelProps>, ModelState> {
+    static getDerivedStateFromProps(props: ModelProps, state: ModelState) {
+        // if (props.value) {
+        //     props.value.forEach(item => normalizeItem(item, props));
+        // }
         return {
-            items: "value" in props ? props.value : state.items,
+            items:
+                "value" in props
+                    ? (props.value as Item[]).map(item =>
+                          normalizeItem(item, props)
+                      )
+                    : state.items,
         };
     }
 
-    static defaultProps = {
+    static defaultProps: ModelProps = {
         rootId: null,
-        idField: "id",
-        pidField: "pid",
+        // idField: "id",
+        // pidField: "pid",
         axis: AXIS_VERTICAL,
         commitAction: COMMIT_ACTION_AUTO,
-        onChange: null,
     };
 
-    DropContainerContext = React.createContext({
+    readonly props: Readonly<ModelProps>;
+
+    DropContainerContext = React.createContext<DropContainerContextValue>({
         isRootContainer: true,
         axis: AXIS_VERTICAL,
     });
 
-    state = {
+    state: ModelState = {
         scope: randomStr("scope_"),
         items: this.props.defaultValue || [],
     };
@@ -69,7 +124,7 @@ class Model extends React.Component {
         return DragState.getState();
     }
 
-    onChange(items) {
+    onChange(items: Item[]) {
         const props = this.props;
         const { onChange } = props;
 
@@ -88,7 +143,7 @@ class Model extends React.Component {
         return this.state.scope;
     }
 
-    fireEvent(eventName, ev) {
+    fireEvent(eventName: string, ev) {
         const props = this.props;
 
         const handler = props[eventName];
@@ -99,12 +154,10 @@ class Model extends React.Component {
     }
 
     contains(parentNode, childNode) {
-        const { idField } = this.props;
-
         if (!childNode) return false;
 
-        const parentId = parentNode[idField];
-        const childId = childNode[idField];
+        const parentId = parentNode.id;
+        const childId = childNode.id;
 
         const pids = this.getPids(childId);
 
@@ -113,16 +166,15 @@ class Model extends React.Component {
         return pids.indexOf(parentId) !== -1;
     }
 
-    getChildren(id = null, items = this.state.items) {
-        const { pidField } = this.props;
-        return items.filter(item => item && item[pidField] === id);
+    getChildren(id: IdType = null, items = this.state.items) {
+        return items.filter(item => item && item.pid === id);
     }
 
     getAllItems() {
         return [...this.state.items];
     }
 
-    isRootId(id) {
+    isRootId(id: null | string) {
         const { rootId } = this.props;
         let isRootId = id == null || rootId === id;
 
@@ -135,12 +187,11 @@ class Model extends React.Component {
     }
 
     //获取组件的所有父级ID
-    getPids(id) {
-        const { pidField } = this.props;
-        const pids = [];
+    getPids(id: ItemId) {
+        const pids: ItemId[] = [];
         let node = this.getItem(id);
         while (node) {
-            const pid = node[pidField];
+            const pid = node.pid;
 
             if (this.isRootId(pid)) break;
 
@@ -151,10 +202,9 @@ class Model extends React.Component {
         return pids;
     }
 
-    updateItem(item) {
-        const { idField } = this.props;
+    updateItem(item: Item) {
         const items = this.getAllItems();
-        const id = item[idField];
+        const id = item.id;
         const idx = this.getItemIndex(id);
 
         if (idx !== -1) {
@@ -164,57 +214,50 @@ class Model extends React.Component {
         this.onChange(items);
     }
 
-    isSameItem(s1, s2) {
-        const { idField } = this.props;
-
-        return s1 && s2 && s1[idField] === s2[idField];
+    isSameItem(s1: Item, s2: Item) {
+        return s1 && s2 && s1.id === s2.id;
     }
 
-    _addItem(item, pid = null) {
-        const { pidField } = this.props;
+    _addItem(item: Item, pid: null | string = null) {
         item = normalizeItem(item, this.props);
-        item[pidField] = pid;
+        item.pid = pid;
 
         this.state.items.push(item);
     }
 
-    addItem(item, pid = null) {
-        const { pidField } = this.props;
+    addItem(item: Item, pid = null) {
         item = normalizeItem(item, this.props);
 
         const items = this.getAllItems();
 
-        item[pidField] = pid;
+        item.pid = pid;
 
         items.push(item);
 
         this.onChange(items);
     }
 
-    addItems(items = [], pid = null) {
-        const { pidField } = this.props;
-
+    addItems(items: Item[] = [], pid: ItemId = null) {
         items = items.map(item => normalizeItem(item, this.props));
 
-        items.forEach(item => (item[pidField] = pid));
+        items.forEach(item => (item.pid = pid));
 
         this.onChange([...this.getAllItems(), ...items]);
     }
 
-    addTmpItem(item, pid) {
+    addTmpItem(item, pid?) {
         item.__tmp__ = true;
         this.addItem(item, pid);
     }
 
     removeItem(id) {
-        const { idField } = this.props;
         const items = this.getAllItems();
         //移除指定项目及子项目
         const ret = items.filter(item => {
-            let shouldRemove = item[idField] === id;
+            let shouldRemove = item.id === id;
 
             if (!shouldRemove) {
-                const pids = this.getPids(item[idField]);
+                const pids = this.getPids(item.id);
                 shouldRemove = pids.indexOf(id) > -1;
             }
 
@@ -226,45 +269,39 @@ class Model extends React.Component {
 
     getItemIndex(id, items = this.state.items) {
         //this.getAllItems()
-        const { idField } = this.props;
         // items = items || this.getAllItems();
-        return findIndex(items, item => item[idField] === id);
+        return findIndex(items, item => item.id === id);
     }
 
     getItem(id, items = this.state.items) {
-        const { idField } = this.props;
-        return find(items, item => item && item[idField] === id);
+        return find(items, item => item && item.id === id);
     }
 
     insertBefore(item, bItem) {
         if (this.isSameItem(item, bItem)) return false;
 
-        const { idField, pidField } = this.props;
         const items = this.getAllItems();
-        const id = bItem[idField];
+        const id = bItem.id;
 
         //判断是否需要移动
         const _idx = this.getItemIndex(id);
         if (_idx !== 0) {
             const prevItem = items[_idx - 1];
-            if (
-                prevItem[idField] === item[idField] &&
-                prevItem[pidField] === bItem[pidField]
-            ) {
+            if (prevItem.id === item.id && prevItem.pid === bItem.pid) {
                 return false;
             }
         }
 
         //判断当前item是否已经存在, 如果存在则先删除
-        const oIdx = this.getItemIndex(item[idField]);
+        const oIdx = this.getItemIndex(item.id);
         if (oIdx > -1) {
             items.splice(oIdx, 1);
         }
 
-        item[pidField] = bItem[pidField];
+        item.pid = bItem.pid;
 
         //插入操作
-        const idx = findIndex(items, item => item[idField] === id); //this.getItemIndex(id, items);
+        const idx = findIndex(items, item => item.id === id); //this.getItemIndex(id, items);
         items.splice(idx, 0, item);
 
         this.onChange(items);
@@ -275,32 +312,28 @@ class Model extends React.Component {
     insertAfter(item, prevItem) {
         if (this.isSameItem(item, prevItem)) return false;
 
-        const { idField, pidField } = this.props;
         const items = this.getAllItems();
-        const id = prevItem[idField];
+        const id = prevItem.id;
 
         //判断是否需要移动
         const _idx = this.getItemIndex(id);
         if (_idx !== items.length - 1) {
             const nextItem = items[_idx + 1];
-            if (
-                nextItem[idField] === item[idField] &&
-                nextItem[pidField] === prevItem[pidField]
-            ) {
+            if (nextItem.id === item.id && nextItem.pid === prevItem.pid) {
                 return false;
             }
         }
 
         //判断当前item是否已经存在, 如果存在则先删除
-        const oIdx = this.getItemIndex(item[idField]);
+        const oIdx = this.getItemIndex(item.id);
         if (oIdx > -1) {
             items.splice(oIdx, 1);
         }
 
-        item[pidField] = prevItem[pidField];
+        item.pid = prevItem.pid;
 
         //插入操作 之前有删除操作, 要重新查找index
-        const idx = findIndex(items, item => item[idField] === id);
+        const idx = findIndex(items, item => item.id === id);
         items.splice(idx, 1, items[idx], item);
 
         this.onChange(items);
@@ -321,12 +354,10 @@ class Model extends React.Component {
         hasTmp && this.onChange(newItems);
     }
 
-    updateItemPid(item, pid = null) {
-        const { idField, pidField } = this.props;
+    updateItemPid(item: Item, pid: IdType = null) {
+        if (item.pid === pid) return false;
 
-        if (item[pidField] === pid) return false;
-
-        const id = item[idField];
+        const id = item.id;
 
         //自身引用
         if (id === pid) return false;
@@ -350,7 +381,7 @@ class Model extends React.Component {
 
         if (idx === -1) return false;
 
-        item[pidField] = pid;
+        item.pid = pid;
         //将当前項添加至尾部
         items.splice(idx, 1);
         items.push(item);
@@ -361,9 +392,8 @@ class Model extends React.Component {
     }
 
     commitItem(item) {
-        const { idField } = this.props;
         const items = this.getAllItems();
-        const id = item[idField];
+        const id = item.id;
         const idx = this.getItemIndex(id);
 
         if (idx !== -1 && item.__tmp__) {
@@ -401,7 +431,7 @@ class Model extends React.Component {
         if (isNew) {
             if (hoverItem) {
                 //新增
-                this._addItem(dragItem, undefined, false);
+                this._addItem(dragItem, null);
                 //移动
                 moveItem();
             } else {
@@ -429,14 +459,13 @@ class Model extends React.Component {
     }
 
     isDragging(id) {
-        const { idField } = this.props;
         const dragState = DragState.getState();
         const isDragging = dragState.isDragging;
 
         if (!isDragging) return false;
 
         if (id !== undefined) {
-            return dragState.item && dragState.item[idField] === id;
+            return dragState.item && dragState.item.id === id;
         }
 
         return true;
@@ -448,11 +477,11 @@ class Model extends React.Component {
         return dragState.item;
     }
 
-    isTmpItem(item) {
+    isTmpItem(item: Item) {
         return !!item.__tmp__;
     }
 
-    getModel() {
+    getModel(this: Model): ModelContextValue {
         return {
             model: this,
         };
@@ -464,29 +493,11 @@ class Model extends React.Component {
         return (
             <ModelContext.Provider value={this.getModel()}>
                 <DropZone>
-                    {typeof children === "function" ? children(this) : children}
+                    {isFunction(children) ? children(this) : children}
                 </DropZone>
             </ModelContext.Provider>
         );
     }
 }
-
-Model.propTypes = {
-    idField: propTypes.string,
-    pidField: propTypes.string,
-    value: propTypes.array,
-    defaultValue: propTypes.array,
-    axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
-    commitAction: propTypes.oneOf([COMMIT_ACTION_AUTO, COMMIT_ACTION_DROP]),
-    onChange: propTypes.func,
-    onDragStart: propTypes.func,
-    onDragEnd: propTypes.func,
-    onDrop: propTypes.func,
-    onDropToItem: propTypes.func,
-    onDropToContainer: propTypes.func,
-    onDragHover: propTypes.func,
-    onDragHoverContainer: propTypes.func,
-    onDragHoverItem: propTypes.func,
-};
 
 export default Model;

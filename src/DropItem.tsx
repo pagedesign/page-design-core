@@ -18,7 +18,7 @@ import {
     AXIS_BOTH,
 } from "./constants";
 import ModelContext from "./ModelContext";
-import { isNodeInDocument, getHoverDirection } from "./utils";
+import { isNodeInDocument, getHoverDirection, isFunction } from "./utils";
 
 import DragState from "./DragState";
 

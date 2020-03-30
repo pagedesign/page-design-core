@@ -16,18 +16,53 @@ import {
     AXIS_HORIZONTAL,
     AXIS_BOTH,
 } from "./constants";
-import ModelContext from "./ModelContext";
+import { ModelContext, ModelContextValue } from "./ModelContext";
 import DragState from "./DragState";
+import { isFunction } from "./utils";
+import { Model } from "./Model";
+import {
+    CanDropOptions,
+    DragHoverOptions,
+    DropOptions,
+    DropContainerRenderProps,
+} from "./types";
 
-class DropContainer extends React.Component {
+interface DropContainerProps {
+    id: null | string;
+    children?:
+        | ((props: DropContainerRenderProps) => React.ReactNode)
+        | React.ReactNode;
+    render?: (props: DropContainerRenderProps) => React.ReactNode;
+    axis?: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
+    accepts: string[];
+    canDrop?(data: CanDropOptions): boolean;
+    hover?(data: DragHoverOptions): void;
+    drop?(data: DropOptions): void;
+}
+
+// DropContainer.propTypes = {
+//     children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+//     axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
+//     accepts: propTypes.array,
+//     render: propTypes.func,
+//     id: propTypes.any,
+//     canDrop: propTypes.func,
+//     hover: propTypes.func,
+//     drop: propTypes.func,
+// };
+
+class DropContainer extends React.Component<Partial<DropContainerProps>> {
     static contextType = ModelContext;
+    context: ModelContextValue;
 
-    static defaultProps = {
+    static defaultProps: DropContainerProps = {
         id: null,
         accepts: [],
     };
 
-    _connectDropTarget = null;
+    readonly props: Readonly<DropContainerProps>;
+
+    _connectDropTarget: null | ((dom: null | HTMLElement) => void) = null;
 
     connectDropTarget() {
         const children = this.props.children;
@@ -36,7 +71,9 @@ class DropContainer extends React.Component {
 
         const dom = findDOMNode(this);
 
-        this._connectDropTarget(dom);
+        if (this._connectDropTarget) {
+            this._connectDropTarget(dom);
+        }
     }
 
     componentDidMount() {
@@ -50,7 +87,9 @@ class DropContainer extends React.Component {
     }
 
     componentWillUnmount() {
-        this._connectDropTarget(null);
+        if (this._connectDropTarget) {
+            this._connectDropTarget(null);
+        }
     }
 
     getModel() {
@@ -203,7 +242,7 @@ class DropContainer extends React.Component {
         };
 
         const child = children
-            ? typeof children === "function"
+            ? isFunction(children)
                 ? children(props)
                 : children
             : render
@@ -222,16 +261,5 @@ class DropContainer extends React.Component {
         );
     }
 }
-
-DropContainer.propTypes = {
-    children: propTypes.oneOfType([propTypes.func, propTypes.node]),
-    axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
-    accepts: propTypes.array,
-    render: propTypes.func,
-    id: propTypes.any,
-    canDrop: propTypes.func,
-    hover: propTypes.func,
-    drop: propTypes.func,
-};
 
 export default withHooks(DropContainer);

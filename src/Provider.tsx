@@ -1,22 +1,27 @@
 import React from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
-
 import Model from "./Model";
 
-export default class PageDesignCoreProvider extends React.Component {
-    static defaultProps = {
-        context: window,
-        backend: HTML5Backend
-    };
+interface ProviderProps {
+    backend: typeof HTML5Backend;
+    context: any;
+}
 
-    model = null;
+export default class Provider extends React.Component<Partial<ProviderProps>> {
+    static defaultProps: ProviderProps = {
+        context: window,
+        backend: HTML5Backend,
+    };
+    readonly props: Readonly<ProviderProps>;
+
+    model: Model;
 
     getModel() {
         return this.model;
     }
 
-    saveModel = model => {
+    saveModel = (model: Model) => {
         this.model = model;
     };
 

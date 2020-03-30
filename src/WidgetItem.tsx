@@ -1,25 +1,55 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
-import propTypes from "prop-types";
-import { useDrag } from "react-dnd";
+// import propTypes from "prop-types";
+import { useDrag, DragSourceMonitor } from "react-dnd";
 import withHooks from "with-component-hooks";
-import ModelContext from "./ModelContext";
+import { ModelContext, ModelContextValue } from "./ModelContext";
 import {
     EVENT_TYPE_ADD,
     EVENT_TYPE_SORT,
     COMMIT_ACTION_AUTO,
-    COMMIT_ACTION_DROP
+    COMMIT_ACTION_DROP,
 } from "./constants";
-import { isNodeInDocument } from "./utils";
+import { isNodeInDocument, isFunction } from "./utils";
 import DragState from "./DragState";
+import {
+    CanDragOptions,
+    BeginDragOptions,
+    EndDragOptions,
+    WidgetItemRenderProps,
+    Item,
+    DragObject,
+    DragCollectedProps,
+    DropResult,
+} from "./types";
 
-class WidgetItem extends React.Component {
+interface WidgetItemProps {
+    getInstance: () => Item;
+    children?:
+        | ((props: WidgetItemRenderProps) => React.ReactNode)
+        | React.ReactNode;
+    render?: (props: WidgetItemRenderProps) => React.ReactNode;
+    canDrag?: (data: CanDragOptions) => boolean;
+    beginDrag?: (data: BeginDragOptions) => void;
+    endDrag?: (data: EndDragOptions) => void;
+}
+
+// WidgetItem.propTypes = {
+//     children: propTypes.oneOfType([propTypes.func, propTypes.node]),
+//     render: propTypes.func,
+//     getInstance: propTypes.func.isRequired,
+//     canDrag: propTypes.func,
+//     beginDrag: propTypes.func,
+//     endDrag: propTypes.func
+// };
+
+export class WidgetItem extends React.Component<WidgetItemProps> {
     static contextType = ModelContext;
+    context: ModelContextValue;
 
-    _connectDragDOM = null;
-
-    _connectDragSource = null;
-    _connectDragPreview = null;
+    _dragDOM: null | HTMLElement;
+    _connectDragSource: null | ((dom: null | HTMLElement) => void) = null;
+    _connectDragPreview: null | ((dom: null | HTMLElement) => void) = null;
 
     componentDidUpdate() {
         this.connectDragSource();
@@ -38,16 +68,18 @@ class WidgetItem extends React.Component {
 
         if (!children || typeof children === "function") return;
 
-        this._connectDragSource(findDOMNode(this));
+        if (this._connectDragSource) {
+            this._connectDragSource(findDOMNode(this));
+        }
     }
 
     componentWillUnmount() {
-        //fix: 当拖动节点在拖动状态被删除时导致react-dnd在drop后需要移动鼠标才及时触发endDrag问题
-        const dragDOM = this._connectDragDOM;
+        //fix: 当拖动的节点在拖动状态被删除时导致react-dnd在drop后需要移动鼠标才及时触发endDrag问题
+        const dragDOM = this._dragDOM;
         const dragState = DragState.getState();
         if (dragState.isDragging && dragDOM && dragState.dragDOM === dragDOM) {
             DragState.setState({
-                dragDOMIsRemove: true
+                dragDOMIsRemove: true,
             });
 
             setTimeout(() => {
@@ -62,8 +94,8 @@ class WidgetItem extends React.Component {
             }, 0);
         }
 
-        this._connectDragSource(null);
-        this._connectDragPreview(null);
+        if (this._connectDragSource) this._connectDragSource(null);
+        if (this._connectDragPreview) this._connectDragPreview(null);
     }
 
     getDragOptions() {
@@ -73,22 +105,22 @@ class WidgetItem extends React.Component {
 
         return {
             item: {
-                type: model.getScope()
+                type: model.getScope(),
             },
 
-            canDrag: monitor => {
+            canDrag: (monitor: DragSourceMonitor) => {
                 if (canDrag) {
                     return canDrag({
                         monitor,
                         model,
-                        component: this
+                        component: this,
                     });
                 }
 
                 return true;
             },
 
-            begin: monitor => {
+            begin: (monitor: DragSourceMonitor) => {
                 const item = getInstance();
                 const dom = findDOMNode(this);
 
@@ -98,17 +130,17 @@ class WidgetItem extends React.Component {
                         dom,
                         component: this,
                         monitor,
-                        model
+                        model,
                     });
                 }
 
-                const dragDOM = this._connectDragDOM;
+                const dragDOM = this._dragDOM;
                 DragState.setState({
                     item,
                     isNew: true,
                     dragDOMIsRemove: false,
                     isDragging: true,
-                    dragDOM
+                    dragDOM,
                 });
 
                 if (commitAction === COMMIT_ACTION_AUTO) {
@@ -121,16 +153,20 @@ class WidgetItem extends React.Component {
                     type: EVENT_TYPE_ADD,
                     model,
                     monitor,
-                    component: this
+                    component: this,
                 });
 
                 return {
+                    type: model.getScope(),
                     item,
-                    dom
+                    dom,
                 };
             },
 
-            end: (dragResult, monitor) => {
+            end: (
+                dragResult: Required<DragObject>,
+                monitor: DragSourceMonitor
+            ) => {
                 const { dragDOMIsRemove, dragDOM } = DragState.getState();
                 DragState.reset();
 
@@ -140,10 +176,11 @@ class WidgetItem extends React.Component {
 
                 if (endDrag) {
                     endDrag({
-                        ...dragResult,
+                        item: dragResult.item,
+                        dom: dragResult.dom,
                         model,
                         monitor,
-                        component: this
+                        component: this,
                     });
                 }
 
@@ -154,16 +191,16 @@ class WidgetItem extends React.Component {
                     type: EVENT_TYPE_ADD,
                     model,
                     monitor,
-                    component: this
+                    component: this,
                 });
             },
 
-            collect(monitor) {
+            collect(monitor: DragSourceMonitor) {
                 return {
                     monitor,
-                    isDragging: monitor.isDragging()
+                    isDragging: monitor.isDragging(),
                 };
-            }
+            },
         };
     }
 
@@ -177,22 +214,22 @@ class WidgetItem extends React.Component {
 
         this._connectDragSource = React.useCallback(
             dom => {
-                this._connectDragDOM = dom;
+                this._dragDOM = dom;
                 connectDragSource(dom);
             },
             [connectDragSource]
         );
         this._connectDragPreview = connectDragPreview;
 
-        const props = {
+        const props: WidgetItemRenderProps = {
             ...collectProps,
             model,
             connectDragSource,
-            connectDragPreview
+            connectDragPreview,
         };
 
         return children
-            ? typeof children === "function"
+            ? isFunction(children)
                 ? children(props)
                 : children
             : render
@@ -200,14 +237,5 @@ class WidgetItem extends React.Component {
             : null;
     }
 }
-
-WidgetItem.propTypes = {
-    children: propTypes.oneOfType([propTypes.func, propTypes.node]),
-    render: propTypes.func,
-    getInstance: propTypes.func.isRequired,
-    canDrag: propTypes.func,
-    beginDrag: propTypes.func,
-    endDrag: propTypes.func
-};
 
 export default withHooks(WidgetItem);

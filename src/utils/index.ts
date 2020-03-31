@@ -1,3 +1,5 @@
+import { DirType } from "../types";
+
 /**
  * 判断指定坐标在指定矩形上的位置
  *
@@ -9,7 +11,14 @@
  * @param {number} py 待检测坐标y(一般位鼠标y坐标)
  * @returns {number} 1:up 2:down 3:left 4:right -1:center(对角线上)
  */
-export function getRectDirection(x, y, width, height, px, py) {
+export function getRectDirection(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    px: number,
+    py: number
+) {
     const y_ac =
         ((y + height) * px - y * px + y * (x + width) - (y + height) * x) /
         (x + width - x);
@@ -49,16 +58,30 @@ export function getRectDirection(x, y, width, height, px, py) {
     }
 }
 
-export function isBeforeRect(...a) {
-    const ret = getRectDirection(...a);
+export function isBeforeRect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    px: number,
+    py: number
+) {
+    const ret = getRectDirection(x, y, width, height, px, py);
 
     return ret === 1 || ret === 3;
 }
 
-export function getHoverDirection(...a) {
-    const ret = getRectDirection(...a);
+export function getHoverDirection(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    px: number,
+    py: number
+): DirType {
+    const ret = getRectDirection(x, y, width, height, px, py);
 
-    let dir = "down";
+    let dir: DirType = "down";
 
     if (ret === 1) {
         dir = "up";
@@ -73,16 +96,19 @@ export function getHoverDirection(...a) {
     return dir;
 }
 
-export function isNodeInDocument(node) {
+export function isNodeInDocument(node: HTMLElement) {
     return document.body.contains(node);
 }
 
-export function last(array) {
+export function last(array: any[]) {
     var length = array == null ? 0 : array.length;
     return length ? array[length - 1] : undefined;
 }
 
-export function findIndex(array, predicate) {
+export function findIndex(
+    array: any[],
+    predicate: (value: any, index: any, array: any) => boolean
+) {
     if (array == null) {
         throw new TypeError('"this" is null or not defined');
     }

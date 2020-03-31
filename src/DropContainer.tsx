@@ -1,6 +1,6 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
-import { useDrop } from "react-dnd";
+import { useDrop, DropTargetConnector } from "react-dnd";
 import propTypes from "prop-types";
 import withHooks from "with-component-hooks";
 import invariant from "invariant";
@@ -19,7 +19,6 @@ import {
 import { ModelContext, ModelContextValue } from "./ModelContext";
 import DragState from "./DragState";
 import { isFunction } from "./utils";
-import { Model } from "./Model";
 import {
     CanDropOptions,
     DragHoverOptions,
@@ -35,9 +34,11 @@ interface DropContainerProps {
     render?: (props: DropContainerRenderProps) => React.ReactNode;
     axis?: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
     accepts: string[];
-    canDrop?(data: CanDropOptions): boolean;
-    hover?(data: DragHoverOptions): void;
-    drop?(data: DropOptions): void;
+    canDrop?: <T = DropContainer>(data: CanDropOptions<T>) => boolean;
+    hover?: <T = DropContainer>(data: DragHoverOptions<T>) => void;
+    drop?: <T = DropContainer, D = DropTargetConnector>(
+        data: DropOptions<T, D>
+    ) => void;
 }
 
 // DropContainer.propTypes = {

@@ -14,7 +14,7 @@ export type ModelContextValue = { model: Model };
 
 export type DropContainerContextValue = {
     isRootContainer: boolean;
-    axis: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
+    axis?: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
 };
 
 export const ModelContext = React.createContext<ModelContextValue>({

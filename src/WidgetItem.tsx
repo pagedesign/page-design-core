@@ -29,9 +29,9 @@ interface WidgetItemProps {
         | ((props: WidgetItemRenderProps) => React.ReactNode)
         | React.ReactNode;
     render?: (props: WidgetItemRenderProps) => React.ReactNode;
-    canDrag?: (data: CanDragOptions) => boolean;
-    beginDrag?: (data: BeginDragOptions) => void;
-    endDrag?: (data: EndDragOptions) => void;
+    canDrag?: <T = WidgetItem>(data: CanDragOptions<T>) => boolean;
+    beginDrag?: <T = WidgetItem>(data: BeginDragOptions<T>) => void;
+    endDrag?: <T = WidgetItem>(data: EndDragOptions<T>) => void;
 }
 
 // WidgetItem.propTypes = {

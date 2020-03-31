@@ -5,10 +5,11 @@ import {
     ConnectDragSource,
     ConnectDragPreview,
     ConnectDropTarget,
+    XYCoord,
 } from "react-dnd";
 
 import { Model } from "./Model";
-import { WidgetItem } from "./WidgetItem";
+// import { WidgetItem } from "./WidgetItem";
 import {
     DRAG_DIR_UP,
     DRAG_DIR_DOWN,
@@ -17,11 +18,19 @@ import {
     DRAG_DIR_NONE,
 } from "./constants";
 
+export type DirType =
+    | typeof DRAG_DIR_UP
+    | typeof DRAG_DIR_DOWN
+    | typeof DRAG_DIR_LEFT
+    | typeof DRAG_DIR_RIGHT;
+
+export type HoverDirection = DirType | typeof DRAG_DIR_NONE;
+
 export type IdType = string | null;
 
 export interface Item extends Record<string | number, any> {
-    id: string | null;
-    pid: string | number | null;
+    id: IdType;
+    pid: IdType;
 }
 
 export interface DragObject {
@@ -55,24 +64,28 @@ export interface DragState {
     dragDOM: null | HTMLElement;
 }
 
-export interface CanDragOptions {
-    monitor: DragSourceMonitor;
+export interface CanDragOptions<T, D = DragSourceMonitor> {
+    monitor: D;
     model: Model;
-    component: WidgetItem;
+    component: T;
 }
 
-export interface CanDropOptions extends CanDragOptions {
+export interface CanDropOptions<T> extends CanDragOptions<T> {
     item: Item;
     dom: HTMLElement;
 }
 
-export interface DragHoverOptions extends CanDropOptions {}
+export interface DragHoverOptions<T> extends CanDropOptions<T> {}
 
-export interface BeginDragOptions extends CanDropOptions {}
+export interface BeginDragOptions<T> extends CanDropOptions<T> {}
 
-export interface EndDragOptions extends BeginDragOptions {}
+export interface EndDragOptions<T> extends CanDropOptions<T> {}
 
-export interface DropOptions extends CanDropOptions {}
+export interface DropOptions<T, D = DragSourceMonitor>
+    extends CanDragOptions<T, D> {
+    item: Item;
+    dom: HTMLElement;
+}
 
 export interface DropContainerRenderProps {
     monitor: DropTargetMonitor;
@@ -91,4 +104,33 @@ export interface WidgetItemRenderProps {
     model: Model;
     connectDragSource: ConnectDragSource;
     connectDragPreview: ConnectDragPreview;
+}
+
+export interface DropItemRenderProps {
+    monitor: DropTargetMonitor;
+    hoverDirection: HoverDirection;
+    isOver: boolean;
+    isStrictlyOver: boolean;
+    canDrop: boolean;
+    isDragging: boolean;
+    item: Item;
+    isTmp: boolean;
+    model: Model;
+    connectDropTarget: ConnectDropTarget;
+    connectDragSource: ConnectDragSource;
+    connectDragAndDrop: (dom: HTMLElement | null) => void;
+    connectDragPreview: ConnectDragPreview;
+}
+
+export interface DragLayerRenderProps {
+    type: string;
+    dom: HTMLElement;
+    item: Item;
+    monitor: DragLayerMonitor;
+    isDragging: boolean;
+    initialClientOffset: XYCoord | null;
+    initialSourceClientOffset: XYCoord | null;
+    clientOffset: XYCoord | null;
+    differenceFromInitialOffset: XYCoord | null;
+    sourceClientOffset: XYCoord | null;
 }

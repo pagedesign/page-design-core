@@ -1,6 +1,5 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
-import propTypes from "prop-types";
 import withHooks from "with-component-hooks";
 import {
     useDrop,
@@ -52,7 +51,7 @@ import {
 //     endDrag: propTypes.func,
 // };
 
-interface DropItemProps {
+export interface DropItemProps {
     item: Item;
     accepts?: string[];
     children?:
@@ -478,4 +477,6 @@ class DropItem extends React.Component<DropItemProps> {
     }
 }
 
-export default withHooks(DropItem);
+const DropItemWithHooks = withHooks(DropItem);
+
+export { DropItemWithHooks as DropItem };

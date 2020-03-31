@@ -1,7 +1,7 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
-import { useDrop } from "react-dnd";
 import withHooks from "with-component-hooks";
+import { useDrop } from "react-dnd";
 import { ModelContext, ModelContextValue } from "./ModelContext";
 
 class DropZone extends React.Component {
@@ -46,4 +46,6 @@ class DropZone extends React.Component {
     }
 }
 
-export default withHooks(DropZone);
+const DropZoneWithHooks = withHooks(DropZone);
+
+export { DropZoneWithHooks as DropZone };

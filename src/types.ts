@@ -31,6 +31,7 @@ export type IdType = string | null;
 export interface Item extends Record<string | number, any> {
     id: IdType;
     pid: IdType;
+    __tmp__?: boolean;
 }
 
 export interface DragObject {

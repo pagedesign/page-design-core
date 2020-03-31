@@ -1,7 +1,6 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import { useDrop, DropTargetConnector } from "react-dnd";
-import propTypes from "prop-types";
 import withHooks from "with-component-hooks";
 import invariant from "invariant";
 import {
@@ -26,7 +25,7 @@ import {
     DropContainerRenderProps,
 } from "./types";
 
-interface DropContainerProps {
+export interface DropContainerProps {
     id: null | string;
     children?:
         | ((props: DropContainerRenderProps) => React.ReactNode)
@@ -263,4 +262,6 @@ class DropContainer extends React.Component<Partial<DropContainerProps>> {
     }
 }
 
-export default withHooks(DropContainer);
+const DropContainerWithHooks = withHooks(DropContainer);
+
+export { DropContainerWithHooks as DropContainer };

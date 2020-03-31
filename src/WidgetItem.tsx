@@ -23,7 +23,7 @@ import {
     DropResult,
 } from "./types";
 
-interface WidgetItemProps {
+export interface WidgetItemProps {
     getInstance: () => Item;
     children?:
         | ((props: WidgetItemRenderProps) => React.ReactNode)
@@ -34,16 +34,7 @@ interface WidgetItemProps {
     endDrag?: <T = WidgetItem>(data: EndDragOptions<T>) => void;
 }
 
-// WidgetItem.propTypes = {
-//     children: propTypes.oneOfType([propTypes.func, propTypes.node]),
-//     render: propTypes.func,
-//     getInstance: propTypes.func.isRequired,
-//     canDrag: propTypes.func,
-//     beginDrag: propTypes.func,
-//     endDrag: propTypes.func
-// };
-
-export class WidgetItem extends React.Component<WidgetItemProps> {
+class WidgetItem extends React.Component<WidgetItemProps> {
     static contextType = ModelContext;
     context: ModelContextValue;
 
@@ -238,4 +229,5 @@ export class WidgetItem extends React.Component<WidgetItemProps> {
     }
 }
 
-export default withHooks(WidgetItem);
+const WidgetItemWithHooks = withHooks(WidgetItem);
+export { WidgetItemWithHooks as WidgetItem };

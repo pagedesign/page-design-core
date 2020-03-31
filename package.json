@@ -9,8 +9,8 @@
         "start": "tsc -w",
         "cjs": "transform-es src -d lib -t cjs -c",
         "esm": "transform-es src -d esm -t esm -c",
-        "demo": "node scripts/server",
-        "docs": "node scripts/docs"
+        "demo": "packez server ./demo/index.js -c",
+        "docs": "packez build ./demo/index.js -c"
     },
     "repository": {
         "type": "git",

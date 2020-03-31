@@ -1,7 +1,6 @@
 import React from "react";
-// import propTypes from "prop-types";
 import { last, find, findIndex, isFunction } from "./utils";
-import DropZone from "./DropZone";
+import { DropZone } from "./DropZone";
 import {
     ModelContext,
     ModelContextValue,
@@ -17,20 +16,12 @@ import {
     AXIS_HORIZONTAL,
     AXIS_BOTH,
 } from "./constants";
-import { IdType } from "./types";
+import { IdType, Item } from "./types";
 
 type ItemId = IdType;
 
-interface Item extends Record<string | number, any> {
-    id: ItemId;
-    pid: ItemId;
-    __tmp__?: boolean;
-}
-
-interface ModelProps {
+export interface ModelProps {
     rootId: ItemId;
-    // idField: ItemId;
-    // pidField: ItemId;
     axis: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
     commitAction: typeof COMMIT_ACTION_AUTO | typeof COMMIT_ACTION_DROP;
     value?: Item[];
@@ -67,29 +58,8 @@ function normalizeItem(item: Item, props: ModelProps) {
     return item;
 }
 
-// Model.propTypes = {
-//     idField: propTypes.string,
-//     pidField: propTypes.string,
-//     value: propTypes.array,
-//     defaultValue: propTypes.array,
-//     axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
-//     commitAction: propTypes.oneOf([COMMIT_ACTION_AUTO, COMMIT_ACTION_DROP]),
-//     onChange: propTypes.func,
-//     onDragStart: propTypes.func,
-//     onDragEnd: propTypes.func,
-//     onDrop: propTypes.func,
-//     onDropToItem: propTypes.func,
-//     onDropToContainer: propTypes.func,
-//     onDragHover: propTypes.func,
-//     onDragHoverContainer: propTypes.func,
-//     onDragHoverItem: propTypes.func,
-// };
-
 export class Model extends React.Component<Partial<ModelProps>, ModelState> {
     static getDerivedStateFromProps(props: ModelProps, state: ModelState) {
-        // if (props.value) {
-        //     props.value.forEach(item => normalizeItem(item, props));
-        // }
         return {
             items:
                 "value" in props
@@ -102,8 +72,6 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
 
     static defaultProps: ModelProps = {
         rootId: null,
-        // idField: "id",
-        // pidField: "pid",
         axis: AXIS_VERTICAL,
         commitAction: COMMIT_ACTION_AUTO,
     };
@@ -117,7 +85,7 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
 
     state: ModelState = {
         scope: randomStr("scope_"),
-        items: this.props.defaultValue || [],
+        items: [],
     };
 
     getDragState() {
@@ -499,5 +467,3 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         );
     }
 }
-
-export default Model;

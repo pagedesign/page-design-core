@@ -5,7 +5,7 @@ import AnimateContainer from "./AnimateContainer";
 import DropContainerDemo from "./DropContainerDemo";
 import DropContainerWithChildDemo from "./DropContainerWithChildDemo";
 
-import { Provider, WidgetItem, DragLayer } from "@/src";
+import { PageDesignCore as Provider, WidgetItem, DragLayer } from "@/src";
 
 import widgets from "./widgets";
 
@@ -28,7 +28,7 @@ function DragLayerDemo() {
                             background: "rgba(0,0,0,.2)",
                             position: "fixed",
                             top: 0,
-                            right: 0
+                            right: 0,
                         }}
                     >
                         dragLayer: isDragging...
@@ -41,12 +41,12 @@ function DragLayerDemo() {
 
 export default function App() {
     const [metadata, onMetadataChange] = React.useState({
-        items: []
+        items: [],
     });
 
     function onChange(items) {
         onMetadataChange({
-            items
+            items,
         });
     }
 
@@ -68,13 +68,13 @@ export default function App() {
             <div
                 style={{
                     display: "flex",
-                    height: "100%"
+                    height: "100%",
                 }}
             >
                 <div
                     style={{
                         width: 240,
-                        flex: "none"
+                        flex: "none",
                     }}
                 >
                     {widgets.map(widget => {
@@ -86,7 +86,7 @@ export default function App() {
                                     ...widget,
                                     id: randomStr(),
                                     pid: null,
-                                    index: idx++
+                                    index: idx++,
                                 })}
                             >
                                 {({ connectDragSource }) => (
@@ -95,7 +95,7 @@ export default function App() {
                                         style={{
                                             height: 32,
                                             lineHeight: `32px`,
-                                            padding: "0 20px"
+                                            padding: "0 20px",
                                         }}
                                     >
                                         {widget.title}

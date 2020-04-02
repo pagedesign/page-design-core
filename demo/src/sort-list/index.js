@@ -1,12 +1,12 @@
 import React from "react";
-import { Provider, DropContainer, DropItem } from "@/src";
+import { PageDesignCore as Provider, DropContainer, DropItem } from "@/src";
 
 const dataset = [];
 
 for (let i = 0; i < 20; i++) {
     dataset.push({
         id: i + 1,
-        title: `${i + 1}. item`
+        title: `${i + 1}. item`,
     });
 }
 
@@ -22,7 +22,7 @@ function ListItem({ item }) {
                             padding: 10,
                             margin: 5,
                             background: "#f2f2f2",
-                            border: "1px solid #dadada"
+                            border: "1px solid #dadada",
                         }}
                     >
                         {item.title}
@@ -49,7 +49,7 @@ export default () => {
                             width: 270,
                             margin: "30px auto",
                             height: "80%",
-                            overflow: "auto"
+                            overflow: "auto",
                         }}
                     >
                         {items.map(item => (

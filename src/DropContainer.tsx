@@ -1,6 +1,6 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
-import { useDrop, DropTargetConnector } from "react-dnd";
+import { useDrop, DropTargetConnector, DropTargetMonitor } from "react-dnd";
 import withHooks from "with-component-hooks";
 import invariant from "invariant";
 import {
@@ -23,6 +23,7 @@ import {
     DragHoverOptions,
     DropOptions,
     DropContainerRenderProps,
+    DragObject,
 } from "./types";
 
 export interface DropContainerProps {
@@ -33,23 +34,16 @@ export interface DropContainerProps {
     render?: (props: DropContainerRenderProps) => React.ReactNode;
     axis?: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
     accepts: string[];
-    canDrop?: <T = DropContainer>(data: CanDropOptions<T>) => boolean;
-    hover?: <T = DropContainer>(data: DragHoverOptions<T>) => void;
+    canDrop?: <T = DropContainer, D = DropTargetMonitor>(
+        data: CanDropOptions<T, D>
+    ) => boolean;
+    hover?: <T = DropContainer, D = DropTargetMonitor>(
+        data: DragHoverOptions<T, D>
+    ) => void;
     drop?: <T = DropContainer, D = DropTargetConnector>(
         data: DropOptions<T, D>
     ) => void;
 }
-
-// DropContainer.propTypes = {
-//     children: propTypes.oneOfType([propTypes.func, propTypes.node]),
-//     axis: propTypes.oneOf([AXIS_BOTH, AXIS_HORIZONTAL, AXIS_VERTICAL]),
-//     accepts: propTypes.array,
-//     render: propTypes.func,
-//     id: propTypes.any,
-//     canDrop: propTypes.func,
-//     hover: propTypes.func,
-//     drop: propTypes.func,
-// };
 
 class DropContainer extends React.Component<Partial<DropContainerProps>> {
     static contextType = ModelContext;
@@ -62,7 +56,7 @@ class DropContainer extends React.Component<Partial<DropContainerProps>> {
 
     readonly props: Readonly<DropContainerProps>;
 
-    _connectDropTarget: null | ((dom: null | HTMLElement) => void) = null;
+    _connectDropTarget: (dom: null | HTMLElement) => void;
 
     connectDropTarget() {
         const children = this.props.children;
@@ -71,25 +65,19 @@ class DropContainer extends React.Component<Partial<DropContainerProps>> {
 
         const dom = findDOMNode(this);
 
-        if (this._connectDropTarget) {
-            this._connectDropTarget(dom);
-        }
+        this._connectDropTarget(dom);
     }
 
     componentDidMount() {
-        //TODO: 后续提示_connectDropTarget是否被未被调用 DropItem WidgetItem 同样提示
         this.connectDropTarget();
     }
 
     componentDidUpdate() {
-        //TODO: 后续提示_connectDropTarget是否被未被调用
         this.connectDropTarget();
     }
 
     componentWillUnmount() {
-        if (this._connectDropTarget) {
-            this._connectDropTarget(null);
-        }
+        this._connectDropTarget(null);
     }
 
     getModel() {
@@ -109,7 +97,10 @@ class DropContainer extends React.Component<Partial<DropContainerProps>> {
         return {
             accept: [model.getScope(), ...accepts],
 
-            canDrop: (dragResult, monitor) => {
+            canDrop: (
+                dragResult: Required<DragObject>,
+                monitor: DropTargetMonitor
+            ) => {
                 let ret = !model.contains(dragResult.item, model.getItem(id));
 
                 if (ret && canDrop) {
@@ -124,7 +115,10 @@ class DropContainer extends React.Component<Partial<DropContainerProps>> {
                 return ret;
             },
 
-            hover: (dragResult, monitor) => {
+            hover: (
+                dragResult: Required<DragObject>,
+                monitor: DropTargetMonitor
+            ) => {
                 const canDrop = monitor.canDrop();
                 if (hover) {
                     hover({
@@ -163,7 +157,10 @@ class DropContainer extends React.Component<Partial<DropContainerProps>> {
                 model.fireEvent("onDragHover", e);
             },
 
-            drop: (dragResult, monitor) => {
+            drop: (
+                dragResult: Required<DragObject>,
+                monitor: DropTargetMonitor
+            ) => {
                 const dragState = DragState.getState();
                 DragState.reset();
 
@@ -198,7 +195,7 @@ class DropContainer extends React.Component<Partial<DropContainerProps>> {
                 }
             },
 
-            collect: monitor => {
+            collect: (monitor: DropTargetMonitor) => {
                 return {
                     monitor,
                     canDrop: monitor.canDrop(),

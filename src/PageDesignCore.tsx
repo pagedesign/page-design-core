@@ -3,13 +3,13 @@ import HTML5Backend from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { Model, ModelProps } from "./Model";
 
-export interface ProviderProps {
+export interface ProviderProps extends ModelProps {
     backend: typeof HTML5Backend;
     context: any;
 }
 
-export class Provider extends React.Component<Partial<ProviderProps>> {
-    static defaultProps: ProviderProps = {
+export class PageDesignCore extends React.Component<Partial<ProviderProps>> {
+    static defaultProps: Pick<ProviderProps, "context" | "backend"> = {
         context: window,
         backend: HTML5Backend,
     };

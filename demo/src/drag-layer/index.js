@@ -1,10 +1,10 @@
 import React from "react";
 import {
-    Provider,
+    PageDesignCore as Provider,
     DropContainer,
     DropItem,
     DragLayer,
-    getEmptyImage
+    getEmptyImage,
 } from "@/src";
 
 /**
@@ -18,7 +18,7 @@ for (let i = 0; i < 5; i++) {
     dataset.push({
         pid: "a",
         id: i + 1,
-        title: `${i + 1}. item`
+        title: `${i + 1}. item`,
     });
 }
 
@@ -26,7 +26,7 @@ for (let i = 5; i < 20; i++) {
     dataset.push({
         pid: "b",
         id: i + 1,
-        title: `${i + 1}. item`
+        title: `${i + 1}. item`,
     });
 }
 
@@ -45,7 +45,7 @@ function ListItem({ item }) {
                             padding: 10,
                             margin: 5,
                             background: "#f2f2f2",
-                            border: "1px solid #dadada"
+                            border: "1px solid #dadada",
                         }}
                     >
                         {item.title}
@@ -65,7 +65,7 @@ function ItemDragLayer({ dom, differenceFromInitialOffset }) {
 
         initData({
             rect,
-            cloneNode
+            cloneNode,
         });
 
         cloneNode.style.position = "fixed";
@@ -108,7 +108,7 @@ export default () => {
                     display: "flex",
                     margin: "30px auto",
                     height: "80%",
-                    width: 600
+                    width: 600,
                 }}
             >
                 <DropContainer id="a">
@@ -120,7 +120,7 @@ export default () => {
                                 border: "1px solid #ccc",
                                 borderRadius: 4,
                                 padding: 5,
-                                overflow: "auto"
+                                overflow: "auto",
                             }}
                         >
                             {items.map(item => (
@@ -131,7 +131,7 @@ export default () => {
                 </DropContainer>
                 <div
                     style={{
-                        width: 20
+                        width: 20,
                     }}
                 ></div>
                 <DropContainer id="b">
@@ -143,7 +143,7 @@ export default () => {
                                 border: "1px solid #ccc",
                                 borderRadius: 4,
                                 padding: 5,
-                                overflow: "auto"
+                                overflow: "auto",
                             }}
                         >
                             {items.map(item => (

@@ -1,6 +1,6 @@
 import { getEmptyImage, NativeTypes } from "react-dnd-html5-backend";
 import * as constants from "./constants";
-export * from "./Provider";
+export * from "./PageDesignCore";
 export * from "./DropContainer";
 export * from "./DropItem";
 export * from "./WidgetItem";

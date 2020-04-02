@@ -60,7 +60,9 @@ export interface DropItemProps {
     render?: (props: DropItemRenderProps) => React.ReactNode;
     axis?: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
     canDrop?: <T = DropItem>(data: CanDropOptions<T>) => boolean;
-    hover?: <T = DropItem>(data: DragHoverOptions<T>) => void;
+    hover?: <T = DropItem, D = DropTargetMonitor>(
+        data: DragHoverOptions<T, D>
+    ) => void;
     drop?: <T = DropItem, D = DropTargetMonitor>(
         data: DropOptions<T, D>
     ) => void;
@@ -164,7 +166,10 @@ class DropItem extends React.Component<DropItemProps> {
                 return ret;
             },
 
-            hover: (dragResult, monitor: DropTargetMonitor) => {
+            hover: (
+                dragResult: Required<DragObject>,
+                monitor: DropTargetMonitor
+            ) => {
                 const canDrop = monitor.canDrop();
                 if (hover) {
                     hover({

@@ -16,7 +16,7 @@ import {
     AXIS_HORIZONTAL,
     AXIS_BOTH,
 } from "./constants";
-import { IdType, Item } from "./types";
+import { IdType, Item, DragStateType } from "./types";
 
 type ItemId = IdType;
 
@@ -111,7 +111,7 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         return this.state.scope;
     }
 
-    fireEvent(eventName: string, ev) {
+    fireEvent<T>(eventName: string, ev: T) {
         const props = this.props;
 
         const handler = props[eventName];
@@ -121,7 +121,7 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         }
     }
 
-    contains(parentNode, childNode) {
+    contains(parentNode: Item, childNode: Item | null) {
         if (!childNode) return false;
 
         const parentId = parentNode.id;
@@ -193,7 +193,7 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         this.state.items.push(item);
     }
 
-    addItem(item: Item, pid = null) {
+    addItem(item: Item, pid: IdType = null) {
         item = normalizeItem(item, this.props);
 
         const items = this.getAllItems();
@@ -213,12 +213,12 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         this.onChange([...this.getAllItems(), ...items]);
     }
 
-    addTmpItem(item, pid?) {
+    addTmpItem(item: Item, pid?: IdType) {
         item.__tmp__ = true;
         this.addItem(item, pid);
     }
 
-    removeItem(id) {
+    removeItem(id: IdType) {
         const items = this.getAllItems();
         //移除指定项目及子项目
         const ret = items.filter(item => {
@@ -235,17 +235,17 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         this.onChange(ret);
     }
 
-    getItemIndex(id, items = this.state.items) {
+    getItemIndex(id: IdType, items = this.state.items) {
         //this.getAllItems()
         // items = items || this.getAllItems();
         return findIndex(items, item => item.id === id);
     }
 
-    getItem(id, items = this.state.items) {
+    getItem(id: IdType, items = this.state.items) {
         return find(items, item => item && item.id === id);
     }
 
-    insertBefore(item, bItem) {
+    insertBefore(item: Item, bItem: Item) {
         if (this.isSameItem(item, bItem)) return false;
 
         const items = this.getAllItems();
@@ -277,7 +277,7 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         return true;
     }
 
-    insertAfter(item, prevItem) {
+    insertAfter(item: Item, prevItem: Item) {
         if (this.isSameItem(item, prevItem)) return false;
 
         const items = this.getAllItems();
@@ -359,7 +359,7 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         return true;
     }
 
-    commitItem(item) {
+    commitItem(item: Item) {
         const items = this.getAllItems();
         const id = item.id;
         const idx = this.getItemIndex(id);
@@ -374,9 +374,9 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
     }
 
     //提交DragState中的数据
-    commitDragStateItem(dragState) {
+    commitDragStateItem(dragState: DragStateType) {
         const canDrop = dragState.canDrop;
-        const dragItem = dragState.item;
+        const dragItem = dragState.item as Item;
         const hoverContainerId = dragState.hoverContainerId;
         const hoverItem = dragState.hoverItem;
         const hoverDirection = dragState.hoverDirection;
@@ -390,9 +390,9 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
                 hoverDirection === DRAG_DIR_UP ||
                 hoverDirection === DRAG_DIR_LEFT
             ) {
-                this.insertBefore(dragItem, hoverItem);
+                this.insertBefore(dragItem, hoverItem as Item);
             } else {
-                this.insertAfter(dragItem, hoverItem);
+                this.insertAfter(dragItem, hoverItem as Item);
             }
         };
 
@@ -426,7 +426,7 @@ export class Model extends React.Component<Partial<ModelProps>, ModelState> {
         }
     }
 
-    isDragging(id) {
+    isDragging(id: IdType) {
         const dragState = DragState.getState();
         const isDragging = dragState.isDragging;
 

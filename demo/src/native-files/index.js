@@ -2,7 +2,7 @@ import React from "react";
 import classnames from "classnames";
 import { NativeTypes } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
-import { Provider, useModel, DropItem } from "@/src";
+import { PageDesignCore as Provider, useModel, DropItem } from "@/src";
 
 import "./index.scss";
 
@@ -18,7 +18,7 @@ function FileDropZone({ onChange }) {
                     pid: null,
                     id: idx++,
                     name: file.name,
-                    size: file.size
+                    size: file.size,
                 };
             });
 
@@ -29,8 +29,8 @@ function FileDropZone({ onChange }) {
         },
         collect: monitor => ({
             isOver: monitor.isOver(),
-            canDrop: monitor.canDrop()
-        })
+            canDrop: monitor.canDrop(),
+        }),
     });
     const isActive = canDrop && isOver;
 
@@ -40,7 +40,7 @@ function FileDropZone({ onChange }) {
             ref={connectDropTarget}
             className={classnames({
                 "files-list": true,
-                "drag-over": isActive
+                "drag-over": isActive,
             })}
         >
             {files.map(file => (
@@ -67,7 +67,7 @@ function File({ file }) {
                             backgroundColor: isDragging ? "cornsilk" : "",
                             opacity: isDragging ? 0.5 : 1,
                             padding: 10,
-                            borderBottom: "1px solid #ccc"
+                            borderBottom: "1px solid #ccc",
                         }}
                     >
                         {file.name} - {file.size}
@@ -80,7 +80,7 @@ function File({ file }) {
 
 export default class extends React.Component {
     state = {
-        files: []
+        files: [],
     };
 
     renderDropContainer = ({ items, monitor, connectDropTarget, ...rest }) => {
@@ -95,7 +95,7 @@ export default class extends React.Component {
                 ref={connectDropTarget}
                 className={classnames({
                     "files-list": true,
-                    "drag-over": monitor.isOver()
+                    "drag-over": monitor.isOver(),
                 })}
             ></div>
         );
@@ -104,13 +104,13 @@ export default class extends React.Component {
     handleChange = items => {
         const { files } = this.state;
         this.setState({
-            files: [...files, ...items]
+            files: [...files, ...items],
         });
     };
 
     handleSort = items => {
         this.setState({
-            files: items
+            files: items,
         });
     };
 

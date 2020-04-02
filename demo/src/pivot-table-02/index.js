@@ -1,13 +1,13 @@
 import React from "react";
 import cx from "classnames";
 import {
-    Provider,
+    PageDesignCore as Provider,
     DropContainer,
     DropItem,
     DragLayer,
     WidgetItem,
     getEmptyImage,
-    DropZone
+    DropZone,
 } from "@/src";
 import fields from "./fields";
 import ItemDragLayer from "./ItemDragLayer";
@@ -21,7 +21,7 @@ function FieldItem({ field }) {
             getInstance={() => {
                 return {
                     ...field,
-                    id: fid++
+                    id: fid++,
                 };
             }}
         >
@@ -50,7 +50,7 @@ function DropFieldContainer({ id: pid }) {
                     ? model.getChildren("filter")
                     : [
                           ...model.getChildren("column"),
-                          ...model.getChildren("row")
+                          ...model.getChildren("row"),
                       ];
             const names = items.map(item => item.name);
             const ids = items.map(item => item.id);
@@ -73,7 +73,7 @@ function DropFieldContainer({ id: pid }) {
                         className={cx({
                             "field-drop-list": true,
                             "can-drop": canDrop,
-                            "is-over": canDrop && isStrictlyOver
+                            "is-over": canDrop && isStrictlyOver,
                         })}
                     >
                         {items.map(item => {
@@ -89,7 +89,7 @@ function DropFieldContainer({ id: pid }) {
                                         connectDragSource,
                                         connectDragPreview,
                                         model,
-                                        hoverDirection
+                                        hoverDirection,
                                     }) => {
                                         connectDragPreview(getEmptyImage());
                                         return (
@@ -97,7 +97,7 @@ function DropFieldContainer({ id: pid }) {
                                                 style={{
                                                     opacity: isDragging
                                                         ? 0.5
-                                                        : 1
+                                                        : 1,
                                                 }}
                                                 className={
                                                     "field-drop-item hover-dir-" +
@@ -149,7 +149,7 @@ const E_VALUE_ITEM = {
     title: "∑数值",
     name: "∑Values",
     type: "number",
-    pid: "column"
+    pid: "column",
 };
 
 export default () => {
@@ -183,7 +183,7 @@ export default () => {
                         display: "flex",
                         margin: "30px auto",
                         height: "80%",
-                        width: 888
+                        width: 888,
                     }}
                 >
                     <div className="pivot-field-list">

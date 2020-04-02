@@ -65,18 +65,21 @@ export interface DragState {
     dragDOM: null | HTMLElement;
 }
 
+export type DragStateType = DragState;
+
 export interface CanDragOptions<T, D = DragSourceMonitor> {
     monitor: D;
     model: Model;
     component: T;
 }
 
-export interface CanDropOptions<T> extends CanDragOptions<T> {
+export interface CanDropOptions<T, D = DragSourceMonitor>
+    extends CanDragOptions<T, D> {
     item: Item;
     dom: HTMLElement;
 }
 
-export interface DragHoverOptions<T> extends CanDropOptions<T> {}
+export interface DragHoverOptions<T, D> extends CanDropOptions<T, D> {}
 
 export interface BeginDragOptions<T> extends CanDropOptions<T> {}
 

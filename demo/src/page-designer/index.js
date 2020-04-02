@@ -3,7 +3,7 @@ import classnames from "classnames";
 import "./index.scss";
 
 import {
-    Provider,
+    PageDesignCore as Provider,
     WidgetItem,
     DropContainer,
     DropItem,

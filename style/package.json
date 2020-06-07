@@ -1,0 +1,6 @@
+{
+	"name": "page-design-core/style",
+	"private": true,
+	"main": "../cjs/style/index.js",
+	"module": "../esm/style/index.js"
+}

@@ -1,68 +1,74 @@
 {
-    "name": "page-design-core",
-    "version": "0.3.3",
-    "description": "",
-    "main": "lib/index.js",
-    "module": "esm/index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "tsc -w",
-        "cjs": "transform-es src -d lib -t cjs -c",
-        "esm": "transform-es src -d esm -t esm -c",
-        "demo": "packez server ./demo/index.js -c",
-        "docs": "packez build ./demo/index.js -c"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/pagedesign/page-design-core.git"
-    },
-    "keywords": [
-        "page-design-core",
-        "drag-and-drop",
-        "react-dnd",
-        "designer"
-    ],
-    "author": "nobo.zhou@foxmail.com",
-    "license": "MIT",
-    "files": [
-        "*.md",
-        "esm",
-        "lib"
-    ],
-    "bugs": {
-        "url": "https://github.com/pagedesign/page-design-core/issues"
-    },
-    "homepage": "https://github.com/pagedesign/page-design-core#readme",
-    "dependencies": {
-        "@babel/runtime": "^7.9.2",
-        "invariant": "^2.2.4",
-        "prop-types": "^15.7.2",
-        "react-dnd": "^10.0.2",
-        "react-dnd-html5-backend": "^10.0.2",
-        "with-component-hooks": "^1.0.0"
-    },
-    "devDependencies": {
-        "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
-        "classnames": "^2.2.6",
-        "lodash": "^4.17.15",
-        "packez": "^4.1.2",
-        "react": "^16.13.1",
-        "react-dom": "^16.13.1",
-        "react-router-dom": "^5.1.2",
-        "transform-es": "^3.3.2",
-        "typescript": "^3.8.3"
-    },
-    "peerDependencies": {
-        "react": ">=16.8.0",
-        "react-dom": ">=16.8.0"
-    },
-    "browserslist": [
-        ">=0.2%",
-        "not dead",
-        "not op_mini all",
-        "not Android 4.4.3-4.4.4",
-        "not ios_saf < 10",
-        "not Chrome < 50",
-        "firefox ESR"
-    ]
+	"name": "page-design-core",
+	"version": "0.4.0-beta",
+	"description": "",
+	"main": "lib/index.js",
+	"module": "esm/index.js",
+	"types": "lib/index.d.ts",
+	"scripts": {
+		"docs": "packez build ./examples/index.js -d docs -c",
+		"start": "tsc -w",
+		"cjs": "transform-es src -d cjs -c -t cjs",
+		"esm": "transform-es src -d esm -c -t esm",
+		"tsc": "tsc",
+		"demo": "packez server ./examples/index.js -d dist -w -c",
+		"test": "jest",
+		"clear": "rimraf lib cjs esm docs dist",
+		"build": "run-s clear tsc cjs esm docs"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pagedesign/page-design-core.git"
+	},
+	"keywords": [
+		"page-design-core",
+		"drag-and-drop",
+		"react-dnd",
+		"designer"
+	],
+	"author": "nobo.zhou@foxmail.com",
+	"license": "MIT",
+	"files": [
+		"cjs",
+		"esm",
+		"lib",
+		"style",
+		"*.md"
+	],
+	"bugs": {
+		"url": "https://github.com/pagedesign/page-design-core/issues"
+	},
+	"homepage": "https://github.com/pagedesign/page-design-core#readme",
+	"dependencies": {
+		"@babel/runtime": "^7.9.2",
+		"invariant": "^2.2.4",
+		"lodash": "^4.17.15",
+		"react-dnd": "^11.1.3",
+		"react-dnd-html5-backend": "^11.1.3",
+		"with-component-hooks": "^1.0.0"
+	},
+	"devDependencies": {
+		"babel-plugin-search-and-replace": "^1.0.1",
+		"babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+		"classnames": "^2.2.6",
+		"packez": "^4.1.3",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"react-router-dom": "^5.1.2",
+		"transform-es": "^5.0.4",
+		"typescript": "^3.8.3"
+	},
+	"peerDependencies": {
+		"react": ">=16.8.0",
+		"react-dom": ">=16.8.0"
+	},
+	"browserslist": [
+		">=0.25%",
+		"not dead",
+		"not op_mini all",
+		"not Android 4.4.3-4.4.4",
+		"not ios_saf < 10",
+		"not Chrome < 50",
+		"firefox ESR"
+	]
 }

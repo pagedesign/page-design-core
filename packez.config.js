@@ -1,17 +1,28 @@
-const _ = require("lodash");
 const path = require("path");
+const pkg = require("./package.json");
 
-module.exports = function({ method, program, ...defaults }) {
-    const opts = {
-        // 自定义配置
-        useTypeScript: false,
-        resolve: {
-            alias: {
-                "@": path.join(__dirname, "."),
-                components: path.join(__dirname, "../demo/components"),
-            },
-        },
-    };
-
-    return _.defaultsDeep(opts, defaults);
+module.exports = function (options, state) {
+	return {
+		babel: {
+			plugins: [
+				[
+					"search-and-replace",
+					{
+						rules: [
+							{
+								search: "%VERSION%",
+								replace: pkg.version,
+							},
+						],
+					},
+				],
+			],
+		},
+		resolve: {
+			alias: {
+				"@": path.join(__dirname, "."),
+				components: path.join(__dirname, "../examples/components"),
+			},
+		},
+	};
 };

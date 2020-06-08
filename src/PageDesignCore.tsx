@@ -8,12 +8,11 @@ export interface ProviderProps extends ModelProps {
 	context: any;
 }
 
-export class PageDesignCore extends React.Component<Partial<ProviderProps>> {
-	static defaultProps: Pick<ProviderProps, "context" | "backend"> = {
+export class PageDesignCore extends React.Component<ProviderProps> {
+	static defaultProps: Partial<ProviderProps> = {
 		context: window,
 		backend: HTML5Backend,
 	};
-	readonly props: Readonly<ProviderProps>;
 
 	model: Model;
 

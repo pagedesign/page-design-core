@@ -92,7 +92,7 @@ render(){
 
 开始拖拽时触发
 
--   `DragStartEvent.type` 拖拽模式：`add`（新增模式，`WidgetItem`触发） 或 `sort` （排序模式，`DropItem`触发）
+-   `DragStartEvent.type` 拖拽模式：`add`（新增模式，`DragItem`触发） 或 `sort` （排序模式，`DropItem`触发）
 -   `DragStartEvent.item` 拖拽项目
 -   `DragStartEvent.dom` 拖拽项目 DOM 元素
 -   `DragStartEvent.component` 拖拽项目对象
@@ -246,7 +246,7 @@ children 为函数时，`props`属性说明：
 -   `isStrictlyOver: boolean` 推拽中的项目是否正经过当前组件，效果同`monitor.isOver({ shallow: true })`
 -   `canDrop: boolean` 当前组件是否能接收拖拽目标目标，只有使用了`connectDropTarget`才可能为`true`
 -   `hoverDirection: "up" | "down" | "left" | "right" | "none"` 拖拽项目经过当前组件所在的位置，通过对角线进行分割的四块区域。受`axis`影响
--   `isTmp: boolean` 拖拽节点处于未提交状态，通常在拖拽`WidgetItem`时有效，如果不是自行操作 model，那么当前字段基本都为`false`
+-   `isTmp: boolean` 拖拽节点处于未提交状态，通常在拖拽`DragItem`时有效，如果不是自行操作 model，那么当前字段基本都为`false`
 -   `model: Model` 数据模型对象
 -   `monitor: DragSourceMonitor` 参考：http://react-dnd.github.io/react-dnd/docs/api/drop-target-monitor
 -   `connectDropTarget:dom => void` 使指定 DOM 元素具备接收`drop`能力。
@@ -292,7 +292,7 @@ children 为函数时，`props`属性说明：
 
 当前组件拖拽结束后触发，触发时机晚于比`drop`，属性作用同 `DropContainer Options`的`canDrop`
 
-## WidgetItem Options
+## DragItem Options
 
 ### getInstance
 
@@ -302,7 +302,7 @@ children 为函数时，`props`属性说明：
 
 ### children
 
-`ReactNode | (props: WidgetItemRenderProps) => JSX.Element`
+`ReactNode | (props: DragItemRenderProps) => JSX.Element`
 
 children 为函数时，`props`属性说明：
 
@@ -330,7 +330,7 @@ children 为函数时，`props`属性说明：
 
 ## DragLayer
 
-`ReactNode | (props: WidgetItemRenderProps) => JSX.Element`
+`ReactNode | (props: DragItemRenderProps) => JSX.Element`
 
 children 为函数时，`props`属性说明：
 
@@ -500,7 +500,7 @@ interface ProviderState {
 interface CanDragOptions {
     monitor: DragSourceMonitor;
     model: Model;
-    component: WidgetItem;
+    component: DragItem;
 }
 
 interface CanDropOptions extends CanDragOptions {
@@ -516,7 +516,7 @@ interface EndDragOptions extends BeginDragOptions {}
 
 interface DropOptions extends CanDropOptions {}
 
-interface WidgetItemRenderProps {
+interface DragItemRenderProps {
     monitor: DragSourceMonitor;
     isDragging: boolean;
     model: Model;
@@ -524,12 +524,12 @@ interface WidgetItemRenderProps {
     connectDragPreview: ConnectDragPreview;
 }
 
-type WidgetItemRender = (props: WidgetItemRenderProps) => JSX.Element;
+type DragItemRender = (props: DragItemRenderProps) => JSX.Element;
 
-interface WidgetItemProps {
+interface DragItemProps {
     getInstance: () => Item;
-    children?: React.ReactNode | WidgetItemRender;
-    render?: WidgetItemRender;
+    children?: React.ReactNode | DragItemRender;
+    render?: DragItemRender;
     canDrag?: (props: CanDragOptions) => boolean;
     beginDrag?: (props: BeginDragOptions) => void;
     endDrag?: (props: EndDragOptions) => void;
@@ -616,7 +616,7 @@ export class Model extends React.Component<ModelProps, {}> {
     render(): JSX.Element;
 }
 
-export class WidgetItem extends React.Component<WidgetItemProps, {}> {
+export class DragItem extends React.Component<DragItemProps, {}> {
     render(): JSX.Element;
 }
 

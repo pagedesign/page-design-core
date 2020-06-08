@@ -5,45 +5,45 @@ import { useDrop } from "react-dnd";
 import { ModelContext, ModelContextValue } from "./ModelContext";
 
 class DropZone extends React.Component {
-    static contextType = ModelContext;
+	static contextType = ModelContext;
 
-    context: ModelContextValue;
+	context: ModelContextValue;
 
-    _connectDropTarget: (dom: HTMLElement | null) => void;
+	_connectDropTarget: (dom: HTMLElement | null) => void;
 
-    connectDropTarget() {
-        const dom = findDOMNode(this);
+	connectDropTarget() {
+		const dom = findDOMNode(this);
 
-        this._connectDropTarget(dom);
-    }
+		this._connectDropTarget(dom);
+	}
 
-    componentDidMount() {
-        this.connectDropTarget();
-    }
+	componentDidMount() {
+		this.connectDropTarget();
+	}
 
-    componentDidUpdate() {
-        this.connectDropTarget();
-    }
+	componentDidUpdate() {
+		this.connectDropTarget();
+	}
 
-    componentWillUnmount() {
-        this._connectDropTarget(null);
-    }
+	componentWillUnmount() {
+		this._connectDropTarget(null);
+	}
 
-    getDropOptions() {
-        const model = this.context.model;
+	getDropOptions() {
+		const model = this.context.model;
 
-        return {
-            accept: model.getScope(),
-        };
-    }
+		return {
+			accept: model.getScope(),
+		};
+	}
 
-    render() {
-        const [, connectDropTarget] = useDrop(this.getDropOptions());
+	render() {
+		const [, connectDropTarget] = useDrop(this.getDropOptions());
 
-        this._connectDropTarget = connectDropTarget;
+		this._connectDropTarget = connectDropTarget;
 
-        return this.props.children;
-    }
+		return this.props.children;
+	}
 }
 
 const DropZoneWithHooks = withHooks(DropZone);

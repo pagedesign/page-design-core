@@ -5,120 +5,118 @@ import AnimateContainer from "./AnimateContainer";
 import DropContainerDemo from "./DropContainerDemo";
 import DropContainerWithChildDemo from "./DropContainerWithChildDemo";
 
-import { PageDesignCore as Provider, WidgetItem, DragLayer } from "@/src";
+import { PageDesignCore as Provider, DragItem, DragLayer } from "@/src";
 
 import widgets from "./widgets";
 
 function randomStr() {
-    return Math.random()
-        .toString(16)
-        .slice(2, 8);
+	return Math.random().toString(16).slice(2, 8);
 }
 
 let idx = 1;
 
 function DragLayerDemo() {
-    return (
-        <DragLayer>
-            {({ isDragging, ...rest }) => {
-                return !isDragging ? null : (
-                    <div
-                        style={{
-                            padding: 5,
-                            background: "rgba(0,0,0,.2)",
-                            position: "fixed",
-                            top: 0,
-                            right: 0,
-                        }}
-                    >
-                        dragLayer: isDragging...
-                    </div>
-                );
-            }}
-        </DragLayer>
-    );
+	return (
+		<DragLayer>
+			{({ isDragging, ...rest }) => {
+				return !isDragging ? null : (
+					<div
+						style={{
+							padding: 5,
+							background: "rgba(0,0,0,.2)",
+							position: "fixed",
+							top: 0,
+							right: 0,
+						}}
+					>
+						dragLayer: isDragging...
+					</div>
+				);
+			}}
+		</DragLayer>
+	);
 }
 
 export default function App() {
-    const [metadata, onMetadataChange] = React.useState({
-        items: [],
-    });
+	const [metadata, onMetadataChange] = React.useState({
+		items: [],
+	});
 
-    function onChange(items) {
-        onMetadataChange({
-            items,
-        });
-    }
+	function onChange(items) {
+		onMetadataChange({
+			items,
+		});
+	}
 
-    return (
-        <Provider
-            // 受控
-            value={metadata.items}
-            onChange={onChange}
-            onDragStart={ev => {
-                console.log("onDragStart", ev);
-            }}
-            onDragEnd={ev => {
-                console.log("onDragEnd", ev);
-            }}
-            onDrop={ev => {
-                console.log("onDrop", ev);
-            }}
-        >
-            <div
-                style={{
-                    display: "flex",
-                    height: "100%",
-                }}
-            >
-                <div
-                    style={{
-                        width: 240,
-                        flex: "none",
-                    }}
-                >
-                    {widgets.map(widget => {
-                        return (
-                            <WidgetItem
-                                key={widget.xtype}
-                                // disabled={widget.xtype === "EX_URL_FIELD"}
-                                getInstance={() => ({
-                                    ...widget,
-                                    id: randomStr(),
-                                    pid: null,
-                                    index: idx++,
-                                })}
-                            >
-                                {({ connectDragSource }) => (
-                                    <div
-                                        ref={connectDragSource}
-                                        style={{
-                                            height: 32,
-                                            lineHeight: `32px`,
-                                            padding: "0 20px",
-                                        }}
-                                    >
-                                        {widget.title}
-                                    </div>
-                                )}
-                            </WidgetItem>
-                        );
-                    })}
-                </div>
-                <DropContainerDemo title="A" />
-                <DropContainerDemo id="b" title="B" />
-                <AnimateContainer />
+	return (
+		<Provider
+			// 受控
+			value={metadata.items}
+			onChange={onChange}
+			onDragStart={(ev) => {
+				console.log("onDragStart", ev);
+			}}
+			onDragEnd={(ev) => {
+				console.log("onDragEnd", ev);
+			}}
+			onDrop={(ev) => {
+				console.log("onDrop", ev);
+			}}
+		>
+			<div
+				style={{
+					display: "flex",
+					height: "100%",
+				}}
+			>
+				<div
+					style={{
+						width: 240,
+						flex: "none",
+					}}
+				>
+					{widgets.map((widget) => {
+						return (
+							<DragItem
+								key={widget.xtype}
+								// disabled={widget.xtype === "EX_URL_FIELD"}
+								getInstance={() => ({
+									...widget,
+									id: randomStr(),
+									pid: null,
+									index: idx++,
+								})}
+							>
+								{({ connectDragSource }) => (
+									<div
+										ref={connectDragSource}
+										style={{
+											height: 32,
+											lineHeight: `32px`,
+											padding: "0 20px",
+										}}
+									>
+										{widget.title}
+									</div>
+								)}
+							</DragItem>
+						);
+					})}
+				</div>
+				<DropContainerDemo title="A" />
+				<DropContainerDemo id="b" title="B" />
+				<AnimateContainer />
 
-                <DropContainerWithChildDemo title="Parent" />
-                <DropContainerDemo
-                    id="d"
-                    title="D"
-                    canDrop={item => {
-                        return item.xtype === "EX_TEXTAREA_FIELD";
-                    }}
-                />
-                <DragLayerDemo />
-            </div>
-        </Provider>
-    );
+				<DropContainerWithChildDemo title="Parent" />
+				<DropContainerDemo
+					id="d"
+					title="D"
+					canDrop={(item) => {
+						return item.xtype === "EX_TEXTAREA_FIELD";
+					}}
+				/>
+				<DragLayerDemo />
+			</div>
+		</Provider>
+	);
 }

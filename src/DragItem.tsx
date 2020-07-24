@@ -23,18 +23,18 @@ import type {
 	DropResult,
 } from "./types";
 
-export interface DragItemProps {
-	getInstance: () => Item;
-	children?: ((props: DragItemRenderProps) => React.ReactNode) | React.ReactNode;
-	render?: (props: DragItemRenderProps) => React.ReactNode;
-	canDrag?: <T = DragItem>(data: CanDragOptions<T>) => boolean;
-	beginDrag?: <T = DragItem>(data: BeginDragOptions<T>) => void;
-	endDrag?: <T = DragItem>(data: EndDragOptions<T>) => void;
+export interface DragItemProps<T1 extends Item = Item> {
+	getInstance: () => T1;
+	children?: ((props: DragItemRenderProps<T1>) => React.ReactNode) | React.ReactNode;
+	render?: (props: DragItemRenderProps<T1>) => React.ReactNode;
+	canDrag?: <T = DragItem<T1>>(data: CanDragOptions<T>) => boolean;
+	beginDrag?: <T = DragItem<T1>>(data: BeginDragOptions<T>) => void;
+	endDrag?: <T = DragItem<T1>>(data: EndDragOptions<T>) => void;
 }
 
-class DragItem extends React.Component<DragItemProps> {
+class DragItem<T extends Item = Item> extends React.Component<DragItemProps<T>> {
 	static contextType = ModelContext;
-	context: ModelContextValue;
+	context: ModelContextValue<T>;
 
 	_dragDOM: null | HTMLElement;
 	_connectDragSource: null | ((dom: null | HTMLElement) => void) = null;
@@ -152,7 +152,7 @@ class DragItem extends React.Component<DragItemProps> {
 				};
 			},
 
-			end: (dragResult: Required<DragObject>, monitor: DragSourceMonitor) => {
+			end: (dragResult: Required<DragObject<T>>, monitor: DragSourceMonitor) => {
 				const { dragDOMIsRemove, dragDOM } = DragState.getState();
 				DragState.reset();
 
@@ -207,7 +207,7 @@ class DragItem extends React.Component<DragItemProps> {
 		);
 		this._connectDragPreview = connectDragPreview;
 
-		const props: DragItemRenderProps = {
+		const props: DragItemRenderProps<T> = {
 			...collectProps,
 			model,
 			connectDragSource,

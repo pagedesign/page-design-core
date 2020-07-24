@@ -1,17 +1,15 @@
 import React from "react";
 import { useDragLayer, DragLayerMonitor } from "react-dnd";
 import { isFunction } from "./utils";
-import type { DragObject, DragLayerRenderProps } from "./types";
+import type { DragObject, DragLayerRenderProps, Item } from "./types";
 
-export interface DragLayerProps {
-	children: ((props: DragLayerRenderProps) => React.ReactElement) | React.ReactElement;
+export interface DragLayerProps<T extends Item = Item> {
+	children: ((props: DragLayerRenderProps<T>) => React.ReactElement) | React.ReactElement;
 }
 
-interface DragLayerFC extends React.FC<DragLayerProps> {}
-
-export const DragLayer: DragLayerFC = function ({ children }) {
-	const props = useDragLayer((monitor: DragLayerMonitor) => {
-		const dragResult: Required<DragObject> = monitor.getItem();
+export const DragLayer = function <T extends Item = Item>({ children }: DragLayerProps<T>) {
+	const props: DragLayerRenderProps<T> = useDragLayer((monitor: DragLayerMonitor) => {
+		const dragResult: Required<DragObject<T>> = monitor.getItem();
 		return {
 			...dragResult,
 			monitor,

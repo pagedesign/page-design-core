@@ -24,12 +24,14 @@ import type {
 	DropOptions,
 	DropContainerRenderProps,
 	DragObject,
+	Item,
+	IdType,
 } from "./types";
 
-export interface DropContainerProps {
-	id: null | string;
-	children?: ((props: DropContainerRenderProps) => React.ReactNode) | React.ReactNode;
-	render?: (props: DropContainerRenderProps) => React.ReactNode;
+export interface DropContainerProps<T extends Item = Item> {
+	id: IdType;
+	children?: ((props: DropContainerRenderProps<T>) => React.ReactNode) | React.ReactNode;
+	render?: (props: DropContainerRenderProps<T>) => React.ReactNode;
 	axis?: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
 	accepts: string[];
 	canDrop?: <T = DropContainer, D = DropTargetMonitor>(data: CanDropOptions<T, D>) => boolean;
@@ -37,9 +39,9 @@ export interface DropContainerProps {
 	drop?: <T = DropContainer, D = DropTargetConnector>(data: DropOptions<T, D>) => void;
 }
 
-class DropContainer extends React.Component<DropContainerProps> {
+class DropContainer<T extends Item = Item> extends React.Component<DropContainerProps<T>> {
 	static contextType = ModelContext;
-	context: ModelContextValue;
+	context: ModelContextValue<T>;
 
 	static defaultProps: DropContainerProps = {
 		id: null,
@@ -87,7 +89,7 @@ class DropContainer extends React.Component<DropContainerProps> {
 		return {
 			accept: [model.getScope(), ...accepts],
 
-			canDrop: (dragResult: Required<DragObject>, monitor: DropTargetMonitor) => {
+			canDrop: (dragResult: Required<DragObject<T>>, monitor: DropTargetMonitor) => {
 				let ret = !model.contains(dragResult.item, model.getItem(id));
 
 				if (ret && canDrop) {
@@ -102,7 +104,7 @@ class DropContainer extends React.Component<DropContainerProps> {
 				return ret;
 			},
 
-			hover: (dragResult: Required<DragObject>, monitor: DropTargetMonitor) => {
+			hover: (dragResult: Required<DragObject<T>>, monitor: DropTargetMonitor) => {
 				const canDrop = monitor.canDrop();
 				if (hover) {
 					hover({
@@ -141,7 +143,7 @@ class DropContainer extends React.Component<DropContainerProps> {
 				model.fireEvent("onDragHover", e);
 			},
 
-			drop: (dragResult: Required<DragObject>, monitor: DropTargetMonitor) => {
+			drop: (dragResult: Required<DragObject<T>>, monitor: DropTargetMonitor) => {
 				const dragState = DragState.getState();
 				DragState.reset();
 
@@ -165,11 +167,11 @@ class DropContainer extends React.Component<DropContainerProps> {
 					const e = {
 						target: id,
 						targetDOM,
-						type: isNew ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
 						monitor,
 						component: this,
 						model,
 						...dragResult,
+						type: isNew ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
 					};
 					model.fireEvent("onDropToContainer", e);
 					model.fireEvent("onDrop", e);
@@ -207,12 +209,12 @@ class DropContainer extends React.Component<DropContainerProps> {
 
 		this._connectDropTarget = connectDropTarget;
 
-		const props = {
+		const props: DropContainerRenderProps<T> = {
 			...collectedProps,
 			model,
 			connectDropTarget,
 			items,
-		};
+		} as DropContainerRenderProps<T>;
 
 		const child = children
 			? isFunction(children)

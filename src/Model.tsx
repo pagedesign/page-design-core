@@ -12,49 +12,66 @@ import {
 	AXIS_HORIZONTAL,
 	AXIS_BOTH,
 } from "./constants";
-import type { IdType, Item, DragStateType } from "./types";
+import type {
+	IdType,
+	Item,
+	DragStateType,
+	DragStartEvent,
+	DragEndEvent,
+	DropEvent,
+	DropToItemEvent,
+	DropToContainerEvent,
+	DragHoverEvent,
+	DragHoverContainerEvent,
+	DragHoverItemEvent,
+} from "./types";
+
+type TItem = Item;
 
 type ItemId = IdType;
 
-export interface ModelProps {
+export interface ModelProps<T extends Item = Item> {
 	rootId: ItemId;
 	axis: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
 	commitAction: typeof COMMIT_ACTION_AUTO | typeof COMMIT_ACTION_DROP;
-	value?: Item[];
-	defaultValue?: Item[];
-	children?: ((instance: Model) => React.ReactNode) | React.ReactNode;
-	onChange?(items: Item[]): void;
-	onDragStart?(): void;
-	onDragEnd?(): void;
-	onDrop?(): void;
-	onDropToItem?(): void;
-	onDropToContainer?(): void;
-	onDragHover?(): void;
-	onDragHoverContainer?(): void;
-	onDragHoverItem?(): void;
+	value?: T[];
+	defaultValue?: T[];
+	children?: ((instance: Model<T>) => React.ReactNode) | React.ReactNode;
+	onChange?(items: T[]): void;
+	onDragStart?(e: DragStartEvent<T>): void;
+	onDragEnd?(e: DragEndEvent<T>): void;
+	onDrop?(e: DropEvent<T>): void;
+	onDropToItem?(e: DropToItemEvent<T>): void;
+	onDropToContainer?(e: DropToContainerEvent<T>): void;
+	onDragHover?(e: DragHoverEvent<T>): void;
+	onDragHoverContainer?(e: DragHoverContainerEvent<T>): void;
+	onDragHoverItem?(e: DragHoverItemEvent<T>): void;
 }
 
-interface ModelState {
+interface ModelState<T extends Item = Item> {
 	scope: string;
-	items: Item[];
+	items: T[];
 }
 
 function randomStr(prefix = "") {
 	return prefix + Math.random().toString(16).slice(2, 8);
 }
 
-function normalizeItem(item: Item, props: ModelProps) {
+function normalizeItem<T extends Item>(item: T, props: ModelProps) {
 	item.id = item.id === undefined ? randomStr(`item_`) : item.id;
 	item.pid = item.pid === undefined ? props.rootId : item.pid;
 	return item;
 }
 
-export class Model extends React.Component<ModelProps, ModelState> {
+export class Model<Item extends TItem = TItem> extends React.Component<
+	ModelProps<Item>,
+	ModelState<Item>
+> {
 	static getDerivedStateFromProps(props: ModelProps, state: ModelState) {
 		return {
 			items:
 				"value" in props
-					? (props.value as Item[]).map((item) => normalizeItem(item, props))
+					? (props.value as TItem[]).map((item) => normalizeItem(item, props))
 					: state.items,
 		};
 	}
@@ -70,7 +87,7 @@ export class Model extends React.Component<ModelProps, ModelState> {
 		axis: AXIS_VERTICAL,
 	});
 
-	state: ModelState = {
+	state: ModelState<Item> = {
 		scope: randomStr("scope_"),
 		items: [],
 	};
@@ -431,7 +448,7 @@ export class Model extends React.Component<ModelProps, ModelState> {
 		return !!item.__tmp__;
 	}
 
-	getModel(this: Model): ModelContextValue {
+	getModel(this: Model<Item>): ModelContextValue<Item> {
 		return {
 			model: this,
 		};

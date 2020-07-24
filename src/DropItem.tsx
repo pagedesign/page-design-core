@@ -33,28 +33,28 @@ import type {
 	HoverDirection,
 } from "./types";
 
-export interface DropItemProps {
-	item: Item;
+export interface DropItemProps<T1 extends Item = Item> {
+	item: T1;
 	accepts: string[];
-	children?: ((props: DropItemRenderProps) => React.ReactNode) | React.ReactNode;
-	render?: (props: DropItemRenderProps) => React.ReactNode;
+	children?: ((props: DropItemRenderProps<T1>) => React.ReactNode) | React.ReactNode;
+	render?: (props: DropItemRenderProps<T1>) => React.ReactNode;
 	axis?: typeof AXIS_BOTH | typeof AXIS_HORIZONTAL | typeof AXIS_VERTICAL;
-	canDrop?: <T = DropItem>(data: CanDropOptions<T>) => boolean;
-	hover?: <T = DropItem, D = DropTargetMonitor>(data: DragHoverOptions<T, D>) => void;
-	drop?: <T = DropItem, D = DropTargetMonitor>(data: DropOptions<T, D>) => void;
-	canDrag?: <T = DropItem>(data: CanDragOptions<T>) => boolean;
-	beginDrag?: <T = DropItem>(data: BeginDragOptions<T>) => void;
-	endDrag?: <T = DropItem>(data: EndDragOptions<T>) => void;
+	canDrop?: <T = DropItem<T1>>(data: CanDropOptions<T>) => boolean;
+	hover?: <T = DropItem<T1>, D = DropTargetMonitor>(data: DragHoverOptions<T, D>) => void;
+	drop?: <T = DropItem<T1>, D = DropTargetMonitor>(data: DropOptions<T, D>) => void;
+	canDrag?: <T = DropItem<T1>>(data: CanDragOptions<T>) => boolean;
+	beginDrag?: <T = DropItem<T1>>(data: BeginDragOptions<T>) => void;
+	endDrag?: <T = DropItem<T1>>(data: EndDragOptions<T>) => void;
 }
 
-class DropItem extends React.Component<DropItemProps> {
+class DropItem<T extends Item> extends React.Component<DropItemProps<T>> {
 	static contextType = ModelContext;
 
 	static defaultProps = {
 		accepts: [],
 	};
 
-	context: ModelContextValue;
+	context: ModelContextValue<T>;
 
 	_lastHoverDirection: HoverDirection = DRAG_DIR_NONE;
 
@@ -134,7 +134,7 @@ class DropItem extends React.Component<DropItemProps> {
 				return ret;
 			},
 
-			hover: (dragResult: Required<DragObject>, monitor: DropTargetMonitor) => {
+			hover: (dragResult: Required<DragObject<T>>, monitor: DropTargetMonitor) => {
 				const canDrop = monitor.canDrop();
 				if (hover) {
 					hover({
@@ -193,7 +193,7 @@ class DropItem extends React.Component<DropItemProps> {
 				model.fireEvent("onDragHover", e);
 			},
 
-			drop: (dragResult: Required<DragObject>, monitor: DropTargetMonitor) => {
+			drop: (dragResult: Required<DragObject<T>>, monitor: DropTargetMonitor) => {
 				const dragState = DragState.getState();
 				DragState.reset();
 				if (drop) {
@@ -216,11 +216,11 @@ class DropItem extends React.Component<DropItemProps> {
 					const e = {
 						target: item,
 						targetDOM,
-						type: isNew ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
 						monitor,
 						component: this,
 						model,
 						...dragResult,
+						type: isNew ? EVENT_TYPE_ADD : EVENT_TYPE_SORT,
 					};
 					model.fireEvent("onDropToItem", e);
 					model.fireEvent("onDrop", e);
@@ -403,7 +403,7 @@ class DropItem extends React.Component<DropItemProps> {
 			this._connectDragSource(dom);
 		}, []);
 
-		const props: DropItemRenderProps = {
+		const props: DropItemRenderProps<T> = {
 			...collectedDropProps,
 			...collectedDragProps,
 			item,
@@ -413,7 +413,7 @@ class DropItem extends React.Component<DropItemProps> {
 			connectDragSource,
 			connectDragAndDrop,
 			connectDragPreview,
-		} as DropItemRenderProps;
+		} as DropItemRenderProps<T>;
 
 		const { isStrictlyOver, isDragging, canDrop } = props;
 

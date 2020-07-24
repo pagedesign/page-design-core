@@ -16,6 +16,8 @@ import {
 	DRAG_DIR_LEFT,
 	DRAG_DIR_RIGHT,
 	DRAG_DIR_NONE,
+	EVENT_TYPE_ADD,
+	EVENT_TYPE_SORT,
 } from "./constants";
 
 export type DirType =
@@ -26,7 +28,7 @@ export type DirType =
 
 export type HoverDirection = DirType | typeof DRAG_DIR_NONE;
 
-export type IdType = string | null;
+export type IdType = string | number | null;
 
 export interface Item extends Record<string | number, any> {
 	id: IdType;
@@ -34,9 +36,9 @@ export interface Item extends Record<string | number, any> {
 	__tmp__?: boolean;
 }
 
-export interface DragObject {
+export interface DragObject<T extends Item = Item> {
 	type: string;
-	item?: Item;
+	item?: T;
 	dom?: HTMLElement;
 }
 
@@ -47,12 +49,12 @@ export interface DragCollectedProps {
 	monitor: DragSourceMonitor;
 }
 
-export interface DragState {
-	item: null | Item;
+export interface DragState<T extends Item = Item> {
+	item: null | T;
 	isNew: boolean;
 	canDrop: boolean;
 	hoverContainerId: IdType;
-	hoverItem: null | Item;
+	hoverItem: null | T;
 	hoverDirection:
 		| typeof DRAG_DIR_UP
 		| typeof DRAG_DIR_DOWN
@@ -89,45 +91,45 @@ export interface DropOptions<T, D = DragSourceMonitor> extends CanDragOptions<T,
 	dom: HTMLElement;
 }
 
-export interface DropContainerRenderProps {
+export interface DropContainerRenderProps<T extends Item> {
 	monitor: DropTargetMonitor;
 	canDrop: boolean;
 	isOver: boolean;
 	isStrictlyOver: boolean;
-	model: Model;
+	model: Model<T>;
 	connectDropTarget: ConnectDropTarget;
-	items: Item[];
+	items: T[];
 	[propName: string]: any;
 }
 
-export interface DragItemRenderProps {
+export interface DragItemRenderProps<T extends Item> {
 	monitor: DragSourceMonitor;
 	isDragging: boolean;
-	model: Model;
+	model: Model<T>;
 	connectDragSource: ConnectDragSource;
 	connectDragPreview: ConnectDragPreview;
 }
 
-export interface DropItemRenderProps {
+export interface DropItemRenderProps<T extends Item = Item> {
 	monitor: DropTargetMonitor;
 	hoverDirection: HoverDirection;
 	isOver: boolean;
 	isStrictlyOver: boolean;
 	canDrop: boolean;
 	isDragging: boolean;
-	item: Item;
+	item: T;
 	isTmp: boolean;
-	model: Model;
+	model: Model<T>;
 	connectDropTarget: ConnectDropTarget;
 	connectDragSource: ConnectDragSource;
 	connectDragAndDrop: (dom: HTMLElement | null) => void;
 	connectDragPreview: ConnectDragPreview;
 }
 
-export interface DragLayerRenderProps {
+export interface DragLayerRenderProps<T extends Item = Item> {
 	type: string;
 	dom: HTMLElement;
-	item: Item;
+	item: T;
 	monitor: DragLayerMonitor;
 	isDragging: boolean;
 	initialClientOffset: XYCoord | null;
@@ -136,3 +138,44 @@ export interface DragLayerRenderProps {
 	differenceFromInitialOffset: XYCoord | null;
 	sourceClientOffset: XYCoord | null;
 }
+
+export interface DragStartEvent<T extends Item = Item> {
+	item: T;
+	dom: HTMLElement;
+	type: typeof EVENT_TYPE_ADD | typeof EVENT_TYPE_SORT;
+	model: Model<T>;
+	monitor: DragSourceMonitor;
+	component: any;
+}
+export interface DragEndEvent<T extends Item = Item> extends DragObject<T> {
+	type: typeof EVENT_TYPE_ADD | typeof EVENT_TYPE_SORT;
+	model: Model<T>;
+	monitor: DragSourceMonitor;
+	component: any;
+}
+export interface DropEvent<T extends Item = Item> extends DragObject<T> {
+	target: IdType;
+	targetDOM: HTMLElement;
+	monitor: DropTargetMonitor;
+	component: any;
+	model: Model<T>;
+	type: typeof EVENT_TYPE_ADD | typeof EVENT_TYPE_SORT;
+}
+export interface DropToItemEvent<T extends Item = Item> extends DragObject<T> {
+	target: T;
+	targetDOM: HTMLElement;
+	monitor: DropTargetMonitor;
+	component: any;
+	model: Model<T>;
+	type: typeof EVENT_TYPE_ADD | typeof EVENT_TYPE_SORT;
+}
+
+export type DropToContainerEvent<T extends Item = Item> = DropEvent<T>;
+
+export interface DragHoverEvent<T extends Item = Item>
+	extends Omit<DropEvent<T>, "type" | "target"> {
+	target: T | string | null;
+}
+
+export type DragHoverContainerEvent<T extends Item = Item> = Omit<DropEvent<T>, "type">;
+export type DragHoverItemEvent<T extends Item = Item> = Omit<DropToItemEvent<T>, "type">;
